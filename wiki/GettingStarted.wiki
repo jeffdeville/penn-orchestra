@@ -1,0 +1,16 @@
+#labels Featured
+= UNDER CONSTRUCTION =
+
+= Setting Up Your Development Environment in Eclipse=
+
+Here's the way that we set up our development environment:
+
+  # get the Eclipse Classic package from, for example, [http://www.eclipse.org/downloads/]
+  # install the [http://m2eclipse.sonatype.org/ M2Eclipse] Eclipse plugin. At a minimim you'll need the following items:
+    * Maven Integration/Maven Embedder
+    * Maven Integration/Maven Integration for Eclipse
+    * Integration w/ Subclipse
+  # install the [http://subclipse.tigris.org/ Subclipse] Eclipse plugin. At a minimum you'll need the required item: 
+    * Subclipse/Subclipse
+  # install the [http://testng.org/doc/eclipse.html TestNG] Eclipse plugin
+  # fire up Eclipse and switch over to the `SVN Repository Exploring` perspective and create a repository at [http://penn-orchestra.googlecode.com/svn/trunk/] if you're not a commiter or [https://penn-orchestra.googlecode.com/svn/trunk/] if you're a commiter
