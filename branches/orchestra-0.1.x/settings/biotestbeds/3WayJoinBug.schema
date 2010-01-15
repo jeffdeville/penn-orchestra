@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--17:17:35 06/25/08 EDT
+{integers=0, inout=true, oracle=0, skip=0, cutoff=8, password=, addBypasses=0, deletions=1, username=, addValueAttr=true, relsize=12, tukwila=0, fanout=0, olivier=1, schemas=6, dbalias=BIOTBG, insertions=10, iterations=0, seed=2, mappingsServer=jdbc:db2://localhost:50000, bidir=0, updateAlias=null, addPeers=0, coverage=1.0, deleteBypasses=0, maxcycles=0, peers=6, filename=3WayJoinBug, mincycles=0, deletePeers=0}-->
+<catalog recMode="false" name="3WayJoinBug">
+  <migrated>true</migrated>
+  <peer name="P0" address="localhost">
+    <schema name="S0">
+      <relation name="P0_S0_R0" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R0"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P0_S0_R0_L" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R0_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P0_S0_R0_R" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R0_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P0_S0_R1" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R1"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P0_S0_R1_L" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R1_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P0_S0_R1_R" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R1_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P0_S0_R2" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R2"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P0_S0_R2_L" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R2_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P0_S0_R2_R" materialized="true">
+        <dbinfo schema="orchestra" table="P0_S0_R2_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer name="P1" address="localhost">
+    <schema name="S1">
+      <relation name="P1_S1_R0" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R0"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P1_S1_R0_L" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R0_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P1_S1_R0_R" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R0_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P1_S1_R1" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R1"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P1_S1_R1_L" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R1_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P1_S1_R1_R" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R1_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P1_S1_R2" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R2"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P1_S1_R2_L" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R2_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P1_S1_R2_R" materialized="true">
+        <dbinfo schema="orchestra" table="P1_S1_R2_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer name="P2" address="localhost">
+    <schema name="S2">
+      <relation name="P2_S2_R0" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R0"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P2_S2_R0_L" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R0_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P2_S2_R0_R" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R0_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P2_S2_R1" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R1"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P2_S2_R1_L" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R1_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P2_S2_R1_R" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R1_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P2_S2_R2" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R2"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P2_S2_R2_L" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R2_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P2_S2_R2_R" materialized="true">
+        <dbinfo schema="orchestra" table="P2_S2_R2_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer name="P3" address="localhost">
+    <schema name="S3">
+      <relation name="P3_S3_R0" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R0"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P3_S3_R0_L" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R0_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P3_S3_R0_R" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R0_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P3_S3_R1" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R1"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P3_S3_R1_L" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R1_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P3_S3_R1_R" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R1_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P3_S3_R2" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R2"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P3_S3_R2_L" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R2_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P3_S3_R2_R" materialized="true">
+        <dbinfo schema="orchestra" table="P3_S3_R2_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer name="P4" address="localhost">
+    <schema name="S4">
+      <relation name="P4_S4_R0" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R0"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P4_S4_R0_L" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R0_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P4_S4_R0_R" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R0_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P4_S4_R1" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R1"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P4_S4_R1_L" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R1_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P4_S4_R1_R" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R1_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P4_S4_R2" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R2"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P4_S4_R2_L" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R2_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P4_S4_R2_R" materialized="true">
+        <dbinfo schema="orchestra" table="P4_S4_R2_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer name="P5" address="localhost">
+    <schema name="S5">
+      <relation name="P5_S5_R0" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R0"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P5_S5_R0_L" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R0_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P5_S5_R0_R" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R0_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="RC" type="varchar(8)"/>
+        <field name="OX" type="varchar(8)"/>
+        <field name="PE" type="varchar(8)"/>
+        <field name="OH" type="varchar(8)"/>
+        <field name="OG" type="varchar(8)"/>
+        <field name="CC" type="varchar(8)"/>
+        <field name="RP" type="varchar(8)"/>
+        <field name="GN" type="varchar(8)"/>
+        <field name="DT" type="varchar(8)"/>
+        <field name="KW" type="varchar(8)"/>
+        <field name="RL" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P5_S5_R1" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R1"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P5_S5_R1_L" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R1_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P5_S5_R1_R" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R1_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="FT" type="varchar(8)"/>
+        <field name="OS" type="varchar(8)"/>
+        <field name="RA" type="varchar(8)"/>
+        <field name="RN" type="varchar(8)"/>
+        <field name="SD" type="varchar(8)"/>
+        <field name="RX" type="varchar(8)"/>
+        <field name="AC" type="varchar(8)"/>
+        <field name="RG" type="varchar(8)"/>
+        <field name="OC" type="varchar(8)"/>
+        <field name="RT" type="varchar(8)"/>
+        <field name="SQ" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P5_S5_R2" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R2"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P5_S5_R2_L" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R2_L"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+      <relation name="P5_S5_R2_R" materialized="true">
+        <dbinfo schema="orchestra" table="P5_S5_R2_R"/>
+        <field name="KID" type="integer" key="true"/>
+        <field name="DE" type="varchar(8)"/>
+        <field name="ID" type="varchar(8)"/>
+        <field name="DR" type="varchar(8)"/>
+        <field name="VALUE" type="integer" key="true"/>
+      </relation>
+    </schema>
+  </peer>
+  <mapping name="M0" materialized="true">
+    <head>
+      <atom>P1.S1.P1_S1_R0(KID, OS, OC, RN, ID, RP, RX, KW, SQ, DE, DT, CC, VALUE)</atom>
+      <atom>P1.S1.P1_S1_R1(KID, RA, RT, SD, RC, PE, RG, OG, GN, AC, OH, RL, VALUE)</atom>
+      <atom>P1.S1.P1_S1_R2(KID, FT, OX, DR, VALUE)</atom>
+    </head>
+    <body>
+      <atom>P0.S0.P0_S0_R0(KID, OC, PE, DT, RG, OS, RL, RP, RT, OG, KW, RC, VALUE)</atom>
+      <atom>P0.S0.P0_S0_R1(KID, FT, RX, CC, SQ, SD, ID, OH, OX, DE, GN, AC, VALUE)</atom>
+      <atom>P0.S0.P0_S0_R2(KID, RN, RA, DR, VALUE)</atom>
+    </body>
+  </mapping>
+  <mapping name="M1" materialized="true">
+    <head>
+      <atom>P2.S2.P2_S2_R0(KID, CC, OC, OS, RN, AC, SD, RP, RL, DE, RC, RT, VALUE)</atom>
+      <atom>P2.S2.P2_S2_R1(KID, DR, GN, OG, DT, PE, RA, ID, OH, FT, SQ, RX, VALUE)</atom>
+      <atom>P2.S2.P2_S2_R2(KID, OX, KW, RG, VALUE)</atom>
+    </head>
+    <body>
+      <atom>P0.S0.P0_S0_R0(KID, OC, PE, DT, RG, OS, RL, RP, RT, OG, KW, RC, VALUE)</atom>
+      <atom>P0.S0.P0_S0_R1(KID, FT, RX, CC, SQ, SD, ID, OH, OX, DE, GN, AC, VALUE)</atom>
+      <atom>P0.S0.P0_S0_R2(KID, RN, RA, DR, VALUE)</atom>
+    </body>
+  </mapping>
+  <mapping name="M2" materialized="true">
+    <head>
+      <atom>P1.S1.P1_S1_R0(KID, OS, OC, RN, ID, RP, RX, KW, SQ, DE, DT, CC, VALUE)</atom>
+      <atom>P1.S1.P1_S1_R1(KID, RA, RT, SD, RC, PE, RG, OG, GN, AC, OH, RL, VALUE)</atom>
+      <atom>P1.S1.P1_S1_R2(KID, FT, OX, DR, VALUE)</atom>
+    </head>
+    <body>
+      <atom>P3.S3.P3_S3_R0(KID, AC, RN, RL, FT, RX, GN, OS, PE, RA, OC, OG, VALUE)</atom>
+      <atom>P3.S3.P3_S3_R1(KID, RC, ID, SQ, DR, KW, CC, DT, OH, SD, RG, RT, VALUE)</atom>
+      <atom>P3.S3.P3_S3_R2(KID, OX, RP, DE, VALUE)</atom>
+    </body>
+  </mapping>
+  <mapping name="M3" materialized="true">
+    <head>
+      <atom>P4.S4.P4_S4_R0(KID, PE, OH, GN, RL, OG, OX, AC, SQ, RT, RN, DE, VALUE)</atom>
+      <atom>P4.S4.P4_S4_R1(KID, CC, RA, RG, OC, ID, SD, RP, DR, RX, FT, KW, VALUE)</atom>
+      <atom>P4.S4.P4_S4_R2(KID, RC, OS, DT, VALUE)</atom>
+    </head>
+    <body>
+      <atom>P1.S1.P1_S1_R0(KID, OS, OC, RN, ID, RP, RX, KW, SQ, DE, DT, CC, VALUE)</atom>
+      <atom>P1.S1.P1_S1_R1(KID, RA, RT, SD, RC, PE, RG, OG, GN, AC, OH, RL, VALUE)</atom>
+      <atom>P1.S1.P1_S1_R2(KID, FT, OX, DR, VALUE)</atom>
+    </body>
+  </mapping>
+  <mapping name="M4" materialized="true">
+    <head>
+      <atom>P3.S3.P3_S3_R0(KID, AC, RN, RL, FT, RX, GN, OS, PE, RA, OC, OG, VALUE)</atom>
+      <atom>P3.S3.P3_S3_R1(KID, RC, ID, SQ, DR, KW, CC, DT, OH, SD, RG, RT, VALUE)</atom>
+      <atom>P3.S3.P3_S3_R2(KID, OX, RP, DE, VALUE)</atom>
+    </head>
+    <body>
+      <atom>P5.S5.P5_S5_R0(KID, RC, OX, PE, OH, OG, CC, RP, GN, DT, KW, RL, VALUE)</atom>
+      <atom>P5.S5.P5_S5_R1(KID, FT, OS, RA, RN, SD, RX, AC, RG, OC, RT, SQ, VALUE)</atom>
+      <atom>P5.S5.P5_S5_R2(KID, DE, ID, DR, VALUE)</atom>
+    </body>
+  </mapping>
+  <engine>
+    <mappings type="sql" server="jdbc:db2://localhost:50000/BIOTBG" username="" password=""/>
+  </engine>
+  <store>
+    <update type="bdb" hostname="localhost" port="777"/>
+    <state type="hash"/>
+  </store>
+  <trustConditions peer="P0" schema="S0">
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R0"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R1"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R2"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R0"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R1"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R2"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R0"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R1"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R2"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R0"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R1"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R2"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R0"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R1"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R2"/>
+  </trustConditions>
+  <trustConditions peer="P1" schema="S1">
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R0"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R1"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R2"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R0"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R1"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R2"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R0"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R1"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R2"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R0"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R1"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R2"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R0"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R1"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R2"/>
+  </trustConditions>
+  <trustConditions peer="P2" schema="S2">
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R0"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R1"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R2"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R0"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R1"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R2"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R0"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R1"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R2"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R0"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R1"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R2"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R0"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R1"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R2"/>
+  </trustConditions>
+  <trustConditions peer="P3" schema="S3">
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R0"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R1"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R2"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R0"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R1"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R2"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R0"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R1"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R2"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R0"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R1"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R2"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R0"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R1"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R2"/>
+  </trustConditions>
+  <trustConditions peer="P4" schema="S4">
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R0"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R1"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R2"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R0"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R1"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R2"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R0"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R1"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R2"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R0"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R1"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R2"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R0"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R1"/>
+    <trusts pid="P5" pidType="STRING" priority="5" relation="P5_S5_R2"/>
+  </trustConditions>
+  <trustConditions peer="P5" schema="S5">
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R0"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R1"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P0_S0_R2"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R0"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R1"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P1_S1_R2"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R0"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R1"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P2_S2_R2"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R0"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R1"/>
+    <trusts pid="P3" pidType="STRING" priority="5" relation="P3_S3_R2"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R0"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R1"/>
+    <trusts pid="P4" pidType="STRING" priority="5" relation="P4_S4_R2"/>
+  </trustConditions>
+</catalog>

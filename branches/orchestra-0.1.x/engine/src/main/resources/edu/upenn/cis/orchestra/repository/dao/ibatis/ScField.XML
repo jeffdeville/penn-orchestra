@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="orchestraSchema">
+	
+	<typeAlias type="edu.upenn.cis.orchestra.repository.model.beans.ScFieldBean" alias="ScField"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsSchemaRelationFieldBean" alias="EncapsFieldProp"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerIdSchemaId" alias="EncapsPeerIdSchemaId"/>
+	
+	<resultMap class="ScField" id="field">
+		<result property="name" column="fld_name"/>
+		<result property="description" column="fld_description"/>
+		<result property="type" column="fld_type"/>
+		<result property="dbType" column="fld_dbType"/>
+		<result property="dbSize" column="fld_dbSize"/>
+		<result property="nullable" column="fld_isNullable"/>
+	</resultMap>		
+	
+	
+	
+	<insert id="insertField" parameterClass="EncapsFieldProp">
+		INSERT INTO fields 
+			(peerId, schemaId, relationId, name, 
+			 type, dbType, dbSize, description, isNullable
+			)
+		  VALUES 
+		    (#peer.id#, #schema.schemaId#, #relation.name#, #field.name#,
+		     #field.type#, #field.dbType#, #field.dbSize#, #field.description#, 
+		     #field.nullable#
+		    );		
+	</insert>
+	
+	<delete id="deleteFieldsForPeer" parameterClass="java.lang.String">
+		DELETE FROM fields
+		  WHERE peerId=#value#
+	</delete>	
+
+	<delete id="deleteFieldsForSchema" parameterClass="EncapsPeerIdSchemaId">
+		DELETE FROM fields
+		  WHERE peerId=#peerId#
+		    AND schemaId=#schemaId#
+	</delete>	
+	
+</sqlMap>

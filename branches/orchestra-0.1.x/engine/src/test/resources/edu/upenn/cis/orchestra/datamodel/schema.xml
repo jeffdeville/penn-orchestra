@@ -1,0 +1,33 @@
+<schema name="pPODPeer2Schema1">
+        <description>pPOD Peer2 Schema1</description>
+        <relation description="pPOD Peer2 Schema1 Relation1" hasLocalData="true" materialized="true" name="OTU" noNulls="false">
+          <dbinfo catalog="" schema="PPOD2" table="OTU"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field1" labeledNullable="true" name="OTU_ID" nullable="false" type="integer"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field2" labeledNullable="true" name="LABEL" nullable="false" type="varchar(255)"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field3" labeledNullable="true" name="OBJ_VERSION" nullable="true" type="integer"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field4" labeledNullable="true" name="PPOD_VERSION" nullable="true" type="integer"/>
+          <primaryKey name="PRIMARY">
+            <fieldName name="OTU_ID"/>
+          </primaryKey>
+        </relation>
+        <relation description="pPOD Peer2 Schema1 Relation1" hasLocalData="true" materialized="true" name="OTU_L" noNulls="false">
+          <dbinfo catalog="" schema="PPOD2" table="OTU_L"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field1" labeledNullable="true" name="OTU_ID" nullable="false" type="integer"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field2" labeledNullable="true" name="LABEL" nullable="false" type="varchar(255)"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field3" labeledNullable="true" name="OBJ_VERSION" nullable="true" type="integer"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field4" labeledNullable="true" name="PPOD_VERSION" nullable="true" type="integer"/>
+          <primaryKey name="PRIMARY">
+            <fieldName name="OTU_ID"/>
+          </primaryKey>
+        </relation>
+        <relation description="pPOD Peer2 Schema1 Relation1" hasLocalData="true" materialized="true" name="OTU_R" noNulls="false">
+          <dbinfo catalog="" schema="PPOD2" table="OTU_R"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field1" labeledNullable="true" name="OTU_ID" nullable="false" type="integer"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field2" labeledNullable="true" name="LABEL" nullable="false" type="varchar(255)"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field3" labeledNullable="true" name="OBJ_VERSION" nullable="true" type="integer"/>
+          <field description="pPOD Peer2 Schema1 Relation1 Field4" labeledNullable="true" name="PPOD_VERSION" nullable="true" type="integer"/>
+          <primaryKey name="PRIMARY">
+            <fieldName name="OTU_ID"/>
+          </primaryKey>
+        </relation>
+</schema>

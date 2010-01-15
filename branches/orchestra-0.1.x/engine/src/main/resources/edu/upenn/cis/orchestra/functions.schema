@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<catalog>
+    <schema name="ARITH">
+  		<description></description>
+      <relation materialized="true" name="INTADD">
+        <dbinfo schema="BUILTIN" table="INTADD"/>
+        <field name="SUM" type="integer"/>
+        <field key="true" name="ADD1" type="integer"/>
+        <field key="true" name="ADD2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTSUB">
+        <dbinfo schema="BUILTIN" table="INTSUB"/>
+        <field name="DIFFERENCE" type="integer"/>
+        <field key="true" name="SUB1" type="integer"/>
+        <field key="true" name="SUB2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTMUL">
+        <dbinfo schema="BUILTIN" table="INTMUL"/>
+        <field name="PRODUCT" type="integer"/>
+        <field key="true" name="MUL1" type="integer"/>
+        <field key="true" name="MUL2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTDIV">
+        <dbinfo schema="BUILTIN" table="INTDIV"/>
+        <field name="QUOTIENT" type="integer"/>
+        <field key="true" name="DIV1" type="integer"/>
+        <field key="true" name="DIV2" type="integer"/>
+      </relation>
+    </schema>
+    <schema name="COMPARE">
+  		<description>The Interpro database is a database of protein families, domains and functional sites, in which identifiable features found in known proteins can be applied to unknown protein sequences.</description>
+      <relation materialized="true" name="INTLESS">
+        <dbinfo schema="BUILTIN" table="INTLESS"/>
+        <field name="LES1" type="integer"/>
+        <field name="LES2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTLESSEQUAL">
+        <dbinfo schema="BUILTIN" table="INTLESSEQUAL"/>
+        <field name="LEQ1" type="integer"/>
+        <field name="LEQ2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTGREATER">
+        <dbinfo schema="BUILTIN" table="INTGREATER"/>
+        <field name="GTR1" type="integer"/>
+        <field name="GTR2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTGREATEREQUAL">
+        <dbinfo schema="BUILTIN" table="INTGREATEREQUAL"/>
+        <field name="GEQ1" type="integer"/>
+        <field name="GEQ2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTEQUAL">
+        <dbinfo schema="BUILTIN" table="INTEQUAL"/>
+        <field name="EQ1" type="integer"/>
+        <field name="EQ2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTNOTEQUAL">
+        <dbinfo schema="BUILTIN" table="INTENOTQUAL"/>
+        <field name="NEQ1" type="integer"/>
+        <field name="NEQ2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="STRLIKE">
+        <dbinfo schema="BUILTIN" table="STRLIKE"/>
+        <field name="BASESTR" type="varchar(200)"/>
+        <field name="SUBSTR" type="varchar(200)"/>
+      </relation>
+    </schema>
+    <schema name="STRING">
+      <relation materialized="true" name="STRCAT">
+        <dbinfo schema="BUILTIN" table="STRCAT"/>
+        <field name="CATSTR" type="varchar(255)"/>
+        <field key="true" name="STR1" type="varchar(200)"/>
+        <field key="true" name="STR2" type="varchar(200)"/>
+      </relation>
+      <relation materialized="true" name="SUBSTR">
+        <dbinfo schema="BUILTIN" table="SUBSTR"/>
+        <field name="SUBSTR" type="varchar(255)"/>
+        <field key="true" name="STR1" type="varchar(255)"/>
+        <field key="true" name="START" type="integer"/>
+        <field key="true" name="END" type="integer"/>
+      </relation>
+      <relation materialized="true" name="STRLEN">
+        <dbinfo schema="BUILTIN" table="STRLEN"/>
+        <field name="SLEN" type="integer"/>
+        <field key="true" name="STR1" type="varchar(255)"/>
+      </relation>
+    </schema>
+</catalog>
+
