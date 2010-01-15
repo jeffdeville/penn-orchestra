@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ 
+<sqlMap>
+	
+	<typeAlias type="edu.upenn.cis.orchestra.repository.model.beans.PeerBean" alias="PeerBean"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.model.beans.SchemaBean" alias="Schema"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerSchemaIdBean" alias="EncapsPeerSchemaId"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerSchemaBean" alias="EncapsPeerSchema"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerIdSchemaId" alias="EncapsPeerIdSchemaId"/>
+	
+	<resultMap class="Schema" id="schema">
+		<result property="schemaId" column="schemaId"/>
+		<result property="description" column="description"/>
+	</resultMap>
+	
+	<resultMap class="Schema" id="schemaDetail" extends="schema">
+		<result property="relations" select="getRelationsBySchema" column="{peerId=peerId,schemaId=schemaId}"/>
+	</resultMap>
+	
+	
+	<select id="getAllSchemasDoNotLoadRelations" resultMap="schema" parameterClass="PeerBean">
+		SELECT * 
+		  FROM orchSchema
+		  WHERE peerId=#id#;
+	</select>
+	
+	<select id="getSchemaDetail" resultMap="schemaDetail" parameterClass="EncapsPeerSchemaId">
+		SELECT * 
+		  FROM orchSchema
+		  WHERE peerId=#peerId#
+		    AND schemaId=#schemaId#
+		  ;
+	</select>
+	
+	<select id="getSchemasDetail" resultMap="schemaDetail">
+		SELECT * 
+		  FROM orchSchema
+		  WHERE peerId=#peer_id#
+		  ;
+	</select>	
+	
+	
+	<insert id="insertSchema" parameterClass="EncapsPeerSchema">
+		INSERT INTO orchSchema
+		   (peerId, schemaId, description)
+		VALUES 
+		   (#peer.id#, #schema.schemaId#, #schema.description#);
+	</insert>
+
+	<delete id="deleteSchemasForPeer" parameterClass="java.lang.String">
+		DELETE FROM orchSchema
+		  WHERE peerId=#value#
+	</delete>	
+	
+	<delete id="deleteSchema" parameterClass="EncapsPeerIdSchemaId">
+		DELETE FROM orchSchema
+		  WHERE peerId=#peerId#
+		    AND schemaId=#schemaId#
+	</delete>		
+
+</sqlMap>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="orchestraSchema">
+	
+	<typeAlias type="edu.upenn.cis.orchestra.repository.model.beans.PeerBean" alias="Peer"/>
+	
+	<resultMap class="Peer" id="peer">
+		<result property="id" column="peer_id"/>
+		<result property="address" column="peer_address"/>
+		<result property="description" column="peer_description"/>
+	</resultMap>
+	
+	<resultMap class="Peer" id="peerDetail" extends="peer">
+		<result property="schemas" column="peer_id" select="getSchemasDetail"/>
+		<result property="mappings" column="peer_id" select="getMappings"/>		
+	</resultMap>
+
+
+	<select id="getPeerDoNotLoadSchemas" parameterClass="java.lang.String" resultMap="peer">
+		SELECT 
+		    peerId      peer_id,
+		    address     peer_address,
+		    description peer_description
+		  FROM peer
+		  WHERE peerId = #value#;
+	</select>
+
+	<insert id="insertPeer" parameterClass="Peer">
+		INSERT INTO peer
+		   (peerId, address, description)
+		VALUES
+		   (#id#, #address#, #description#);
+	</insert>
+
+	<select id="getPeerDetail" parameterClass="java.lang.String" resultMap="peerDetail">
+		SELECT 
+		    peerId      peer_id,
+		    address     peer_address,
+		    description peer_description
+		  FROM peer
+		  WHERE peerId = #value#;
+	</select>
+	
+	<select id="getAllPeerIds" resultClass="java.lang.String">
+	    SELECT peerId
+	      FROM peer
+	</select>
+	
+	<delete id="deletePeer" parameterClass="java.lang.String">
+		DELETE FROM peer
+		  WHERE peerId=#value#
+	</delete>
+
+</sqlMap>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="functional-tests" verbose="1">
+	<!--
+		Maven's testResouce filtering is turned on in the POM so that you can
+		specify locally appropriate values for the
+		testng.db-{url,user,password} properties below.
+	-->
+	<parameter name="orchestra-schema-name" value="ppodLN" />
+	<!-- <parameter name="run-mode" value="generate" /> -->
+	<test name="local-ins-insert">
+		<parameter name="test-data-dir" value="local-ins-insert" />
+		<groups><run><exclude name="broken" /><exclude name="development" /></run></groups>
+		<classes>
+			<class name="edu.upenn.cis.orchestra.MultiOrchestraSystemTest" />
+		</classes>
+	</test>
+	<test name="reject-ins-insert">
+		<parameter name="test-data-dir" value="reject-ins-insert" />
+		<parameter name="db-state" value="no-pre-existing" />
+		<groups><run><exclude name="broken" /><exclude name="development" /></run></groups>
+		<classes>
+			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
+		</classes>
+	</test>
+	<test name="stop-start">
+		<parameter name="test-data-dir" value="stop-start" />
+		<parameter name="db-state" value="no-pre-existing" />
+		<groups><run><exclude name="broken" /><exclude name="development" /></run></groups>
+		<classes>
+			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
+		</classes>
+	</test>
+	<test name="pre-existing">
+		<parameter name="test-data-dir" value="pre-existing" />
+		<parameter name="db-state" value="pre-existing" />
+		<groups><run><exclude name="broken" /><exclude name="development" /></run></groups>
+		<classes>
+			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
+		</classes>
+	</test>
+</suite>

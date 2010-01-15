@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?><deltaRules type="Insertion">
+  <datalog countForFixpoint="true" isRecursive="false" measureExecTime="false" type="datalogSequence">
+    <datalog countForFixpoint="true" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X9, X10, X11, X12)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X9, X10, X11, X12)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X13, X14, X15, X16)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_L"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X13, X14, X15, X16)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_L"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X17, X18, X19, X20)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X17, X18, X19, X20)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X21, X22, X23, X24)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X21, X22, X23, X24)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X25, X26, X27, X28)</atomValue>
+            <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X25, X26, X27, X28)</atomValue>
+            <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+          </atom>
+        </body>
+        
+      </mapping>
+    </datalog>
+  </datalog>
+  <datalog countForFixpoint="true" isRecursive="false" measureExecTime="false" type="datalogSequence">
+    <datalog countForFixpoint="true" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X29, X30, X31, X32)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X29, X30, X31, X32)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X33, X34, X35, X36)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_L"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X33, X34, X35, X36)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_L"/>
+          </atom>
+        </body>
+        
+      </mapping>
+    </datalog>
+    <datalog countForFixpoint="true" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_L"/>
+          </atom>
+        </body>
+        
+      </mapping>
+    </datalog>
+    <datalog countForFixpoint="false" isRecursive="true" measureExecTime="false" type="datalogSequence">
+      <datalog countForFixpoint="true" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+        <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+          <head>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+              <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+            </atom>
+          </head>
+          <body>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+              <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+            </atom>
+          </body>
+          
+          <mapping bidirectional="false" derivedFrom="pPODotu1otu2" description="pPODotu1otu2" isFakeMapping="false" materialized="true" name="pPODotu1otu2" relationship="parentMapping" trustRank="1" type="mapping">
+            <head>
+              <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+                <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+                <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+              </atom>
+            </head>
+            <body>
+              <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+                <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+                <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+              </atom>
+            </body>
+            <provenanceRelation>
+              <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+            </provenanceRelation>
+          </mapping>
+        </mapping>
+      </datalog>
+      <datalog countForFixpoint="true" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+        <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+          <head>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+            </atom>
+          </head>
+          <body>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+              <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+            </atom>
+            <atom allStrata="true" backwardDeletable="false" negated="true" type="NONE">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_R(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_R"/>
+            </atom>
+          </body>
+          
+          <mapping bidirectional="false" description="MH-PROJpPODotu1otu2" isFakeMapping="false" materialized="true" name="MH-PROJpPODotu1otu2" relationship="parentMapping" trustRank="1" type="mapping">
+            <head>
+              <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+                <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+                <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+              </atom>
+            </head>
+            <body>
+              <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+                <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+                <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+              </atom>
+            </body>
+          </mapping>
+        </mapping>
+      </datalog>
+      <datalog countForFixpoint="true" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+        <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+          <head>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+              <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X37, X38, X39, X40)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+            </atom>
+          </head>
+          <body>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+              <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X37, X38, X39, X40)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+            </atom>
+          </body>
+          
+        </mapping>
+        <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+          <head>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X41, X42, X43, X44)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+            </atom>
+          </head>
+          <body>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X41, X42, X43, X44)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+            </atom>
+          </body>
+          
+        </mapping>
+      </datalog>
+      <datalog countForFixpoint="true" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+        <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+          <head>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X45, X46, X47, X48)</atomValue>
+              <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+            </atom>
+          </head>
+          <body>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="INS">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X45, X46, X47, X48)</atomValue>
+              <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+            </atom>
+          </body>
+          
+        </mapping>
+      </datalog>
+    </datalog>
+    <datalog countForFixpoint="true" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram"/>
+  </datalog>
+  <datalog countForFixpoint="true" isRecursive="false" measureExecTime="false" type="datalogSequence">
+    <datalog countForFixpoint="false" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+      <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X49, X50, X51, X52)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X49, X50, X51, X52)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X53, X54, X55, X56)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_L"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X53, X54, X55, X56)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_L"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X57, X58, X59, X60)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X57, X58, X59, X60)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X61, X62, X63, X64)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X61, X62, X63, X64)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+          </atom>
+        </body>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X65, X66, X67, X68)</atomValue>
+            <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X65, X66, X67, X68)</atomValue>
+            <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+          </atom>
+        </body>
+        
+      </mapping>
+    </datalog>
+    <datalog countForFixpoint="false" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram"/>
+    <datalog countForFixpoint="false" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram"/>
+    <datalog countForFixpoint="false" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram">
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="true" type="INS">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X69, X70, X71, X72)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body/>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="true" type="INS">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X73, X74, X75, X76)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body/>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="true" type="INS">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X77, X78, X79, X80)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+          </atom>
+        </head>
+        <body/>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="true" type="INS">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X81, X82, X83, X84)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_L"/>
+          </atom>
+        </head>
+        <body/>
+        
+      </mapping>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="true" type="INS">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X85, X86, X87, X88)</atomValue>
+            <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+          </atom>
+        </head>
+        <body/>
+        
+      </mapping>
+    </datalog>
+    <datalog countForFixpoint="false" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram"/>
+    <datalog countForFixpoint="false" measureExecTime="false" programType="nonRecursiveDatalogProgram" type="datalogProgram"/>
+  </datalog>
+</deltaRules>

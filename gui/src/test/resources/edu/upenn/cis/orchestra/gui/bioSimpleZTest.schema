@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<!--11:49:52 05/21/07 EDT
+{'cutoff': 1024, 'help': False, 'skip': 0, 'fanout': 2, 'todd': False, 'schemas': 3, 'xmlformat': True, 'filename': 'bioSimple', 'maxcycles': None, 'deletions': 1, 'dbalias': 'BIOTB', 'coverage': 0.75, 'mincycles': None, 'password': '', 'integers': False, 'peers': 3, 'insertions': 1, 'tukwila': False, 'username': '', 'seed': 0, 'olivier': False, 'oracle': False, 'relsize': 4}-->
+<catalog recmode="false" name="bioSimpleZTest">
+  <migrated>true</migrated>
+  <peer address="localhost" name="NCBI1">
+    <description>National Center for Biotechnology Information first peer. This peer provides information about sequences (genomic DNA, RNA, protein products)</description>
+    <schema name="REFSEQ">
+      <description>The Reference Sequence collection aims to provide a comprehensive, integrated, non-redundant set of sequences,
+      including genomic DNA, transcript (RNA), and protein products, for major research organisms.</description>
+      <relation materialized="true" name="CATALOG" hasLocalData="true">
+	<dbinfo schema="REFSEQ" table="CATALOG"/>
+	<!-- Olivier: temp fix: actual key is GO although ACC is also unique -->
+	<field key="true" name="GI" type="integer"/>
+	<field key="true" name="ACC" type="varchar(40)"/>
+	<field name="TAX_ID" type="integer"/>
+	<field name="SEQ" type="varchar(500)"/>
+      </relation>
+      <relation materialized="true" name="SPECIES" hasLocalData="true">
+	<dbinfo schema="REFSEQ" table="SPECIES"/>
+	<field key="true" name="TAX_ID" type="integer"/>
+	<field key="true" name="SPECIES" type="varchar(300)"/>
+      </relation>
+      <relation materialized="true" name="RMVRECORDS" hasLocalData="true">
+	<dbinfo schema="REFSEQ" table="RMVRECORDS"/>
+	<field key="true" name="GI" type="integer"/>
+	<field key="true" name="ACC" type="varchar(40)"/>
+	<field name="TAX_ID" type="integer"/>
+	<field name="SEQ" type="varchar(500)"/>
+	<field name="replacedby" type="integer"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer address="localhost" name="NCBI2">    
+    <description>National Center for Biotechnology Information first peer. This peer provides information about taxonomy.</description>
+    <schema name="TAXO">
+      <description>The NCBI Taxonomy attempts to incorporate phylogenetic and taxonomic knowledge from a variety of sources,
+      including the published literature, web-based databases, and the advice of sequence submitters and outside taxonomy experts.</description>
+      <relation materialized="true" name="NAMES" hasLocalData="true">
+	<dbinfo schema="TAXO" table="NAMES"/>
+	<field key="true" name="TAX_ID" type="integer"/>
+	<field key="true" name="NAME" type="varchar(500)"/>
+	<field key="true" name="NAME_CLASS" type="varchar(300)"/>
+      </relation>
+    </schema>
+  </peer>
+  <mapping materialized="true" name="M0">
+    <head>
+      <atom>
+	NCBI1.REFSEQ.SPECIES(_, TAXNAME)
+      </atom>
+    </head>
+    <body>
+      <atom>
+	NCBI2.TAXO.NAMES(_, TAXNAME, 'scientific name')
+      </atom>
+    </body>
+  </mapping>
+  <engine>
+    <mappings password="" server="localhost:50000" type="sql" username=""/>
+  </engine>
+  <store>
+    <update hostname="localhost" port="9999" type="bdb"/>
+    <state type="hash"/>
+  </store>
+  <trustConditions peer="NCBI1" schema="PLASMODB">
+    <trusts pid="NCBI2" pidType="STRING" priority="5" relation="NAMES"/>
+  </trustConditions>
+  <trustConditions peer="NCBI2" schema="PLASMODB">
+    <trusts pid="NCBI1" pidType="STRING" priority="5" relation="CATALOG"/>
+    <trusts pid="NCBI1" pidType="STRING" priority="5" relation="RMVRECORDS"/>
+    <trusts pid="NCBI1" pidType="STRING" priority="5" relation="SPECIES"/>
+  </trustConditions>
+</catalog>

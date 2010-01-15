@@ -1,0 +1,33 @@
+GO:0003676|nucleic acid binding|---|1|1|1
+GO:0003677|DNA binding|---|1|1|1
+GO:0003700|transcription factor activity|---|1|1|1
+GO:0003735|structural constituent of ribosome|---|1|1|1
+GO:0003918|DNA topoisomerase (ATP-hydrolyzing) activity|---|1|1|1
+GO:0004146|dihydrofolate reductase activity|---|1|1|1
+GO:0004222|metalloendopeptidase activity|---|1|1|1
+GO:0004298|threonine endopeptidase activity|---|1|1|1
+GO:0004799|thymidylate synthase activity|---|1|1|1
+GO:0005524|ATP binding|---|1|1|1
+GO:0005622|intracellular|---|1|1|1
+GO:0005634|nucleus|---|1|1|1
+GO:0005694|chromosome|---|1|1|1
+GO:0005839|proteasome core complex (sensu Eukaryota)|---|1|1|1
+GO:0005840|ribosome|---|1|1|1
+GO:0006231|dTMP biosynthetic process|---|1|1|1
+GO:0006259|DNA metabolic process|---|1|1|1
+GO:0006265|DNA topological change|---|1|1|1
+GO:0006281|DNA repair|---|1|1|1
+GO:0006355|regulation of transcription, DNA-dependent|---|1|1|1
+GO:0006412|translation|---|1|1|1
+GO:0006508|proteolysis|---|1|1|1
+GO:0006511|ubiquitin-dependent protein catabolic process|---|1|1|1
+GO:0006545|glycine biosynthetic process|---|1|1|1
+GO:0006621|protein retention in ER|---|1|1|1
+GO:0006730|one-carbon compound metabolic process|---|1|1|1
+GO:0006885|regulation of pH|---|1|1|1
+GO:0009165|nucleotide biosynthetic process|---|1|1|1
+GO:0009405|pathogenesis|---|1|1|1
+GO:0015299|solute:hydrogen antiporter activity|---|1|1|1
+GO:0016021|integral to membrane|---|1|1|1
+GO:0046872|metal ion binding|---|1|1|1
+GO:0046923|ER retention sequence binding|---|1|1|1

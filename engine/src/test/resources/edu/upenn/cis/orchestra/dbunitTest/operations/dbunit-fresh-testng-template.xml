@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="functional-tests" verbose="1">
+	<!-- The db-* and jdbc-driver parameters need to be filled in. -->
+	<!-- <parameter name="db-url" value="jdbc:db2://localhost:50000/DBUNIT" /> -->
+	<!-- <parameter name="db-user" value="" /> -->
+	<!-- <parameter name="db-password" value="" /> -->
+	<!-- <parameter name="jdbc-driver" value="com.ibm.db2.jcc.DB2Driver" /> -->
+	<parameter name="orchestra-schema-name" value="dbunitTest" />
+	<parameter name="test-data-dir" value="operations" />
+	<parameter name="db-state" value="no-pre-existing" />
+	<!-- <parameter name="run-mode" value="generate" /> -->
+ 	<test name="functional-tests">
+		<groups>
+			<run>
+				<include name="functional-tests" />
+			</run>
+		</groups>
+		<packages>
+			<package name="edu.upenn.cis.orchestra" />
+		</packages>
+	</test>
+</suite>
