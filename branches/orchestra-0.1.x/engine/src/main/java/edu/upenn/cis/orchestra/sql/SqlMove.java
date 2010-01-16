@@ -79,9 +79,9 @@ class SqlMove implements ISqlMove {
 			// INSERT INTO _destTable SELECT * FROM _sourceTable
 			final ISqlInsert insertIntoOldTable = _sqlFactory
 					.newSqlInsert(_destTable);
-			insertIntoOldTable.addValueSpec(_sqlFactory.newSqlSelect(
+			insertIntoOldTable.addValueSpec(_sqlFactory.newSelect(
 					_sqlFactory.newSqlSelectItem("*"), _sqlFactory
-							.newSqlFromItem(_sourceTable.toString())));
+							.newFromItem(_sourceTable.toString())));
 
 			// DELETE FROM _sourceTable
 			final ISqlDelete deleteSourceTable = _sqlFactory
@@ -100,10 +100,10 @@ class SqlMove implements ISqlMove {
 
 			// CREATE source_table
 			final ISqlSelectItem star = _sqlFactory.newSqlSelectItem("*");
-			final ISqlFromItem fr = _sqlFactory.newSqlFromItem(_destTable
+			final ISqlFromItem fr = _sqlFactory.newFromItem(_destTable
 					.toString());
 			final ISqlExpression w = AbstractSqlExpression.falseExp();
-			final ISqlSelect cq = _sqlFactory.newSqlSelect(star, fr, w);
+			final ISqlSelect cq = _sqlFactory.newSelect(star, fr, w);
 			final ISqlCreateTable createSrcTable = _sqlFactory
 					.newSqlCreateTable(_sourceTable.toString(), cq);
 

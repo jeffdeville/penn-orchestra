@@ -94,7 +94,7 @@ public class RuleSqlGen implements IRuleCodeGen {
 
 	public ISqlSelect toQuery(int curIterCnt) 
 	{
-		ISqlSelect q =  _sqlFactory.newSqlSelect();
+		ISqlSelect q =  _sqlFactory.newSelect();
 		_whereExpressions = newHashMap();
 		_whereRoots = newHashSet();
 		m_varmap = buildVarMap(m_rule);
@@ -131,19 +131,19 @@ public class RuleSqlGen implements IRuleCodeGen {
 			ins = _sqlFactory.newSqlInsert(rel.toAtomString(head.getType()));
 			List<AtomArgument> values = head.getValues();
 			if(values.size() > 1){
-				ISqlExpression comma = _sqlFactory.newSqlExpression(ISqlExpression.Code.COMMA);
+				ISqlExpression comma = _sqlFactory.newExpression(ISqlExpression.Code.COMMA);
 				for (int j = 0; j < values.size(); j++) {
 					String str = values.get(j).toString();
 					ISqlConstant.Type type = getSqlConstantType(head.getRelation().getField(j));
-					ISqlConstant c = _sqlFactory.newSqlConstant(str, type);
+					ISqlConstant c = _sqlFactory.newConstant(str, type);
 					comma.addOperand(c);
 				}
 				ins.addValueSpec(comma);
 			}else if (values.size() == 1){
-				ISqlExpression single = _sqlFactory.newSqlExpression(ISqlExpression.Code.COMMA);
+				ISqlExpression single = _sqlFactory.newExpression(ISqlExpression.Code.COMMA);
 				String str = values.get(0).toString();
 				ISqlConstant.Type type = getSqlConstantType(head.getRelation().getField(0));
-				ISqlConstant c = _sqlFactory.newSqlConstant(str, type);
+				ISqlConstant c = _sqlFactory.newConstant(str, type);
 				single.addOperand(c);
 				ins.addValueSpec(single);
 			}
@@ -176,10 +176,10 @@ public class RuleSqlGen implements IRuleCodeGen {
 				Atom lastAtom = m_rule.getBody().get(m_rule.getBody().size()-1);
 			if(lastAtom.isNeg() && lastAtom.getRelation().equals(m_rule.getHead().getRelation())
 					&& lastAtom.getType().equals(m_rule.getHead().getType())){
-				ISqlSelect exceptQuery = _sqlFactory.newSqlSelect(_sqlFactory.newSqlSelectItem("*"), 
-						_sqlFactory.newSqlFromItem(lastAtom.toString3()),
+				ISqlSelect exceptQuery = _sqlFactory.newSelect(_sqlFactory.newSqlSelectItem("*"), 
+						_sqlFactory.newFromItem(lastAtom.toString3()),
 						null);
-				q1.addSet(_sqlFactory.newSqlExpression(ISqlExpression.Code.EXCEPT, exceptQuery));
+				q1.addSet(_sqlFactory.newExpression(ISqlExpression.Code.EXCEPT, exceptQuery));
 			}
 		}
 		ins.addValueSpec(q1);
@@ -196,10 +196,10 @@ public ISqlDelete toDelete()
 		ISqlExpression exp=null;
 		List<AtomArgument> values = head.getValues();
 		for (int i = 0; i < values.size(); i++) {
-			ISqlExpression eq = _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ);
+			ISqlExpression eq = _sqlFactory.newExpression(ISqlExpression.Code.EQ);
 			RelationField f = rel.getField(i);
-			ISqlConstant c1 = _sqlFactory.newSqlConstant(f.getName(), ISqlConstant.Type.COLUMNNAME);
-			ISqlConstant c2 = _sqlFactory.newSqlConstant(values.get(i).toString(), getSqlConstantType(f));
+			ISqlConstant c1 = _sqlFactory.newConstant(f.getName(), ISqlConstant.Type.COLUMNNAME);
+			ISqlConstant c2 = _sqlFactory.newConstant(values.get(i).toString(), getSqlConstantType(f));
 			eq.addOperand(c1);
 			eq.addOperand(c2);
 			exp = conjoin(exp, eq);
@@ -236,7 +236,7 @@ public List<String> getCode(UPDATE_TYPE u, int curIterCnt) {
 		//		nd C1 = M.C1)
 		//ret.add(delete);
 
-		ISqlSelect n =  _sqlFactory.newSqlSelect();
+		ISqlSelect n =  _sqlFactory.newSelect();
 		m_varmap = buildVarMapForAtom(rel, 0, null, true);
 		HashMap<String,String> atomMap = buildVarMapForAtom(del, 1, null, true);
 		n.addSelectClause(buildSelectForAtom(del, atomMap, false, false, curIterCnt));
@@ -246,7 +246,7 @@ public List<String> getCode(UPDATE_TYPE u, int curIterCnt) {
 //		n.addWhere(OLDbuildWhereForAtom(del, 1, m_varmap, null, curIterCnt));
 		n.addWhere(buildWhereForAtom(del, 1, m_varmap, null, curIterCnt));
 
-		ISqlExpression expr = _sqlFactory.newSqlExpression(ISqlExpression.Code.EXISTS, n);
+		ISqlExpression expr = _sqlFactory.newExpression(ISqlExpression.Code.EXISTS, n);
 
 		ISqlDelete d = _sqlFactory.newSqlDelete(rel.toString3(), "R0");
 		d.addWhere(expr);
@@ -433,7 +433,7 @@ protected Map<String,Type> buildTypeMap(Rule r) throws RuntimeException {
 
 protected ISqlFromItem buildFromItem(Atom a, int i){
 	//SqlFromItem f = new SqlFromItem(a.getRelation().getFullQualifiedDbId());
-	ISqlFromItem f = _sqlFactory.newSqlFromItem(a.toString3());
+	ISqlFromItem f = _sqlFactory.newFromItem(a.toString3());
 	if(i >= 0)
 		f.setAlias("R" + i);
 	return f;
@@ -443,7 +443,7 @@ protected ISqlFromItem buildFromItem(ISqlFromItem.Join type, Atom a, Atom b, int
 {
 	ISqlFromItem f1 = buildFromItem(a, leftPos);
 	ISqlFromItem f2 = buildFromItem(b, rightPos);
-	ISqlFromItem f3 = _sqlFactory.newSqlFromItem(type, f1,f2, cond);
+	ISqlFromItem f3 = _sqlFactory.newFromItem(type, f1,f2, cond);
 
 	return f3;
 }
@@ -522,13 +522,13 @@ private List<Atom> getDepAtomsFor(Atom a){
 	return deps;
 }
 protected ISqlExpression hack(ISqlConstant c1, ISqlConstant c2){
-	return(_sqlFactory.newSqlExpression(ISqlExpression.Code.OR,
-			_sqlFactory.newSqlExpression(ISqlExpression.Code.AND,
-					_sqlFactory.newSqlExpression(ISqlExpression.Code.IS_NULL, c1), 
-					_sqlFactory.newSqlExpression(ISqlExpression.Code.IS_NULL, c2)),
-					_sqlFactory.newSqlExpression(ISqlExpression.Code.AND,
-							_sqlFactory.newSqlExpression(ISqlExpression.Code.IS_NOT_NULL, c1), 
-							_sqlFactory.newSqlExpression(ISqlExpression.Code.IS_NOT_NULL, c2))
+	return(_sqlFactory.newExpression(ISqlExpression.Code.OR,
+			_sqlFactory.newExpression(ISqlExpression.Code.AND,
+					_sqlFactory.newExpression(ISqlExpression.Code.IS_NULL, c1), 
+					_sqlFactory.newExpression(ISqlExpression.Code.IS_NULL, c2)),
+					_sqlFactory.newExpression(ISqlExpression.Code.AND,
+							_sqlFactory.newExpression(ISqlExpression.Code.IS_NOT_NULL, c1), 
+							_sqlFactory.newExpression(ISqlExpression.Code.IS_NOT_NULL, c2))
 	)
 	);
 }
@@ -561,14 +561,14 @@ protected ISqlExpression stratumCondition(Atom a, int i, int curIterCnt)
 //			... involving relations that have a "stratum" attribute, that should be treated specially
 			ISqlConstant c1;
 			if(i >= 0)
-				c1 = _sqlFactory.newSqlConstant("R" + i + ".STRATUM", ISqlConstant.Type.COLUMNNAME);
+				c1 = _sqlFactory.newConstant("R" + i + ".STRATUM", ISqlConstant.Type.COLUMNNAME);
 			else
-				c1 = _sqlFactory.newSqlConstant("STRATUM", ISqlConstant.Type.COLUMNNAME);
+				c1 = _sqlFactory.newConstant("STRATUM", ISqlConstant.Type.COLUMNNAME);
 
 			ISqlConstant c2;
 			if(Config.getPrepare()){
 //				c2 = new SqlConstant("CAST(? AS INTEGER)", SqlConstant.NUMBER);
-				c2 = _sqlFactory.newSqlConstant("?", ISqlConstant.Type.NUMBER);
+				c2 = _sqlFactory.newConstant("?", ISqlConstant.Type.NUMBER);
 //				c2 = new SqlConstant("?", SqlConstant.STRING);
 				if(a.getRelationContext().isMapping()){
 					m_rule.addPreparedParam(0);
@@ -578,13 +578,13 @@ protected ISqlExpression stratumCondition(Atom a, int i, int curIterCnt)
 
 			}else{
 				if(a.getRelationContext().isMapping()){
-					c2 = _sqlFactory.newSqlConstant(Integer.toString(curIterCnt), ISqlConstant.Type.NUMBER);
+					c2 = _sqlFactory.newConstant(Integer.toString(curIterCnt), ISqlConstant.Type.NUMBER);
 				}else{
-					c2 = _sqlFactory.newSqlConstant(Integer.toString(curIterCnt-1), ISqlConstant.Type.NUMBER);
+					c2 = _sqlFactory.newConstant(Integer.toString(curIterCnt-1), ISqlConstant.Type.NUMBER);
 				}
 			}
 
-			return _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c1, c2);
+			return _sqlFactory.newExpression(ISqlExpression.Code.EQ, c1, c2);
 		}
 	}
 	return null;
@@ -594,9 +594,9 @@ protected ISqlExpression isNotNull(RelationField attribute, int pos)
 {
 	String l = fullNameForAttr(attribute, pos);
 
-	ISqlConstant c3 = _sqlFactory.newSqlConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
-	ISqlConstant c4 = _sqlFactory.newSqlConstant("-1", ISqlConstant.Type.COLUMNNAME);
-	ISqlExpression expr = _sqlFactory.newSqlExpression(ISqlExpression.Code.NEQ, c3, c4);
+	ISqlConstant c3 = _sqlFactory.newConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
+	ISqlConstant c4 = _sqlFactory.newConstant("-1", ISqlConstant.Type.COLUMNNAME);
+	ISqlExpression expr = _sqlFactory.newExpression(ISqlExpression.Code.NEQ, c3, c4);
 
 	return expr;
 }
@@ -605,7 +605,7 @@ protected ISqlExpression conditionsForConstant(RelationField attribute, AtomCons
 		int pos, boolean comparable, boolean compareNullColumn)
 {
 	String l = fullNameForAttr(attribute, pos);
-	ISqlConstant c1 = _sqlFactory.newSqlConstant(l, ISqlConstant.Type.COLUMNNAME);
+	ISqlConstant c1 = _sqlFactory.newConstant(l, ISqlConstant.Type.COLUMNNAME);
 	ISqlExpression expr = null;
 
 	boolean fakeSkolemConstant = (c.getValue() == null || "-".equals(c.getValue()) || "_".equals(c.getValue()));
@@ -616,34 +616,34 @@ protected ISqlExpression conditionsForConstant(RelationField attribute, AtomCons
 
 	if(labNullConst){
 		String skolemColumnValue = m_sqlString.skolemColumnValue(attribute.getSQLTypeName());
-		ISqlConstant c2 = _sqlFactory.newSqlConstant(skolemColumnValue, ISqlConstant.Type.UNKNOWN);
+		ISqlConstant c2 = _sqlFactory.newConstant(skolemColumnValue, ISqlConstant.Type.UNKNOWN);
 		String skolemValue = c.getValue().toString().substring(5, c.getValue().toString().length()-1);
-		ISqlConstant c3 = _sqlFactory.newSqlConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
-		ISqlConstant c4 = _sqlFactory.newSqlConstant(skolemValue, ISqlConstant.Type.NUMBER);
+		ISqlConstant c3 = _sqlFactory.newConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
+		ISqlConstant c4 = _sqlFactory.newConstant(skolemValue, ISqlConstant.Type.NUMBER);
 
-		expr = conjoin(expr, _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c1, c2));
-		expr = conjoin(expr, _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c3, c4));
+		expr = conjoin(expr, _sqlFactory.newExpression(ISqlExpression.Code.EQ, c1, c2));
+		expr = conjoin(expr, _sqlFactory.newExpression(ISqlExpression.Code.EQ, c3, c4));
 	}else{
 		if(comparable){
 			if(fakeSkolemConstant){
-				expr = _sqlFactory.newSqlExpression(ISqlExpression.Code.IS_NULL, c1);
+				expr = _sqlFactory.newExpression(ISqlExpression.Code.IS_NULL, c1);
 			}else{
-				ISqlConstant c2 = _sqlFactory.newSqlConstant(c.toString(), zType(attribute.getSQLTypeName()));
-				expr = _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c1, c2);
+				ISqlConstant c2 = _sqlFactory.newConstant(c.toString(), zType(attribute.getSQLTypeName()));
+				expr = _sqlFactory.newExpression(ISqlExpression.Code.EQ, c1, c2);
 			}
 		}
 
 		if(compareNullColumn){
-			ISqlConstant c2 = _sqlFactory.newSqlConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
+			ISqlConstant c2 = _sqlFactory.newConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
 			ISqlConstant c3;
 
 			if(fakeSkolemConstant){
-				c3 = _sqlFactory.newSqlConstant("-1", ISqlConstant.Type.NUMBER);
+				c3 = _sqlFactory.newConstant("-1", ISqlConstant.Type.NUMBER);
 			}else{
-				c3 = _sqlFactory.newSqlConstant("1", ISqlConstant.Type.NUMBER);
+				c3 = _sqlFactory.newConstant("1", ISqlConstant.Type.NUMBER);
 			}
 
-			expr = conjoin(expr, _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c2, c3));
+			expr = conjoin(expr, _sqlFactory.newExpression(ISqlExpression.Code.EQ, c2, c3));
 		}
 	}
 
@@ -657,11 +657,11 @@ protected ISqlExpression conditionsForVariable(RelationField attribute, AtomVari
 	String l = fullNameForAttr(attribute, pos);
 
 	if(var.isSkolem()){
-		ISqlConstant c3 = _sqlFactory.newSqlConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
-		ISqlConstant c4 = _sqlFactory.newSqlConstant(getSkolemTerm(var.skolemDef()), ISqlConstant.Type.COLUMNNAME);
+		ISqlConstant c3 = _sqlFactory.newConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
+		ISqlConstant c4 = _sqlFactory.newConstant(getSkolemTerm(var.skolemDef()), ISqlConstant.Type.COLUMNNAME);
 
 //		SqlExpression skolemExpr = new SqlExpression(SqlExpression.AND, new SqlExpression(SqlExpression.EQ, c1, c2), new SqlExpression(SqlExpression.EQ, c3, c4));
-		ISqlExpression skolemExpr = _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c3, c4);
+		ISqlExpression skolemExpr = _sqlFactory.newExpression(ISqlExpression.Code.EQ, c3, c4);
 		expr = conjoin(expr, skolemExpr);			
 	}else{
 //		otherwise, this is just a projected out var in a negated clause 
@@ -670,34 +670,34 @@ protected ISqlExpression conditionsForVariable(RelationField attribute, AtomVari
 		if (!"-".equals(var.getName()) && !"_".equals(var.getName()) && map.containsKey(var.toString())){ 
 			String n = map.get(var.toString());
 
-			ISqlConstant c1 = _sqlFactory.newSqlConstant(l, ISqlConstant.Type.COLUMNNAME);
-			ISqlConstant c2 = _sqlFactory.newSqlConstant(n, ISqlConstant.Type.COLUMNNAME);
+			ISqlConstant c1 = _sqlFactory.newConstant(l, ISqlConstant.Type.COLUMNNAME);
+			ISqlConstant c2 = _sqlFactory.newConstant(n, ISqlConstant.Type.COLUMNNAME);
 
 			if (c1.toString().compareTo(c2.toString()) == 0){
 //				this is the attribute/column in the map, 
 //				no need to add any condition
 			}else{
 				if(comparable)
-					expr = conjoin(expr, _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c1, c2));
+					expr = conjoin(expr, _sqlFactory.newExpression(ISqlExpression.Code.EQ, c1, c2));
 
 				if(compareNullColumn){
-					ISqlConstant c3 = _sqlFactory.newSqlConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
-					ISqlConstant c4 = _sqlFactory.newSqlConstant(n + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
+					ISqlConstant c3 = _sqlFactory.newConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
+					ISqlConstant c4 = _sqlFactory.newConstant(n + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
 
 //					Do the following ever happen? 
 //					I suppose if we write NULL in the rule without quotes ...	
 					if (l.equals("NULL"))
-						c3 = _sqlFactory.newSqlConstant("-1", ISqlConstant.Type.NUMBER);
+						c3 = _sqlFactory.newConstant("-1", ISqlConstant.Type.NUMBER);
 					if (n.equals("NULL"))
-						c4 = _sqlFactory.newSqlConstant("-1", ISqlConstant.Type.NUMBER);
+						c4 = _sqlFactory.newConstant("-1", ISqlConstant.Type.NUMBER);
 
-					expr = conjoin(expr, _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c3, c4));
+					expr = conjoin(expr, _sqlFactory.newExpression(ISqlExpression.Code.EQ, c3, c4));
 				}
 			}
 		}else if("-".equals(var.getName())){
-			ISqlConstant c3 = _sqlFactory.newSqlConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
-			ISqlConstant c4 = _sqlFactory.newSqlConstant("-1", ISqlConstant.Type.NUMBER);
-			expr = conjoin(expr, _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, c3, c4));
+			ISqlConstant c3 = _sqlFactory.newConstant(l + RelationField.LABELED_NULL_EXT, ISqlConstant.Type.COLUMNNAME);
+			ISqlConstant c4 = _sqlFactory.newConstant("-1", ISqlConstant.Type.NUMBER);
+			expr = conjoin(expr, _sqlFactory.newExpression(ISqlExpression.Code.EQ, c3, c4));
 		}else{
 //			Var not in map or smth else, e.g. _
 			assert(false);
@@ -836,7 +836,7 @@ protected ISqlExpression buildWhere(int curIterCnt) {
 //				// Skip last atom - will add except at higher level
 
 			}else { // Negated atom -- convert to SQL antisemijoin (not-exists)
-				ISqlSelect n = _sqlFactory.newSqlSelect();
+				ISqlSelect n = _sqlFactory.newSelect();
 
 				HashMap<String,String> atomMap = buildVarMapForAtom(a, i, null, true);
 //				n.addSelect(buildSelectForAtom(a, atomMap, false));
@@ -854,7 +854,7 @@ protected ISqlExpression buildWhere(int curIterCnt) {
 //				}
 				n.addWhere(newExpr);
 				if(Config.getNotExists()){
-					expr = conjoin(expr, _sqlFactory.newSqlExpression(ISqlExpression.Code.NOT, _sqlFactory.newSqlExpression(ISqlExpression.Code.EXISTS, n)));
+					expr = conjoin(expr, _sqlFactory.newExpression(ISqlExpression.Code.NOT, _sqlFactory.newExpression(ISqlExpression.Code.EXISTS, n)));
 				}
 			}
 		}catch(Exception e){
@@ -1163,7 +1163,7 @@ protected ISqlExpression conjoin(ISqlExpression expr, ISqlExpression cond) {
 	} else if (cond == null) {
 		return expr; 
 	} else {
-		return _sqlFactory.newSqlExpression(ISqlExpression.Code.AND, expr, cond);
+		return _sqlFactory.newExpression(ISqlExpression.Code.AND, expr, cond);
 	}
 }
 

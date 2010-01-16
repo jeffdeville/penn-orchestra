@@ -56,9 +56,9 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlExpression newSqlExpression(final ISqlExpression.Code code,
+	public ISqlExpression newExpression(final ISqlExpression.Code code,
 			final ISqlExp o1, final ISqlExp o2) {
-		return newSqlExpression(code).addOperand(o1).addOperand(o2);
+		return newExpression(code).addOperand(o1).addOperand(o2);
 	}
 
 	/** {@inheritDoc} */
@@ -69,19 +69,19 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlSelect newSqlSelect() {
+	public ISqlSelect newSelect() {
 		return new DtpSqlSelect();
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlSelect newSqlSelect(final ISqlSelectItem selectItem,
+	public ISqlSelect newSelect(final ISqlSelectItem selectItem,
 			final ISqlFromItem fromItem, final ISqlExpression withItem) {
 		return new DtpSqlSelect(selectItem, fromItem, withItem);
 	}
 
 	@Override
-	public ISqlSelectItem newSqlSelectItem() {
+	public ISqlSelectItem newSelectItem() {
 		return new DtpSqlSelectItem();
 	}
 
@@ -93,7 +93,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlExpression newSqlExpression(final ISqlExpression.Code code) {
+	public ISqlExpression newExpression(final ISqlExpression.Code code) {
 		switch (code) {
 		case AVG:
 		case COUNT:
@@ -134,20 +134,20 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlExpression newSqlExpression(final ISqlExpression.Code code,
+	public ISqlExpression newExpression(final ISqlExpression.Code code,
 			final ISqlExp o1) {
-		return newSqlExpression(code).addOperand(o1);
+		return newExpression(code).addOperand(o1);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlFromItem newSqlFromItem(final String fullName) {
+	public ISqlFromItem newFromItem(final String fullName) {
 		return new DtpSqlFromItem(fullName);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlConstant newSqlConstant(final String value,
+	public ISqlConstant newConstant(final String value,
 			final ISqlConstant.Type type) {
 		switch (type) {
 		case COLUMNNAME:
@@ -159,7 +159,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlFromItem newSqlFromItem(final Join type,
+	public ISqlFromItem newFromItem(final Join type,
 			final ISqlFromItem left, final ISqlFromItem right,
 			final ISqlExp cond) {
 		return new DtpSqlFromItem(type, left, right, cond);
@@ -173,7 +173,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlSelect newSqlSelect(final ISqlSelectItem selectItem,
+	public ISqlSelect newSelect(final ISqlSelectItem selectItem,
 			final ISqlFromItem fromItem) {
 		return new DtpSqlSelect(selectItem, fromItem);
 	}
@@ -217,8 +217,8 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 	/** {@inheritDoc} */
 	@Override
 	public ISqlExpression newFalseExpression() {
-		return newSqlExpression(ISqlExpression.Code.EQ, newSqlConstant("1",
-				ISqlConstant.Type.NUMBER), newSqlConstant("2",
+		return newExpression(ISqlExpression.Code.EQ, newConstant("1",
+				ISqlConstant.Type.NUMBER), newConstant("2",
 				ISqlConstant.Type.NUMBER));
 	}
 
@@ -241,7 +241,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 	}
 
 	@Override
-	public ISqlExpression newSqlExpression(String functionName,
+	public ISqlExpression newExpression(String functionName,
 			ISqlExp... operands) {
 		final ISqlExpression sqlExpression = new ValueExpressionFunctionExpression(
 				functionName);

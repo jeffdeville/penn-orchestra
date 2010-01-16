@@ -63,7 +63,7 @@ public class OracleSqlStatementGen extends AbstractSqlStatementGen {
 		for (int i = 0; i < columns.size(); i++) {
 			ISqlColumnDef s = columns.get(i);
 			
-			ISqlAlter alt = SqlFactories.getSqlFactory().newSqlAlter(tabName);
+			ISqlAlter alt = SqlFactories.getSqlFactory().newAlter(tabName);
 			
 			if(s.getDefault() != null)
 				ret.add(alt.toString() + alterColMsg(s.getName(), s.getDefault()));
@@ -79,7 +79,7 @@ public class OracleSqlStatementGen extends AbstractSqlStatementGen {
 		for (int i = 0; i < columns.size(); i++) {
 			ISqlColumnDef s = columns.get(i);
 			
-			ISqlAlter alt = SqlFactories.getSqlFactory().newSqlAlter(tabName);
+			ISqlAlter alt = SqlFactories.getSqlFactory().newAlter(tabName);
 			
 			if(s.getDefault() != null)
 				if(noLogging)

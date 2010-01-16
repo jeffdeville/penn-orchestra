@@ -76,13 +76,13 @@ public class ExtractorDB2 implements IExtractor<Connection> {
 
 		String ccdName = "CCDTEST." + relation.getDbRelName() + CCD_SUFFIX;
 
-		ISqlSelect select = sqlFactory.newSqlSelect(
+		ISqlSelect select = sqlFactory.newSelect(
 				sqlFactory.newSqlSelectItem("*"),
-				sqlFactory.newSqlFromItem(ccdName)).addOrderBy(
+				sqlFactory.newFromItem(ccdName)).addOrderBy(
 				OrchestraUtil.newArrayList(sqlFactory
-						.newSqlOrderByItem(sqlFactory.newSqlConstant(
+						.newSqlOrderByItem(sqlFactory.newConstant(
 								COMMITSEQ_COL, Type.COLUMNNAME)), sqlFactory
-						.newSqlOrderByItem(sqlFactory.newSqlConstant(
+						.newSqlOrderByItem(sqlFactory.newConstant(
 								INTENTSEQ_COL, Type.COLUMNNAME))));
 
 		Statement statement = null;

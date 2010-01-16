@@ -178,7 +178,7 @@ public class DB2SqlStatementGen extends AbstractSqlStatementGen {
 		for (int i = 0; i < columns.size(); i++) {
 			ISqlColumnDef s = columns.get(i);
 
-			ISqlAlter alt = SqlFactories.getSqlFactory().newSqlAlter(tabName);
+			ISqlAlter alt = SqlFactories.getSqlFactory().newAlter(tabName);
 
 			if(s.getDefault() != null)
 				if(noLogging)
@@ -194,7 +194,7 @@ public class DB2SqlStatementGen extends AbstractSqlStatementGen {
 
 		for (int i = 0; i < columns.size(); i++) {
 			ISqlColumnDef s = columns.get(i);
-			ISqlAlter alt = SqlFactories.getSqlFactory().newSqlAlter(tabName);
+			ISqlAlter alt = SqlFactories.getSqlFactory().newAlter(tabName);
 
 			if(s.getDefault() != null)
 				if(noLogging)
