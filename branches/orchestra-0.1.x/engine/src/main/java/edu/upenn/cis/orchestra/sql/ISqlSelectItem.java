@@ -37,9 +37,10 @@ public interface ISqlSelectItem extends ISqlAliasedName {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @throws IllegalStateException if this {@code ISqlSelectItem} is a
-	 *             wildcard. Note: this behavior is <em>not</em> backward
-	 *             compatible and violates the LSP.
+	 * @throws IllegalStateException
+	 *             if this {@code ISqlSelectItem} is a wildcard. Note: this
+	 *             behavior is <em>not</em> backward compatible and violates the
+	 *             LSP.
 	 */
 	@Override
 	ISqlSelectItem setAlias(String alias);
@@ -91,5 +92,14 @@ public interface ISqlSelectItem extends ISqlAliasedName {
 	 *         {@code null} if it is a wildcard
 	 */
 	ISqlExp getExpression();
+
+	/**
+	 * Initialize this SELECT item as an SQL expression (not a column name nor
+	 * wildcard) Example: SELECT a+b FROM table1; (a+b is an expression)
+	 * 
+	 * @param expression
+	 * @return expression
+	 */
+	ISqlExp setExpression(ISqlExp expression);
 
 }

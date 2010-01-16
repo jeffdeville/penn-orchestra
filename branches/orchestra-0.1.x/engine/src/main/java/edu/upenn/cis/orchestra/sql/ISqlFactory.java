@@ -31,7 +31,8 @@ public interface ISqlFactory {
 	 * Make a {@code IColumnExpression} with an optionally {@code
 	 * [schema.]table} qualified column name.
 	 * 
-	 * @param column an optionally-qualified column name in the form {@code
+	 * @param column
+	 *            an optionally-qualified column name in the form {@code
 	 *            [[schema.]table.]column}
 	 * @return the new {@code IColumnExpression}
 	 */
@@ -43,7 +44,8 @@ public interface ISqlFactory {
 	 * {@code table} is passed through to {@code toString()} SQL generation as
 	 * free text.
 	 * 
-	 * @param table target of the {@code ALTER TABLE}
+	 * @param table
+	 *            target of the {@code ALTER TABLE}
 	 * @return a new {@code ALTER TABLE table} statement
 	 */
 	ISqlAlter newSqlAlter(String table);
@@ -54,8 +56,10 @@ public interface ISqlFactory {
 	 * {@code type} will just be passed straight through to the create
 	 * statement.
 	 * 
-	 * @param name the name of the column.
-	 * @param type the type of column.
+	 * @param name
+	 *            the name of the column.
+	 * @param type
+	 *            the type of column.
 	 * @return the new {@code ISqlColumnDef}.
 	 */
 	ISqlColumnDef newSqlColumnDef(String name, String type);
@@ -66,9 +70,12 @@ public interface ISqlFactory {
 	 * {@code type} will just be passed straight through to the create
 	 * statement.
 	 * 
-	 * @param name the name of the column.
-	 * @param type the type of column.
-	 * @param defaultValue the default value of the column.
+	 * @param name
+	 *            the name of the column.
+	 * @param type
+	 *            the type of column.
+	 * @param defaultValue
+	 *            the default value of the column.
 	 * @return the new {@code ISqlColumnDef}.
 	 */
 	ISqlColumnDef newSqlColumnDef(String name, String type, String defaultValue);
@@ -76,8 +83,10 @@ public interface ISqlFactory {
 	/**
 	 * Create a new constant, given its value and type.
 	 * 
-	 * @param value the value for the constant.
-	 * @param type the type of constant.
+	 * @param value
+	 *            the value for the constant.
+	 * @param type
+	 *            the type of constant.
 	 * @return the new constant.
 	 */
 	ISqlConstant newSqlConstant(String value, ISqlConstant.Type type);
@@ -88,9 +97,12 @@ public interface ISqlFactory {
 	 * As in: {@code CREATE INDEX indexName on tableName (columns.get(0),
 	 * columns.get(1),...,columns.get(N)}.
 	 * 
-	 * @param indexName the name of the index
-	 * @param tableName the table on which we're creating the index
-	 * @param columns the columns that make up the index
+	 * @param indexName
+	 *            the name of the index
+	 * @param tableName
+	 *            the table on which we're creating the index
+	 * @param columns
+	 *            the columns that make up the index
 	 * 
 	 * @return the new {@code CREATE INDEX} statement
 	 */
@@ -102,9 +114,11 @@ public interface ISqlFactory {
 	 * <p>
 	 * Example {@code create temp table cta4 as select * from cta1 where a > 1;}.
 	 * 
-	 * @param name the name of the table, in {@code "[schema.]table"} form.
-	 * @param asQuery the {@code SELECT} part of the {@code CREATE TABLE AS}.
-	 *            the new {@code ISqlCreate}.
+	 * @param name
+	 *            the name of the table, in {@code "[schema.]table"} form.
+	 * @param asQuery
+	 *            the {@code SELECT} part of the {@code CREATE TABLE AS}. the
+	 *            new {@code ISqlCreate}.
 	 * @return the new {@code ISqlCreate}.
 	 */
 	ISqlCreateTable newSqlCreateTable(String name, ISqlSelect asQuery);
@@ -113,12 +127,15 @@ public interface ISqlFactory {
 	 * Construct an{@code ISqlCreateTable}: {@code
 	 * "CREATE type TABLE name (columns) noLogMsg"}.
 	 * 
-	 * @param name the name of the table, in {@code "[schema.]table"} form.
-	 * @param type the type of table, for example {@code "TEMPORARY"} or {@code
+	 * @param name
+	 *            the name of the table, in {@code "[schema.]table"} form.
+	 * @param type
+	 *            the type of table, for example {@code "TEMPORARY"} or {@code
 	 *            "GLOBAL TEMPORARY"}.
-	 * @param columns the columns of the table we're creating.
-	 * @param noLogMsg no logging string, for example {@code
-	 *            "NOT LOGGED INITIALLY"}.
+	 * @param columns
+	 *            the columns of the table we're creating.
+	 * @param noLogMsg
+	 *            no logging string, for example {@code "NOT LOGGED INITIALLY"}.
 	 * @return the new {@code ISqlCreate}.
 	 */
 	ISqlCreateTable newSqlCreateTable(String name, String type,
@@ -128,8 +145,10 @@ public interface ISqlFactory {
 	 * Construct an{@code SqlCreateTable}: {@code "CREATE TABLE name (columns)"}
 	 * .
 	 * 
-	 * @param name the name of the table, in {@code "[schema.]table"} form.
-	 * @param columns the columns of the table we're creating.
+	 * @param name
+	 *            the name of the table, in {@code "[schema.]table"} form.
+	 * @param columns
+	 *            the columns of the table we're creating.
 	 * 
 	 * @return the new {@code ISqlCreate}.
 	 */
@@ -141,7 +160,8 @@ public interface ISqlFactory {
 	 * <p>
 	 * As in: {@code DELETE table}.
 	 * 
-	 * @param table the table to be deleted.
+	 * @param table
+	 *            the table to be deleted.
 	 * @return the new {@code DELETE} statement
 	 */
 	ISqlDelete newSqlDelete(ITable table);
@@ -149,8 +169,9 @@ public interface ISqlFactory {
 	/**
 	 * Construct an {@code SqlDelete} from the target table.
 	 * 
-	 * @param tableName the name of the table in the {@code FROM} part of the
-	 *            {@code DELETE} statement.
+	 * @param tableName
+	 *            the name of the table in the {@code FROM} part of the {@code
+	 *            DELETE} statement.
 	 * @return an {@code SqlDelete} from the target table.
 	 */
 	ISqlDelete newSqlDelete(String tableName);
@@ -163,8 +184,10 @@ public interface ISqlFactory {
 	 * where LBI.UserName = "jdoe";}.
 	 * 
 	 * 
-	 * @param tableName table name.
-	 * @param alias alias for the table.
+	 * @param tableName
+	 *            table name.
+	 * @param alias
+	 *            alias for the table.
 	 * 
 	 * @return an {@code SqlDelete} who's {@code FROM} part has a table and an
 	 *         alias.
@@ -174,7 +197,8 @@ public interface ISqlFactory {
 	/**
 	 * Create a new {@code DROP} statement.
 	 * 
-	 * @param table the name of the table we're dropping.
+	 * @param table
+	 *            the name of the table we're dropping.
 	 * @return the new {@code DROP} statement.
 	 */
 	ISqlDrop newSqlDrop(String table);
@@ -182,7 +206,8 @@ public interface ISqlFactory {
 	/**
 	 * Create a new {@code DROP SCHEMA} statement.
 	 * 
-	 * @param schema the name of the schema we're dropping.
+	 * @param schema
+	 *            the name of the schema we're dropping.
 	 * @return the new {@code DROP SCHEMA} statement.
 	 */
 	ISqlDropSchema newSqlDropSchema(String schema);
@@ -190,7 +215,8 @@ public interface ISqlFactory {
 	/**
 	 * Create an SQL Expression given the operator.
 	 * 
-	 * @param code the type of <code>ISqlExpression</code>, see the
+	 * @param code
+	 *            the type of <code>ISqlExpression</code>, see the
 	 *            <code>static final int</code>s in <code>ISqlExpression</code>.
 	 * 
 	 * @return an SQL Expression given the operator.
@@ -200,8 +226,10 @@ public interface ISqlFactory {
 	/**
 	 * Create an SQL Expression given the operator and 1st operand.
 	 * 
-	 * @param code the operator.
-	 * @param o1 the 1st operand.
+	 * @param code
+	 *            the operator.
+	 * @param o1
+	 *            the 1st operand.
 	 * 
 	 * @return see description.
 	 */
@@ -210,9 +238,12 @@ public interface ISqlFactory {
 	/**
 	 * Create an SQL Expression given the operator, 1st and 2nd operands.
 	 * 
-	 * @param code the operator.
-	 * @param o1 the 1st operand.
-	 * @param o2 the 2nd operand.
+	 * @param code
+	 *            the operator.
+	 * @param o1
+	 *            the 1st operand.
+	 * @param o2
+	 *            the 2nd operand.
 	 * 
 	 * @return see description.
 	 */
@@ -220,12 +251,28 @@ public interface ISqlFactory {
 			ISqlExp o2);
 
 	/**
+	 * Create an SQL Expression given the function name and 1st operand.
+	 * 
+	 * @param functionName
+	 *            the name of the function
+	 * @param o1
+	 *            the 1st operand.
+	 * 
+	 * @return see description.
+	 */
+	ISqlExpression newSqlExpression(String functionName, ISqlExp... o1);
+
+	/**
 	 * Construct a join-type {@code FROM} clause.
 	 * 
-	 * @param type the type of join.
-	 * @param left the left side of the join.
-	 * @param right the right side of the join.
-	 * @param cond {@code WHERE} part of the {@code FROM} clause.
+	 * @param type
+	 *            the type of join.
+	 * @param left
+	 *            the left side of the join.
+	 * @param right
+	 *            the right side of the join.
+	 * @param cond
+	 *            {@code WHERE} part of the {@code FROM} clause.
 	 * @return the new {@code ISqlFromItem}.
 	 */
 	ISqlFromItem newSqlFromItem(Join type, ISqlFromItem left,
@@ -237,17 +284,19 @@ public interface ISqlFactory {
 	 * {@code fullName} can either be schema-unqualified, as in {@code SELECT *
 	 * FROM t}, or schema-qualified, as in {@code SELECT * FROM s.t}.
 	 * 
-	 * @param tableName the table name
+	 * @param tableName
+	 *            the table name
 	 * @return see description
-	 * @throws IllegalArgumentException if {@code tableName} is not the correct
-	 *             format
+	 * @throws IllegalArgumentException
+	 *             if {@code tableName} is not the correct format
 	 */
 	ISqlFromItem newSqlFromItem(String tableName);
 
 	/**
 	 * Create a new {@code ISqlInsert} object.
 	 * 
-	 * @param table the table we're inserting into
+	 * @param table
+	 *            the table we're inserting into
 	 * 
 	 * @return a new <code>ISqlInsert</code> object
 	 */
@@ -256,7 +305,8 @@ public interface ISqlFactory {
 	/**
 	 * Create a new <code>ISqlInsert</code> object.
 	 * 
-	 * @param tableName the name of the table we're inserting into
+	 * @param tableName
+	 *            the name of the table we're inserting into
 	 * 
 	 * @return a new <code>ISqlInsert</code> object
 	 */
@@ -265,9 +315,12 @@ public interface ISqlFactory {
 	/**
 	 * Move the rows from the table {@code source} to the table {@code dest}.
 	 * 
-	 * @param dest destination table
-	 * @param source source table
-	 * @param soft {@code true} means
+	 * @param dest
+	 *            destination table
+	 * @param source
+	 *            source table
+	 * @param soft
+	 *            {@code true} means
 	 *            <ol>
 	 *            <li>{@code DELETE FROM _destTable}
 	 *            <li>{@code INSERT INTO _destTable SELECT * FROM _sourceTable}
@@ -295,8 +348,10 @@ public interface ISqlFactory {
 	/**
 	 * Create a {@code RENAME TABLE source TO dest} statement.
 	 * 
-	 * @param source see description
-	 * @param dest see description
+	 * @param source
+	 *            see description
+	 * @param dest
+	 *            see description
 	 * @return a {@code RENAME TABLE source TO dest} statement.
 	 */
 	ISqlRename newSqlRename(ITable source, ITable dest);
@@ -309,8 +364,10 @@ public interface ISqlFactory {
 	ISqlSelect newSqlSelect();
 
 	/**
-	 * @param selectItem <code>SELECT...</code> part
-	 * @param fromItem <code>FROM...</code> part
+	 * @param selectItem
+	 *            <code>SELECT...</code> part
+	 * @param fromItem
+	 *            <code>FROM...</code> part
 	 * 
 	 * @return a new <code>ISqlSelect</code> with the given <code>SELECT</code>
 	 *         and {@code FROM} clauses.
@@ -321,23 +378,29 @@ public interface ISqlFactory {
 	 * Construct a new {@code ISqlSelect} with the given {@code SELECT}, {@code
 	 * FROM}, and {@code WHERE} clauses.
 	 * 
-	 * @param selectItem {@code SELECT...} part
-	 * @param fromItem {@code FROM...} part
-	 * @param whereItem {@code WHERE...} part
+	 * @param selectItem
+	 *            {@code SELECT...} part
+	 * @param fromItem
+	 *            {@code FROM...} part
+	 * @param whereItem
+	 *            {@code WHERE...} part
 	 * @return a new {@code ISqlSelect} with the given {@code SELECT}, {@code
 	 *         FROM}, and {@code WHERE} clauses
 	 */
 	ISqlSelect newSqlSelect(ISqlSelectItem selectItem, ISqlFromItem fromItem,
 			ISqlExpression whereItem);
 
+	ISqlSelectItem newSqlSelectItem();
+
 	/**
 	 * Create a new {@code SELECT} item, given its name (for column names and
 	 * wildcards).
 	 * 
-	 * @param fullName a string that represents a column name or wildcard
-	 *            (examples: {@code "SCHEMA.TABLE.*"}, {@code "TABLE.*"},
-	 *            {@code "*"}, {@code "SCHEMA.TABLE.COLUMN"}, {@code
-	 *            "TABLE.COLUMN"}, {@code "COLUMN"}).
+	 * @param fullName
+	 *            a string that represents a column name or wildcard (examples:
+	 *            {@code "SCHEMA.TABLE.*"}, {@code "TABLE.*"}, {@code "*"},
+	 *            {@code "SCHEMA.TABLE.COLUMN"}, {@code "TABLE.COLUMN"}, {@code
+	 *            "COLUMN"}).
 	 * 
 	 * @return the newly created {@code ISqlSelectItem}.
 	 */
@@ -346,8 +409,8 @@ public interface ISqlFactory {
 	/**
 	 * Create a table with an optionally schema-qualified table name.
 	 * 
-	 * @param schemaTable the table name. Must be in the form {@code
-	 *            [schema.]table}.
+	 * @param schemaTable
+	 *            the table name. Must be in the form {@code [schema.]table}.
 	 * 
 	 * @return a table with the given optionally schema-qualified table name
 	 */
@@ -356,9 +419,11 @@ public interface ISqlFactory {
 	/**
 	 * Create a new {@code ITable}.
 	 * 
-	 * @param tableName the name of the new table. Must be in the form {@code
+	 * @param tableName
+	 *            the name of the new table. Must be in the form {@code
 	 *            [schema.]table}.
-	 * @param alias alias for the table
+	 * @param alias
+	 *            alias for the table
 	 * 
 	 * @return the new {@code ITable}
 	 */
@@ -375,10 +440,13 @@ public interface ISqlFactory {
 	 * Construct an {@code ISqlCreateTempTable}: {@code
 	 * "CREATE TEMP type TABLE name (columns)"}.
 	 * 
-	 * @param name the name of the table, in {@code "[schema.]table"} form.
-	 * @param type the type of table, for example {@code "TEMPORARY"} or {@code
+	 * @param name
+	 *            the name of the table, in {@code "[schema.]table"} form.
+	 * @param type
+	 *            the type of table, for example {@code "TEMPORARY"} or {@code
 	 *            "GLOBAL TEMPORARY"}.
-	 * @param cols the columns of the table we're creating.
+	 * @param cols
+	 *            the columns of the table we're creating.
 	 * @return the new {@code ISqlCreateTempTable}
 	 */
 	ISqlCreateTempTable newSqlCreateTempTable(String name, String type,
@@ -395,7 +463,8 @@ public interface ISqlFactory {
 	 * Construct an {@code ISqlOrderByItem} for use in an {@code ORDER BY}
 	 * clause.
 	 * 
-	 * @param orderByName the name of the item to order by
+	 * @param orderByName
+	 *            the name of the item to order by
 	 * @return the new {@code ISqlOrderByItem}
 	 */
 	ISqlOrderByItem newSqlOrderByItem(ISqlConstant orderByName);
@@ -404,9 +473,12 @@ public interface ISqlFactory {
 	 * Construct an {@code ISqlOrderByItem} for use in an {@code ORDER BY}
 	 * clause.
 	 * 
-	 * @param orderByName the name of the item to order by
-	 * @param orderType indicates if the order is ascending or descending
-	 * @param nullOrderType indicates if nulls should be first or last
+	 * @param orderByName
+	 *            the name of the item to order by
+	 * @param orderType
+	 *            indicates if the order is ascending or descending
+	 * @param nullOrderType
+	 *            indicates if nulls should be first or last
 	 * @return the new {@code ISqlOrderByItem}
 	 */
 	ISqlOrderByItem newSqlOrderByItem(ISqlConstant orderByName,
