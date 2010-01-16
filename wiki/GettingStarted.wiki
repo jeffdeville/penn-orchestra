@@ -3,7 +3,7 @@
 Here's the way that we set up our development environment:
 
   # Get the Eclipse Classic package from, for example, [http://www.eclipse.org/downloads/]
-  # Install the [http://m2eclipse.sonatype.org/ M2Eclipse] Eclipse plugin. At a minimim you'll need the following items:
+  # Install the [http://m2eclipse.sonatype.org/ M2Eclipse] Eclipse plugin. At a minimum you'll need the following items:
     * Maven Integration/Maven Embedder
     * Maven Integration/Maven Integration for Eclipse
     * Maven Optional Components/Maven SCM Handler for Subclipse
