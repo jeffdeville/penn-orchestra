@@ -32,9 +32,9 @@ public abstract class AbstractSqlExpression implements ISqlExpression {
 	 * @return a {@code ISqlExpression} which evaluates to {@code false}
 	 */
 	public static ISqlExpression falseExp() {
-		return _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, _sqlFactory
-				.newSqlConstant("1", ISqlConstant.Type.NUMBER), _sqlFactory
-				.newSqlConstant("2", ISqlConstant.Type.NUMBER));
+		return _sqlFactory.newExpression(ISqlExpression.Code.EQ, _sqlFactory
+				.newConstant("1", ISqlConstant.Type.NUMBER), _sqlFactory
+				.newConstant("2", ISqlConstant.Type.NUMBER));
 	}
 
 	/** {@inheritDoc} */

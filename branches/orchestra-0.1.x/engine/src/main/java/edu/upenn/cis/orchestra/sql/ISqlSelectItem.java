@@ -98,8 +98,8 @@ public interface ISqlSelectItem extends ISqlAliasedName {
 	 * wildcard) Example: SELECT a+b FROM table1; (a+b is an expression)
 	 * 
 	 * @param expression
-	 * @return expression
+	 * @return this
 	 */
-	ISqlExp setExpression(ISqlExp expression);
+	ISqlSelectItem setExpression(ISqlExp expression);
 
 }

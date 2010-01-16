@@ -136,7 +136,7 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 		if (isWildcard()) {
 			return null;
 		} else {
-			return _sqlFactory.newSqlConstant(getColumn(),
+			return _sqlFactory.newConstant(getColumn(),
 					ISqlConstant.Type.COLUMNNAME);
 		}
 	}
@@ -210,7 +210,7 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 	}
 
 	@Override
-	public ISqlExp setExpression(final ISqlExp expression) {
+	public DtpSqlSelectItem setExpression(final ISqlExp expression) {
 		// We downcast only as far as necessary and there may not even be any
 		// "implements ISQLQueryObject<QueryValueExpression>" classes defined.
 		// So
@@ -221,7 +221,7 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 		final ISQLQueryObject<QueryValueExpression> dtpSQLQueryObject = (ISQLQueryObject<QueryValueExpression>) expression;
 		_queryResultSpecification = getSQLQueryParserFactory()
 				.createResultColumn(dtpSQLQueryObject.getSQLQueryObject(), null);
-		return expression;
+		return this;
 	}
 }
 

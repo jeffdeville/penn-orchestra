@@ -67,9 +67,9 @@ public class ApplierSql implements IApplier<Connection> {
 
 		try {
 			Peer peer = updates.getPeer();
-			ISqlSelect selectTemplate = sqlFactory.newSqlSelect();
+			ISqlSelect selectTemplate = sqlFactory.newSelect();
 			ISqlExpression valuesTemplate = sqlFactory
-					.newSqlExpression(Code.COMMA);
+					.newExpression(Code.COMMA);
 			Collection<Schema> schemas = peer.getSchemas();
 			for (Schema schema : schemas) {
 				Collection<Relation> relations = schema.getRelations();
@@ -119,13 +119,13 @@ public class ApplierSql implements IApplier<Connection> {
 		selectTemplate.addSelectClause(Collections.singletonList(sqlFactory
 				.newSqlSelectItem("COUNT(*)")));
 		int ncol = relation.getNumCols();
-		ISqlExpression whereClause = sqlFactory.newSqlExpression(Code.AND);
+		ISqlExpression whereClause = sqlFactory.newExpression(Code.AND);
 		for (int i = 0; i < ncol; i++) {
-			whereClause.addOperand(sqlFactory.newSqlExpression(Code.EQ,
-					sqlFactory.newSqlConstant(relation.getColName(i),
-							Type.COLUMNNAME), sqlFactory.newSqlConstant("?",
+			whereClause.addOperand(sqlFactory.newExpression(Code.EQ,
+					sqlFactory.newConstant(relation.getColName(i),
+							Type.COLUMNNAME), sqlFactory.newConstant("?",
 							Type.PREPARED_STATEMENT_PARAMETER)));
-			valuesTemplate.addOperand(sqlFactory.newSqlConstant("?",
+			valuesTemplate.addOperand(sqlFactory.newConstant("?",
 					Type.PREPARED_STATEMENT_PARAMETER));
 
 		}
@@ -170,7 +170,7 @@ public class ApplierSql implements IApplier<Connection> {
 		Relation relation = tuple.getSchema();
 		String fqName = relation.getFullQualifiedDbId();
 		selectTemplate.addFromClause(Collections.singletonList(sqlFactory
-				.newSqlFromItem(fqName + delTable)));
+				.newFromItem(fqName + delTable)));
 
 		ISqlInsert insInsert = sqlFactory.newSqlInsert(fqName + insTable
 				+ Relation.INSERT);

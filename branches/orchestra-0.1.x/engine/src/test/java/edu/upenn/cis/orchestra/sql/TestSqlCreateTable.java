@@ -37,8 +37,8 @@ public class TestSqlCreateTable {
 	public void test() {
 		ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
 		List<ISqlColumnDef> columns = new LinkedList<ISqlColumnDef>();
-		columns.add(sqlFactory.newSqlColumnDef("column1", "INTEGER"));
-		columns.add(sqlFactory.newSqlColumnDef("column2", "VARCHAR(10)"));
+		columns.add(sqlFactory.newColumnDef("column1", "INTEGER"));
+		columns.add(sqlFactory.newColumnDef("column2", "VARCHAR(10)"));
 
 		ISqlCreateStatement create = sqlFactory.newSqlCreateTable(
 				"testTableName", columns);
@@ -58,10 +58,10 @@ public class TestSqlCreateTable {
 				.toString()), SqlUtil
 				.stripWhiteSpaceAndComments(expectedCreateSchemaTable));
 
-		ISqlSelect select = sqlFactory.newSqlSelect();
+		ISqlSelect select = sqlFactory.newSelect();
 
 		select.addFromClause(newArrayList(sqlFactory
-				.newSqlFromItem("SOURCE_TABLE")));
+				.newFromItem("SOURCE_TABLE")));
 
 		ISqlCreateTable createTable = sqlFactory.newSqlCreateTable("NEW_TABLE",
 				select);

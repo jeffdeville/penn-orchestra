@@ -100,33 +100,33 @@ public class BuiltinFunctions {
 	public static ISqlExpression getExpression(String sch, String fn, List<ISqlExp> args) {
 		if (sch.equals("COMPARE")) {
 			if (fn.equals("INTLESS")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.LT, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.LT, args.get(0), args.get(1));
 			} else if (fn.equals("INTLESSEQUAL")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.LTE, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.LTE, args.get(0), args.get(1));
 			} else if (fn.equals("INTGREATER")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.GT, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.GT, args.get(0), args.get(1));
 			} else if (fn.equals("INTGREATEREQUAL")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.GTE, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.GTE, args.get(0), args.get(1));
 			} else if (fn.equals("INTEQUAL")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.EQ, args.get(0), args.get(1));
 			} else if (fn.equals("INTNOTEQUAL")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.NEQ, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.NEQ, args.get(0), args.get(1));
 			} else if (fn.equals("STRLIKE")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.LIKE, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.LIKE, args.get(0), args.get(1));
 			}  
 		} else if (sch.equals("ARITH")) {
 			if (fn.equals("INTADD")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.PLUSSIGN, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.PLUSSIGN, args.get(0), args.get(1));
 			} else if (fn.equals("INTSUB")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.MINUSSIGN, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.MINUSSIGN, args.get(0), args.get(1));
 			} else if (fn.equals("INTMUL")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.MULTSIGN, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.MULTSIGN, args.get(0), args.get(1));
 			} else if (fn.equals("INTDIV")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.DIVSIGN, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.DIVSIGN, args.get(0), args.get(1));
 			}  
 		} else if (sch.equals("STRING")) {
 			if (fn.equals("STRCAT")) {
-				return _sqlFactory.newSqlExpression(ISqlExpression.Code.PIPESSIGN, args.get(0), args.get(1));
+				return _sqlFactory.newExpression(ISqlExpression.Code.PIPESSIGN, args.get(0), args.get(1));
 				/*
 			} else if (fn.equals("SUBSTR")) {
 				return _sqlFactory.newSqlExpression(ISqlExpression.Code.)
@@ -136,7 +136,7 @@ public class BuiltinFunctions {
 			}  
 		}
 		else if (sch.equals("EQUALITYUDFSL")|| sch.equals("EQUALITYUDFSR")){
-			ISqlExpression s = _sqlFactory.newSqlExpression(ISqlExpression.Code._NOT_SUPPORTED, args.get(0));
+			ISqlExpression s = _sqlFactory.newExpression(ISqlExpression.Code._NOT_SUPPORTED, args.get(0));
 			s.setOperator(fn);
 			for(int i=1;i<args.size();i++)
 				s.addOperand(args.get(i));
@@ -214,14 +214,14 @@ public class BuiltinFunctions {
 				args.add(arg);
 				try {
 					Integer.valueOf(arg);
-					children.add(_sqlFactory.newSqlConstant(arg, ISqlConstant.Type.NUMBER));
+					children.add(_sqlFactory.newConstant(arg, ISqlConstant.Type.NUMBER));
 				} catch (NumberFormatException ne) {
 					
 					// Trim '' because the parent class already adds these to a string
 					if (arg.charAt(0) == '\'' && arg.charAt(arg.length() - 1) == '\'') {
 						arg = arg.substring(1, arg.length() - 1);
 					}
-					children.add(_sqlFactory.newSqlConstant(arg, ISqlConstant.Type.STRING));
+					children.add(_sqlFactory.newConstant(arg, ISqlConstant.Type.STRING));
 				}
 			} else if (varmap.get(arg) == null && i >= getFirstParm(sch, fn))
 				return "";
@@ -230,7 +230,7 @@ public class BuiltinFunctions {
 				if (whereExpressions.get(arg) != null)
 					children.add(whereExpressions.get(arg));
 				else
-					children.add(_sqlFactory.newSqlConstant(getArgumentForVar(fn,arg,i,varmap,allAtoms), ISqlConstant.Type.COLUMNNAME));
+					children.add(_sqlFactory.newConstant(getArgumentForVar(fn,arg,i,varmap,allAtoms), ISqlConstant.Type.COLUMNNAME));
 				// This is no longer the root of a condition -- it's a subexpression
 //				_whereRoots.remove(_whereExpressions.get(arg));
 			}
