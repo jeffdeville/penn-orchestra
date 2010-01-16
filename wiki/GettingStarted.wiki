@@ -16,6 +16,7 @@ Here's the way that we set up our development environment:
     * Sublcipse/Subversion JavaHL Native Library Adapter
   # install the [http://testng.org/doc/eclipse.html TestNG] Eclipse plugin
   # fire up Eclipse and switch over to the `SVN Repository Exploring` perspective and create a repository at [http://penn-orchestra.googlecode.com/svn/] if you're not a commiter or [https://penn-orchestra.googlecode.com/svn/] if you're a committer
+  # Right-click (ctrl-click on Macs) to and choose _Check out as Maven project_
 
 = Running the tests =
 
