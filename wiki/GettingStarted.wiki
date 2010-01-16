@@ -16,7 +16,7 @@ Here's the way that we set up our development environment:
   # Install the [http://testng.org/doc/eclipse.html TestNG] Eclipse plugin
   # Fire up Eclipse and switch over to the `SVN Repository Exploring` perspective and create a repository at [http://penn-orchestra.googlecode.com/svn/] if you're not a commiter or [https://penn-orchestra.googlecode.com/svn/] if you're a committer
   # Navigate to http(s)://penn-orchestra.googlecode.com/branches and right-click (ctrl-click on Macs) on orchestra-0.1.x and choose _Check out as Maven Project_
-    * Some of us like to choose the Name Template `[`artifactId`]`-`[`version`]` under advanced to give a quick indicator of which branch we're working on but that doesn't seem to work on OS X
+    * Some of us like to choose the Name Template `[`artifactId`]`-`[`version`]` under _Advanced_ to give a quick indicator of which branch we're working on but that doesn't seem to work on OS X
     * Hit _Finish_
 
 = Running the tests =
