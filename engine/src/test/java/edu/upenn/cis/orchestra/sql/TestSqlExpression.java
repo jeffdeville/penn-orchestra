@@ -38,13 +38,13 @@ public class TestSqlExpression {
 		ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
 
 		ISqlExpression whereExpression = sqlFactory
-				.newSqlExpression(ISqlExpression.Code.EQ);
+				.newExpression(ISqlExpression.Code.EQ);
 		whereExpression.addOperand(
-				SqlFactories.getSqlFactory().newSqlConstant("44",
+				SqlFactories.getSqlFactory().newConstant("44",
 						ISqlConstant.Type.NUMBER)).addOperand(
-				SqlFactories.getSqlFactory().newSqlConstant("45",
+				SqlFactories.getSqlFactory().newConstant("45",
 						ISqlConstant.Type.NUMBER));
-		ISqlExpression notExpression = sqlFactory.newSqlExpression(
+		ISqlExpression notExpression = sqlFactory.newExpression(
 				ISqlExpression.Code.NOT, whereExpression);
 		Assert.assertEquals(SqlUtil.stripWhiteSpaceAndComments(notExpression
 				.toString()), SqlUtil

@@ -71,7 +71,7 @@ public class HsqlSqlStatementGen extends AbstractSqlStatementGen {
 		for (int i = 0; i < columns.size(); i++) {
 			ISqlColumnDef s = columns.get(i);
 			
-			ISqlAlter alt = SqlFactories.getSqlFactory().newSqlAlter(tabName);
+			ISqlAlter alt = SqlFactories.getSqlFactory().newAlter(tabName);
 			
 			if(s.getDefault() != null)
 				if(noLogging)

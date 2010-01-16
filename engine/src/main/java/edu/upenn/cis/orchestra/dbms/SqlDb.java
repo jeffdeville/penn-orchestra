@@ -2319,12 +2319,12 @@ public class SqlDb implements IDb {
 	private String relationToInsert(Relation r) {
 		ISqlInsert insert = _sqlFactory.newSqlInsert(r.getFullQualifiedDbId());
 		ISqlExpression valuesTemplate = _sqlFactory
-				.newSqlExpression(Code.COMMA);
+				.newExpression(Code.COMMA);
 		int ncol = r.getNumCols();
 		for (int i = 0; i < ncol; i++) {
 			valuesTemplate
 					.addOperand(_sqlFactory
-							.newSqlConstant(
+							.newConstant(
 									"?",
 									edu.upenn.cis.orchestra.sql.ISqlConstant.Type.PREPARED_STATEMENT_PARAMETER));
 

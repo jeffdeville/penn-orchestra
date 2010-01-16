@@ -204,11 +204,11 @@ public class ExtractorDB2Test {
 	 */
 	private void setupSourceTable() throws SQLException {
 		ISqlSelectItem selectItem = sqlFactory.newSqlSelectItem("*");
-		ISqlFromItem selectFrom = sqlFactory.newSqlFromItem(sourceTableFQN);
-		ISqlSelect select = sqlFactory.newSqlSelect(selectItem, selectFrom)
+		ISqlFromItem selectFrom = sqlFactory.newFromItem(sourceTableFQN);
+		ISqlSelect select = sqlFactory.newSelect(selectItem, selectFrom)
 				.addOrderBy(
 						Collections.singletonList(sqlFactory
-								.newSqlOrderByItem(sqlFactory.newSqlConstant(
+								.newSqlOrderByItem(sqlFactory.newConstant(
 										"RID", Type.COLUMNNAME))));
 		Statement statement = testConnection.createStatement(
 				ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
@@ -226,10 +226,10 @@ public class ExtractorDB2Test {
 			statement.close();
 		}
 		ISqlInsert insertSql = sqlFactory.newSqlInsert(sourceTableFQN);
-		ISqlExpression intoClause = sqlFactory.newSqlExpression(Code.COMMA);
-		intoClause.addOperand(sqlFactory.newSqlConstant("?",
+		ISqlExpression intoClause = sqlFactory.newExpression(Code.COMMA);
+		intoClause.addOperand(sqlFactory.newConstant("?",
 				Type.PREPARED_STATEMENT_PARAMETER));
-		intoClause.addOperand(sqlFactory.newSqlConstant("?",
+		intoClause.addOperand(sqlFactory.newConstant("?",
 				Type.PREPARED_STATEMENT_PARAMETER));
 		insertSql.addValueSpec(intoClause);
 		PreparedStatement insertStatement = testConnection

@@ -72,13 +72,13 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 
 	public String subtractTables(String pos, String neg, String joinAtt) {
 		ISqlDelete d = sqlFactory.newSqlDelete(pos, "R1");
-		ISqlSelect q = sqlFactory.newSqlSelect(sqlFactory.newSqlSelectItem("1"),
-				sqlFactory.newSqlFromItem(neg + " R2"),
-				sqlFactory.newSqlExpression(ISqlExpression.Code.EQ, 
-						sqlFactory.newSqlConstant("R1." + joinAtt, ISqlConstant.Type.COLUMNNAME), 
-						sqlFactory.newSqlConstant("R2." + joinAtt, ISqlConstant.Type.COLUMNNAME)));
+		ISqlSelect q = sqlFactory.newSelect(sqlFactory.newSqlSelectItem("1"),
+				sqlFactory.newFromItem(neg + " R2"),
+				sqlFactory.newExpression(ISqlExpression.Code.EQ, 
+						sqlFactory.newConstant("R1." + joinAtt, ISqlConstant.Type.COLUMNNAME), 
+						sqlFactory.newConstant("R2." + joinAtt, ISqlConstant.Type.COLUMNNAME)));
 		
-		ISqlExpression expr = sqlFactory.newSqlExpression(ISqlExpression.Code.EXISTS, q);
+		ISqlExpression expr = sqlFactory.newExpression(ISqlExpression.Code.EXISTS, q);
 		d.addWhere(expr);
 		
 		return d.toString();

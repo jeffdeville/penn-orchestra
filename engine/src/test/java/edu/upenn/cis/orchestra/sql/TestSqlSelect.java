@@ -39,14 +39,15 @@ public class TestSqlSelect {
 	private ISqlParser _parser = SqlFactories.getSqlFactory().newSqlParser();
 
 	public void testAddSelectFromWhereClause() {
-		ISqlSelect select = _sqlFactory.newSqlSelect();
+		ISqlSelect select = _sqlFactory.newSelect();
 		select.addSelectClause(newArrayList(_sqlFactory
 				.newSqlSelectItem("CAST(NULL AS VARCHAR(255))")));
-		select.addFromClause(newArrayList(_sqlFactory
-				.newSqlFromItem("SOME_TABLE")));
-		select.addWhere(_sqlFactory.newSqlExpression(ISqlExpression.Code.EQ,
-				_sqlFactory.newSqlConstant("1", ISqlConstant.Type.NUMBER),
-				_sqlFactory.newSqlConstant("1", ISqlConstant.Type.NUMBER)));
+		select
+				.addFromClause(newArrayList(_sqlFactory
+						.newFromItem("SOME_TABLE")));
+		select.addWhere(_sqlFactory.newExpression(ISqlExpression.Code.EQ,
+				_sqlFactory.newConstant("1", ISqlConstant.Type.NUMBER),
+				_sqlFactory.newConstant("1", ISqlConstant.Type.NUMBER)));
 		Assert
 				.assertEquals(
 						SqlUtil.normalizeStatement(select.toString()),
@@ -108,14 +109,15 @@ public class TestSqlSelect {
 		final String expected = SqlUtil
 				.normalizeStatement("select * from some_table order by some_col, some_other_col desc nulls first");
 
-		ISqlSelect select = _sqlFactory.newSqlSelect();
+		ISqlSelect select = _sqlFactory.newSelect();
 		select.addSelectClause(newArrayList(_sqlFactory.newSqlSelectItem("*")));
-		select.addFromClause(newArrayList(_sqlFactory
-				.newSqlFromItem("SOME_TABLE")));
+		select
+				.addFromClause(newArrayList(_sqlFactory
+						.newFromItem("SOME_TABLE")));
 		select.addOrderBy(newArrayList(_sqlFactory
-				.newSqlOrderByItem(_sqlFactory.newSqlConstant("SOME_COL",
+				.newSqlOrderByItem(_sqlFactory.newConstant("SOME_COL",
 						Type.COLUMNNAME)), _sqlFactory.newSqlOrderByItem(
-				_sqlFactory.newSqlConstant("SOME_OTHER_COL", Type.COLUMNNAME),
+				_sqlFactory.newConstant("SOME_OTHER_COL", Type.COLUMNNAME),
 				OrderType.DESC, NullOrderType.NULLS_FIRST)));
 		final String actual = SqlUtil.normalizeStatement(select.toString());
 		assertEquals(actual, expected);
@@ -127,16 +129,17 @@ public class TestSqlSelect {
 	public void selectLeast() {
 		final String expected = SqlUtil
 				.normalizeStatement("select least (33, 23, 10, 7) as least_value from dual");
-		final ISqlSelect select = _sqlFactory.newSqlSelect();
-		final ISqlSelectItem selectItem = _sqlFactory.newSqlSelectItem();
-		selectItem.setExpression(_sqlFactory.newSqlExpression("least",
-				_sqlFactory.newSqlConstant("33", Type.NUMBER), _sqlFactory
-						.newSqlConstant("23", Type.NUMBER), _sqlFactory
-						.newSqlConstant("10", Type.NUMBER), _sqlFactory
-						.newSqlConstant("7", Type.NUMBER)));
+		final ISqlSelect select = _sqlFactory.newSelect();
+		final ISqlSelectItem selectItem = _sqlFactory.newSelectItem();
+		selectItem.setExpression(
+				_sqlFactory.newExpression("least", 
+				_sqlFactory.newConstant("33", Type.NUMBER), 
+				_sqlFactory.newConstant("23", Type.NUMBER), 
+				_sqlFactory.newConstant("10", Type.NUMBER),
+				_sqlFactory.newConstant("7", Type.NUMBER)));
 		selectItem.setAlias("least_value");
 		select.addSelectClause(newArrayList(selectItem));
-		select.addFromClause(newArrayList(_sqlFactory.newSqlFromItem("dual")));
+		select.addFromClause(newArrayList(_sqlFactory.newFromItem("dual")));
 		assertEquals(SqlUtil.normalizeStatement(select.toString()), expected);
 	}
 }

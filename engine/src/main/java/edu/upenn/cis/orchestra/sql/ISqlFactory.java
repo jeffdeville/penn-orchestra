@@ -48,7 +48,7 @@ public interface ISqlFactory {
 	 *            target of the {@code ALTER TABLE}
 	 * @return a new {@code ALTER TABLE table} statement
 	 */
-	ISqlAlter newSqlAlter(String table);
+	ISqlAlter newAlter(String table);
 
 	/**
 	 * Create a column definition with a column name and type.
@@ -62,7 +62,7 @@ public interface ISqlFactory {
 	 *            the type of column.
 	 * @return the new {@code ISqlColumnDef}.
 	 */
-	ISqlColumnDef newSqlColumnDef(String name, String type);
+	ISqlColumnDef newColumnDef(String name, String type);
 
 	/**
 	 * Create a column definition with a column name, type, and default value.
@@ -89,7 +89,7 @@ public interface ISqlFactory {
 	 *            the type of constant.
 	 * @return the new constant.
 	 */
-	ISqlConstant newSqlConstant(String value, ISqlConstant.Type type);
+	ISqlConstant newConstant(String value, ISqlConstant.Type type);
 
 	/**
 	 * Create a new {@code CREATE INDEX} statement.
@@ -221,7 +221,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return an SQL Expression given the operator.
 	 */
-	ISqlExpression newSqlExpression(ISqlExpression.Code code);
+	ISqlExpression newExpression(ISqlExpression.Code code);
 
 	/**
 	 * Create an SQL Expression given the operator and 1st operand.
@@ -233,7 +233,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return see description.
 	 */
-	ISqlExpression newSqlExpression(ISqlExpression.Code code, ISqlExp o1);
+	ISqlExpression newExpression(ISqlExpression.Code code, ISqlExp o1);
 
 	/**
 	 * Create an SQL Expression given the operator, 1st and 2nd operands.
@@ -247,7 +247,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return see description.
 	 */
-	ISqlExpression newSqlExpression(ISqlExpression.Code code, ISqlExp o1,
+	ISqlExpression newExpression(ISqlExpression.Code code, ISqlExp o1,
 			ISqlExp o2);
 
 	/**
@@ -260,7 +260,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return see description.
 	 */
-	ISqlExpression newSqlExpression(String functionName, ISqlExp... o1);
+	ISqlExpression newExpression(String functionName, ISqlExp... o1);
 
 	/**
 	 * Construct a join-type {@code FROM} clause.
@@ -275,7 +275,7 @@ public interface ISqlFactory {
 	 *            {@code WHERE} part of the {@code FROM} clause.
 	 * @return the new {@code ISqlFromItem}.
 	 */
-	ISqlFromItem newSqlFromItem(Join type, ISqlFromItem left,
+	ISqlFromItem newFromItem(Join type, ISqlFromItem left,
 			ISqlFromItem right, ISqlExp cond);
 
 	/**
@@ -290,7 +290,7 @@ public interface ISqlFactory {
 	 * @throws IllegalArgumentException
 	 *             if {@code tableName} is not the correct format
 	 */
-	ISqlFromItem newSqlFromItem(String tableName);
+	ISqlFromItem newFromItem(String tableName);
 
 	/**
 	 * Create a new {@code ISqlInsert} object.
@@ -361,7 +361,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return a new <code>ISqlSelect</code>.
 	 */
-	ISqlSelect newSqlSelect();
+	ISqlSelect newSelect();
 
 	/**
 	 * @param selectItem
@@ -372,7 +372,7 @@ public interface ISqlFactory {
 	 * @return a new <code>ISqlSelect</code> with the given <code>SELECT</code>
 	 *         and {@code FROM} clauses.
 	 */
-	ISqlSelect newSqlSelect(ISqlSelectItem selectItem, ISqlFromItem fromItem);
+	ISqlSelect newSelect(ISqlSelectItem selectItem, ISqlFromItem fromItem);
 
 	/**
 	 * Construct a new {@code ISqlSelect} with the given {@code SELECT}, {@code
@@ -387,10 +387,10 @@ public interface ISqlFactory {
 	 * @return a new {@code ISqlSelect} with the given {@code SELECT}, {@code
 	 *         FROM}, and {@code WHERE} clauses
 	 */
-	ISqlSelect newSqlSelect(ISqlSelectItem selectItem, ISqlFromItem fromItem,
+	ISqlSelect newSelect(ISqlSelectItem selectItem, ISqlFromItem fromItem,
 			ISqlExpression whereItem);
 
-	ISqlSelectItem newSqlSelectItem();
+	ISqlSelectItem newSelectItem();
 
 	/**
 	 * Create a new {@code SELECT} item, given its name (for column names and

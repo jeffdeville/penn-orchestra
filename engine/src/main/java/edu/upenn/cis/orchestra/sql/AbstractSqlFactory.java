@@ -26,7 +26,7 @@ public abstract class AbstractSqlFactory implements ISqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlAlter newSqlAlter(final String table) {
+	public ISqlAlter newAlter(final String table) {
 		return new SqlAlter(table);
 	}
 
@@ -61,7 +61,7 @@ public abstract class AbstractSqlFactory implements ISqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlColumnDef newSqlColumnDef(final String name, final String type) {
+	public ISqlColumnDef newColumnDef(final String name, final String type) {
 		return new SqlColumnDef(name, type);
 	}
 
