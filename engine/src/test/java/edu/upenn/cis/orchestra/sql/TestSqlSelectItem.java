@@ -15,13 +15,15 @@
  */
 package edu.upenn.cis.orchestra.sql;
 
+import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static org.testng.Assert.assertEquals;
 
 import org.eclipse.datatools.modelbase.sql.query.helper.StatementHelper;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
+
+import edu.upenn.cis.orchestra.sql.ISqlExpression.Code;
 
 /**
  * @author Sam Donnelly
@@ -67,6 +69,16 @@ public class TestSqlSelectItem {
 				.newSqlSelectItem("COLUMN_NAME");
 		ISqlExp exp = columnSelectItem.getExpression();
 		assertEquals(exp.toString(), "COLUMN_NAME");
+	}
+
+	@Test
+	public void testSetExpression() {
+		ISqlSelectItem columnSelectItem = _sqlFactory.newSqlSelectItem();
+		ISqlExpression count = (ISqlExpression) columnSelectItem
+				.setExpression(_sqlFactory.newSqlExpression(Code.COUNT));
+		// No operands means *
+		assertEquals(SqlUtil.normalizeStatement(columnSelectItem.toString()),
+				SqlUtil.normalizeStatement("COUNT(*)"));
 	}
 
 	/**

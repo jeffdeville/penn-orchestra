@@ -72,6 +72,7 @@ public interface ISqlConstant extends ISqlExp {
 		}
 	}
 
+	
 	/**
 	 * Get this constant's value.
 	 * 

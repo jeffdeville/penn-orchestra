@@ -80,6 +80,11 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 		return new DtpSqlSelect(selectItem, fromItem, withItem);
 	}
 
+	@Override
+	public ISqlSelectItem newSqlSelectItem() {
+		return new DtpSqlSelectItem();
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public ISqlSelectItem newSqlSelectItem(final String fullName) {
@@ -90,6 +95,12 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 	@Override
 	public ISqlExpression newSqlExpression(final ISqlExpression.Code code) {
 		switch (code) {
+		case AVG:
+		case COUNT:
+		case MAX:
+		case MIN:
+		case SUM:
+			return new ValueExpressionFunctionExpression(code);
 		case EXCEPT:
 			return new QueryCombinedExpression();
 		case EXISTS:
@@ -206,9 +217,9 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 	/** {@inheritDoc} */
 	@Override
 	public ISqlExpression newFalseExpression() {
-		return newSqlExpression(ISqlExpression.Code.EQ, 
-				newSqlConstant("1", ISqlConstant.Type.NUMBER), 
-				newSqlConstant("2", ISqlConstant.Type.NUMBER));
+		return newSqlExpression(ISqlExpression.Code.EQ, newSqlConstant("1",
+				ISqlConstant.Type.NUMBER), newSqlConstant("2",
+				ISqlConstant.Type.NUMBER));
 	}
 
 	/** {@inheritDoc} */
@@ -225,6 +236,18 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 			OrderType orderType, NullOrderType nullOrderType) {
 		@SuppressWarnings("unchecked")
 		AbstractSQLQueryObject<QueryValueExpression> expression = (AbstractSQLQueryObject<QueryValueExpression>) orderByName;
-		return new DtpSqlOrderByItem(expression.getSQLQueryObject(), orderType, nullOrderType);
+		return new DtpSqlOrderByItem(expression.getSQLQueryObject(), orderType,
+				nullOrderType);
+	}
+
+	@Override
+	public ISqlExpression newSqlExpression(String functionName,
+			ISqlExp... operands) {
+		final ISqlExpression sqlExpression = new ValueExpressionFunctionExpression(
+				functionName);
+		for (ISqlExp operand : operands) {
+			sqlExpression.addOperand(operand);
+		}
+		return sqlExpression;
 	}
 }

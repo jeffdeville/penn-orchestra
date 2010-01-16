@@ -64,7 +64,7 @@ class ValueExpressionCombinedExpression extends
 							null);
 			break;
 		default:
-			throw new IllegalArgumentException(code + " not supported.");
+			throw new IllegalArgumentException(code + " not supported");
 		}
 	}
 
@@ -73,7 +73,9 @@ class ValueExpressionCombinedExpression extends
 	public ISqlExpression addOperand(final ISqlExp o) {
 
 		// We downcast only as far as necessary and there may not even be any
-		// "implements ISQLQueryObject<QueryValueExpression>" classes defined.
+		// "implements ISQLQueryObject<QueryValueExpression>" classes defined. So
+		// for example grepping "implements ISQLQueryObject<QueryValueExpression> may come
+		// w/ no results.
 		@SuppressWarnings("unchecked")
 		ISQLQueryObject<QueryValueExpression> dtpSQLQueryObject = (ISQLQueryObject<QueryValueExpression>) o;
 

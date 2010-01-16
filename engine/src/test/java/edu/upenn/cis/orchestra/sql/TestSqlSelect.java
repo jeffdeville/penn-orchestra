@@ -38,7 +38,6 @@ public class TestSqlSelect {
 	private ISqlFactory _sqlFactory = SqlFactories.getSqlFactory();
 	private ISqlParser _parser = SqlFactories.getSqlFactory().newSqlParser();
 
-	@Test
 	public void testAddSelectFromWhereClause() {
 		ISqlSelect select = _sqlFactory.newSqlSelect();
 		select.addSelectClause(newArrayList(_sqlFactory
@@ -120,5 +119,24 @@ public class TestSqlSelect {
 				OrderType.DESC, NullOrderType.NULLS_FIRST)));
 		final String actual = SqlUtil.normalizeStatement(select.toString());
 		assertEquals(actual, expected);
+	}
+
+	/**
+	 * Test select with a LEAST in the the select clause.
+	 */
+	public void selectLeast() {
+		final String expected = SqlUtil
+				.normalizeStatement("select least (33, 23, 10, 7) as least_value from dual");
+		final ISqlSelect select = _sqlFactory.newSqlSelect();
+		final ISqlSelectItem selectItem = _sqlFactory.newSqlSelectItem();
+		selectItem.setExpression(_sqlFactory.newSqlExpression("least",
+				_sqlFactory.newSqlConstant("33", Type.NUMBER), _sqlFactory
+						.newSqlConstant("23", Type.NUMBER), _sqlFactory
+						.newSqlConstant("10", Type.NUMBER), _sqlFactory
+						.newSqlConstant("7", Type.NUMBER)));
+		selectItem.setAlias("least_value");
+		select.addSelectClause(newArrayList(selectItem));
+		select.addFromClause(newArrayList(_sqlFactory.newSqlFromItem("dual")));
+		assertEquals(SqlUtil.normalizeStatement(select.toString()), expected);
 	}
 }

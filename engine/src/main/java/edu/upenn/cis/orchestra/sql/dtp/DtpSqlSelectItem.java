@@ -18,6 +18,7 @@ package edu.upenn.cis.orchestra.sql.dtp;
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
 import org.eclipse.datatools.modelbase.sql.query.QueryResultSpecification;
+import org.eclipse.datatools.modelbase.sql.query.QueryValueExpression;
 import org.eclipse.datatools.modelbase.sql.query.ResultColumn;
 import org.eclipse.datatools.modelbase.sql.query.ResultTableAllColumns;
 import org.eclipse.datatools.modelbase.sql.query.ValueExpressionColumn;
@@ -39,13 +40,13 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 		implements ISqlSelectItem {
 
 	/** Wrapped DTP object. */
-	private final QueryResultSpecification _queryResultSpecification;
+	private QueryResultSpecification _queryResultSpecification;
 
 	/**
 	 * Create a new {@code SELECT} item from a {@code QueryResultSpecification}.
 	 * 
-	 * @param queryResultSpecification from which we build the new {@code
-	 *            DtpSqlSelectItem}.
+	 * @param queryResultSpecification
+	 *            from which we build the new {@code DtpSqlSelectItem}.
 	 */
 	DtpSqlSelectItem(QueryResultSpecification queryResultSpecification) {
 		_queryResultSpecification = queryResultSpecification;
@@ -57,17 +58,18 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 	 * column} position.
 	 * <p>
 	 * For backwards compatibility with the ZQL {@code SqlSelectItem}, we allow
-	 * also {@code skolemstr(...)} udf's and {@code cast} expressions to be passed
-	 * in through {@code fullname}. These expression should be built up using
-	 * {@code edu.upenn.cis.orchestra.sql} classes, but that is not supported
-	 * yet.
+	 * also {@code skolemstr(...)} udf's and {@code cast} expressions to be
+	 * passed in through {@code fullname}. These expression should be built up
+	 * using {@code edu.upenn.cis.orchestra.sql} classes, but that is not
+	 * supported yet.
 	 * <p>
 	 * For expediency, we allow {@code count} functions here.
 	 * 
-	 * @param fullname a string that represents a column name or wildcard
-	 *            (example: <code>SCHEMA.TABLE.*</code> or <code>TABLE.*</code>
-	 *            or <code>*</code>), a {@code skolemstr(...)} udf, {@code
-	 *            cast} expression, a {@code count}
+	 * @param fullname
+	 *            a string that represents a column name or wildcard (example:
+	 *            <code>SCHEMA.TABLE.*</code> or <code>TABLE.*</code> or
+	 *            <code>*</code>), a {@code skolemstr(...)} udf, {@code cast}
+	 *            expression, a {@code count}
 	 */
 	DtpSqlSelectItem(final String fullname) {
 		final String fullnameTrimmed = fullname.trim();
@@ -110,6 +112,8 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 
 		}
 	}
+
+	public DtpSqlSelectItem() {	}
 
 	/**
 	 * Return {@code true} if this is a wildcard ({@code "[table.]*"}), {@code
@@ -203,6 +207,21 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 	@Override
 	public QueryResultSpecification getSQLQueryObject() {
 		return _queryResultSpecification;
+	}
+
+	@Override
+	public ISqlExp setExpression(final ISqlExp expression) {
+		// We downcast only as far as necessary and there may not even be any
+		// "implements ISQLQueryObject<QueryValueExpression>" classes defined.
+		// So
+		// for example grepping "implements
+		// ISQLQueryObject<QueryValueExpression> may come
+		// w/ no results.
+		@SuppressWarnings("unchecked")
+		final ISQLQueryObject<QueryValueExpression> dtpSQLQueryObject = (ISQLQueryObject<QueryValueExpression>) expression;
+		_queryResultSpecification = getSQLQueryParserFactory()
+				.createResultColumn(dtpSQLQueryObject.getSQLQueryObject(), null);
+		return expression;
 	}
 }
 

@@ -27,7 +27,6 @@ import edu.upenn.cis.orchestra.sql.ISqlOrderByItem;
  * A DTP backed {@code ISqlOrderByItem}.
  * 
  * @author John Frommeyer
- * 
  */
 class DtpSqlOrderByItem extends AbstractSQLQueryObject<OrderBySpecification>
 		implements ISqlOrderByItem {

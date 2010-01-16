@@ -39,7 +39,8 @@ import edu.upenn.cis.orchestra.sql.ISqlExpression;
  * Intentionally package-private.
  * 
  * @author Sam Donnelly
- * @param <T> {@inheritDoc}
+ * @param <T>
+ *            {@inheritDoc}
  */
 abstract class AbstractDtpSqlExpression<T extends SQLQueryObject> extends
 		AbstractSqlExpression implements ISQLQueryObject<T> {
@@ -47,7 +48,13 @@ abstract class AbstractDtpSqlExpression<T extends SQLQueryObject> extends
 	/**
 	 * The code of the operator that this object represents.
 	 */
-	private final Code _code;
+	private Code _code;
+
+	protected AbstractDtpSqlExpression<T> setCode(
+			final Code code) {
+		_code = code;
+		return this;
+	}
 
 	/** Keep track of the number of operands we've added. */
 	private int _operandCount = 0;
@@ -55,10 +62,15 @@ abstract class AbstractDtpSqlExpression<T extends SQLQueryObject> extends
 	/** SQL string of this objects <code>operator</code>. */
 	private String _op;
 
+	public AbstractDtpSqlExpression() {
+
+	}
+
 	/**
 	 * Create an SQL Expression given the operator.
 	 * 
-	 * @param code the type of <code>ISqlExpression</code>.
+	 * @param code
+	 *            the type of <code>ISqlExpression</code>.
 	 */
 	AbstractDtpSqlExpression(final Code code) {
 		_code = code;
@@ -125,7 +137,8 @@ abstract class AbstractDtpSqlExpression<T extends SQLQueryObject> extends
 	 * <p>
 	 * Intentionally package-private.
 	 * 
-	 * @param querySearchCondition see description
+	 * @param querySearchCondition
+	 *            see description
 	 * @return see description
 	 */
 	static ISqlExpression newSqlExpression(
