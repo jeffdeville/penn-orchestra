@@ -1,5 +1,3 @@
-= UNDER CONSTRUCTION =
-
 = Setting Up Your Development Environment in Eclipse=
 
 Here's the way that we set up our development environment:
