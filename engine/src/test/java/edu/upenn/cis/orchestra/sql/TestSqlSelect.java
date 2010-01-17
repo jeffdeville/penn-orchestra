@@ -50,9 +50,9 @@ public class TestSqlSelect {
 				_sqlFactory.newConstant("1", ISqlConstant.Type.NUMBER)));
 		Assert
 				.assertEquals(
-						SqlUtil.normalizeStatement(select.toString()),
+						SqlUtil.normalizeSqlStatement(select.toString()),
 						SqlUtil
-								.normalizeStatement("select cast(null as varchar(255)) from some_table where(1 = 1)"));
+								.normalizeSqlStatement("select cast(null as varchar(255)) from some_table where(1 = 1)"));
 
 	}
 
@@ -107,7 +107,7 @@ public class TestSqlSelect {
 	 */
 	public void orderByTest() {
 		final String expected = SqlUtil
-				.normalizeStatement("select * from some_table order by some_col, some_other_col desc nulls first");
+				.normalizeSqlStatement("select * from some_table order by some_col, some_other_col desc nulls first");
 
 		ISqlSelect select = _sqlFactory.newSelect();
 		select.addSelectClause(newArrayList(_sqlFactory.newSelectItem("*")));
@@ -119,7 +119,7 @@ public class TestSqlSelect {
 						Type.COLUMNNAME)), _sqlFactory.newOrderByItem(
 				_sqlFactory.newConstant("SOME_OTHER_COL", Type.COLUMNNAME),
 				OrderType.DESC, NullOrderType.NULLS_FIRST)));
-		final String actual = SqlUtil.normalizeStatement(select.toString());
+		final String actual = SqlUtil.normalizeSqlStatement(select.toString());
 		assertEquals(actual, expected);
 	}
 
@@ -128,7 +128,7 @@ public class TestSqlSelect {
 	 */
 	public void selectLeast() {
 		final String expected = SqlUtil
-				.normalizeStatement("select least (33, 23, 10, 7) as least_value from dual");
+				.normalizeSqlStatement("select least (33, 23, 10, 7) as least_value from dual");
 		final ISqlSelect select = _sqlFactory.newSelect();
 		final ISqlSelectItem selectItem = _sqlFactory.newSelectItem();
 		selectItem.setExpression(
@@ -140,6 +140,6 @@ public class TestSqlSelect {
 		selectItem.setAlias("least_value");
 		select.addSelectClause(newArrayList(selectItem));
 		select.addFromClause(newArrayList(_sqlFactory.newFromItem("dual")));
-		assertEquals(SqlUtil.normalizeStatement(select.toString()), expected);
+		assertEquals(SqlUtil.normalizeSqlStatement(select.toString()), expected);
 	}
 }

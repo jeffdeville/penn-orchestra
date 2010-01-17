@@ -28,31 +28,37 @@ public interface ISqlUtil {
 	 * purpose of this method is to facilitate comparison of SQL statements
 	 * normalized through the same implementation.
 	 * 
-	 * @param sqlStatement to be normalized.
+	 * @param sqlStatement
+	 *            to be normalized.
 	 * 
 	 * @return normalized {@code sqlStatement}
 	 */
 	String normalizeSqlStatement(String sqlStatement);
 
 	/**
-	 * Strips out extraneous white space from the input and eliminates comments.
+	 * Strips out extraneous white space from the input, eliminates comments,
+	 * and upcases non-{@code "'"} delimited text.
+	 * <p>
+	 * Implementations of this method should not require the input to be a
+	 * complete SQL statement.
 	 * 
-	 * Implementations of this method should not require the input to be a complete SQL statement.
-	 * 
-	 * @param sqlFragment input SQL fragment
+	 * @param sqlFragment
+	 *            input SQL fragment
 	 * 
 	 * @return {@code sqlFragment} with no extra white space and no comments
 	 */
-	String stripWhiteSpaceAndComments(String sqlFragment);
-	
+	String normalizeSqlFragment(String sqlFragment);
+
 	/**
-	 * Upcases the characters in the given string except the parts that are 
+	 * Upcases the characters in the given string except the parts that are
 	 * delimited by {@code delimiter}.
 	 * 
-	 * @param s input
-	 * @param delimiter the delimiter
-	 * @return {@code s} all upcased, except the delimited parts which
-	 *         remains untouched
+	 * @param s
+	 *            input
+	 * @param delimiter
+	 *            the delimiter
+	 * @return {@code s} all upcased, except the delimited parts which remains
+	 *         untouched
 	 */
 	String upcaseNonDelimitedText(final String s, final char delimiter);
 

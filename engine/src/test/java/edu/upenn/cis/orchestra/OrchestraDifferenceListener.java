@@ -99,8 +99,8 @@ public class OrchestraDifferenceListener implements DifferenceListener {
 					result = compareArgLists(controlArgList, testArgList);
 				}
 			} else if ("statement".equals(testParentName) && "statement".equals(controlParentName)){
-				String controlValue = SqlUtil.normalizeStatement(controlDetail.getValue());
-				String testValue = SqlUtil.normalizeStatement(testDetail.getValue());
+				String controlValue = SqlUtil.normalizeSqlStatement(controlDetail.getValue());
+				String testValue = SqlUtil.normalizeSqlStatement(testDetail.getValue());
 				if (controlValue.equalsIgnoreCase(testValue)){
 					result = DifferenceListener.RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL;
 				}

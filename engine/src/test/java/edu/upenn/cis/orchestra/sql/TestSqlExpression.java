@@ -46,9 +46,9 @@ public class TestSqlExpression {
 						ISqlConstant.Type.NUMBER));
 		ISqlExpression notExpression = sqlFactory.newExpression(
 				ISqlExpression.Code.NOT, whereExpression);
-		Assert.assertEquals(SqlUtil.stripWhiteSpaceAndComments(notExpression
+		Assert.assertEquals(SqlUtil.normalizeSqlFragment(notExpression
 				.toString()), SqlUtil
-				.stripWhiteSpaceAndComments("(NOT (44 = 45))"));
+				.normalizeSqlFragment("(NOT (44 = 45))"));
 	}
 
 	/**
