@@ -74,38 +74,38 @@ class SqlMove implements ISqlMove {
 		if (_soft) {
 			// DELETE FROM _destTable
 			final ISqlDelete deleteDestTable = _sqlFactory
-					.newSqlDelete(_destTable);
+					.newDelete(_destTable);
 
 			// INSERT INTO _destTable SELECT * FROM _sourceTable
 			final ISqlInsert insertIntoOldTable = _sqlFactory
-					.newSqlInsert(_destTable);
+					.newInsert(_destTable);
 			insertIntoOldTable.addValueSpec(_sqlFactory.newSelect(
-					_sqlFactory.newSqlSelectItem("*"), _sqlFactory
+					_sqlFactory.newSelectItem("*"), _sqlFactory
 							.newFromItem(_sourceTable.toString())));
 
 			// DELETE FROM _sourceTable
 			final ISqlDelete deleteSourceTable = _sqlFactory
-					.newSqlDelete(_sourceTable);
+					.newDelete(_sourceTable);
 
 			ret.add(deleteDestTable.toString());
 			ret.add(insertIntoOldTable.toString());
 			ret.add(deleteSourceTable.toString());
 		} else {
 			// DROP OLD_TABLE
-			final ISqlDrop dr = _sqlFactory.newSqlDrop(_destTable.toString());
+			final ISqlDrop dr = _sqlFactory.newDrop(_destTable.toString());
 
 			// RENAME TABLE NEW_TABLE TO OLD_TABLE
-			final ISqlRename renameSrcToDest = _sqlFactory.newSqlRename(
+			final ISqlRename renameSrcToDest = _sqlFactory.newRename(
 					_sourceTable, _destTable);
 
 			// CREATE source_table
-			final ISqlSelectItem star = _sqlFactory.newSqlSelectItem("*");
+			final ISqlSelectItem star = _sqlFactory.newSelectItem("*");
 			final ISqlFromItem fr = _sqlFactory.newFromItem(_destTable
 					.toString());
 			final ISqlExpression w = AbstractSqlExpression.falseExp();
 			final ISqlSelect cq = _sqlFactory.newSelect(star, fr, w);
 			final ISqlCreateTable createSrcTable = _sqlFactory
-					.newSqlCreateTable(_sourceTable.toString(), cq);
+					.newCreateTable(_sourceTable.toString(), cq);
 
 			ret.add(dr.toString());
 			ret.add(renameSrcToDest.toString());

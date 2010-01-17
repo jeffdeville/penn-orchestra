@@ -49,7 +49,7 @@ public class TestSqlCreateTable {
 				.toString()), SqlUtil
 				.stripWhiteSpaceAndComments(expectedCreateTable));
 
-		ISqlCreateStatement create2 = sqlFactory.newSqlCreateTable(
+		ISqlCreateStatement create2 = sqlFactory.newCreateTable(
 				"schemaName.testTableName", "temporary", columns, "not logged initially");
 
 		String expectedCreateSchemaTable = "create temporary table schemaName.testTableName (column1 INTEGER, column2 VARCHAR(10)) not logged initially";
@@ -63,7 +63,7 @@ public class TestSqlCreateTable {
 		select.addFromClause(newArrayList(sqlFactory
 				.newFromItem("SOURCE_TABLE")));
 
-		ISqlCreateTable createTable = sqlFactory.newSqlCreateTable("NEW_TABLE",
+		ISqlCreateTable createTable = sqlFactory.newCreateTable("NEW_TABLE",
 				select);
 
 		Assert

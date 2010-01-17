@@ -117,7 +117,7 @@ public class ApplierSql implements IApplier<Connection> {
 			ISqlSelect selectTemplate, ISqlExpression valuesTemplate) {
 
 		selectTemplate.addSelectClause(Collections.singletonList(sqlFactory
-				.newSqlSelectItem("COUNT(*)")));
+				.newSelectItem("COUNT(*)")));
 		int ncol = relation.getNumCols();
 		ISqlExpression whereClause = sqlFactory.newExpression(Code.AND);
 		for (int i = 0; i < ncol; i++) {

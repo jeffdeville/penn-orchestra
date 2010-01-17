@@ -32,7 +32,7 @@ public abstract class AbstractSqlFactory implements ISqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlCreateTable newSqlCreateTable(final String table,
+	public ISqlCreateTable newCreateTable(final String table,
 			final String type, final List<? extends ISqlColumnDef> columnDefs,
 			final String noLogging) {
 		return new SqlCreateTable(table, type, columnDefs, noLogging);
@@ -47,14 +47,14 @@ public abstract class AbstractSqlFactory implements ISqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlCreateTable newSqlCreateTable(final String table,
+	public ISqlCreateTable newCreateTable(final String table,
 			final ISqlSelect asSelect) {
 		return new SqlCreateTable(table, asSelect);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlCreateTempTable newSqlCreateTempTable(String name, String type,
+	public ISqlCreateTempTable newCreateTempTable(String name, String type,
 			List<? extends ISqlColumnDef> cols) {
 		return new SqlCreateTempTable(name, type, cols);
 	}
@@ -67,40 +67,40 @@ public abstract class AbstractSqlFactory implements ISqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlColumnDef newSqlColumnDef(final String name, final String type,
+	public ISqlColumnDef newColumnDef(final String name, final String type,
 			final String defaultValue) {
 		return new SqlColumnDef(name, type, defaultValue);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlDrop newSqlDrop(final String table) {
+	public ISqlDrop newDrop(final String table) {
 		return new SqlDrop(table);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlDropSchema newSqlDropSchema(final String schema) {
+	public ISqlDropSchema newDropSchema(final String schema) {
 		return new SqlDropSchema(schema);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlCreateIndex newSqlCreateIndex(final String indName,
+	public ISqlCreateIndex newCreateIndex(final String indName,
 			final String tabName, final List<? extends ISqlColumnDef> columns) {
 		return new SqlCreateIndex(indName, tabName, columns);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlMove newSqlMove(final String dest, final String source,
+	public ISqlMove newMove(final String dest, final String source,
 			final boolean soft) {
 		return new SqlMove(dest, source, soft);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlRename newSqlRename(final ITable source, final ITable destination) {
+	public ISqlRename newRename(final ITable source, final ITable destination) {
 		return new SqlRename(source, destination);
 	}
 

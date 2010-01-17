@@ -78,7 +78,7 @@ public interface ISqlFactory {
 	 *            the default value of the column.
 	 * @return the new {@code ISqlColumnDef}.
 	 */
-	ISqlColumnDef newSqlColumnDef(String name, String type, String defaultValue);
+	ISqlColumnDef newColumnDef(String name, String type, String defaultValue);
 
 	/**
 	 * Create a new constant, given its value and type.
@@ -106,7 +106,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return the new {@code CREATE INDEX} statement
 	 */
-	ISqlCreateIndex newSqlCreateIndex(String indexName, String tableName,
+	ISqlCreateIndex newCreateIndex(String indexName, String tableName,
 			List<? extends ISqlColumnDef> columns);
 
 	/**
@@ -121,7 +121,7 @@ public interface ISqlFactory {
 	 *            new {@code ISqlCreate}.
 	 * @return the new {@code ISqlCreate}.
 	 */
-	ISqlCreateTable newSqlCreateTable(String name, ISqlSelect asQuery);
+	ISqlCreateTable newCreateTable(String name, ISqlSelect asQuery);
 
 	/**
 	 * Construct an{@code ISqlCreateTable}: {@code
@@ -138,7 +138,7 @@ public interface ISqlFactory {
 	 *            no logging string, for example {@code "NOT LOGGED INITIALLY"}.
 	 * @return the new {@code ISqlCreate}.
 	 */
-	ISqlCreateTable newSqlCreateTable(String name, String type,
+	ISqlCreateTable newCreateTable(String name, String type,
 			List<? extends ISqlColumnDef> columns, String noLogMsg);
 
 	/**
@@ -164,7 +164,7 @@ public interface ISqlFactory {
 	 *            the table to be deleted.
 	 * @return the new {@code DELETE} statement
 	 */
-	ISqlDelete newSqlDelete(ITable table);
+	ISqlDelete newDelete(ITable table);
 
 	/**
 	 * Construct an {@code SqlDelete} from the target table.
@@ -192,7 +192,7 @@ public interface ISqlFactory {
 	 * @return an {@code SqlDelete} who's {@code FROM} part has a table and an
 	 *         alias.
 	 */
-	ISqlDelete newSqlDelete(String tableName, String alias);
+	ISqlDelete newDelete(String tableName, String alias);
 
 	/**
 	 * Create a new {@code DROP} statement.
@@ -201,7 +201,7 @@ public interface ISqlFactory {
 	 *            the name of the table we're dropping.
 	 * @return the new {@code DROP} statement.
 	 */
-	ISqlDrop newSqlDrop(String table);
+	ISqlDrop newDrop(String table);
 
 	/**
 	 * Create a new {@code DROP SCHEMA} statement.
@@ -210,7 +210,7 @@ public interface ISqlFactory {
 	 *            the name of the schema we're dropping.
 	 * @return the new {@code DROP SCHEMA} statement.
 	 */
-	ISqlDropSchema newSqlDropSchema(String schema);
+	ISqlDropSchema newDropSchema(String schema);
 
 	/**
 	 * Create an SQL Expression given the operator.
@@ -300,7 +300,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return a new <code>ISqlInsert</code> object
 	 */
-	ISqlInsert newSqlInsert(ITable table);
+	ISqlInsert newInsert(ITable table);
 
 	/**
 	 * Create a new <code>ISqlInsert</code> object.
@@ -336,14 +336,14 @@ public interface ISqlFactory {
 	 *            </ol>
 	 * @return the new {@code ISqlMove}
 	 */
-	ISqlMove newSqlMove(String dest, String source, boolean soft);
+	ISqlMove newMove(String dest, String source, boolean soft);
 
 	/**
 	 * Get a new {@code ISqlParser}.
 	 * 
 	 * @return the new parser.
 	 */
-	ISqlParser newSqlParser();
+	ISqlParser newParser();
 
 	/**
 	 * Create a {@code RENAME TABLE source TO dest} statement.
@@ -354,7 +354,7 @@ public interface ISqlFactory {
 	 *            see description
 	 * @return a {@code RENAME TABLE source TO dest} statement.
 	 */
-	ISqlRename newSqlRename(ITable source, ITable dest);
+	ISqlRename newRename(ITable source, ITable dest);
 
 	/**
 	 * Create a new <code>ISqlSelect</code>.
@@ -404,7 +404,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return the newly created {@code ISqlSelectItem}.
 	 */
-	ISqlSelectItem newSqlSelectItem(String fullName);
+	ISqlSelectItem newSelectItem(String fullName);
 
 	/**
 	 * Create a table with an optionally schema-qualified table name.
@@ -449,7 +449,7 @@ public interface ISqlFactory {
 	 *            the columns of the table we're creating.
 	 * @return the new {@code ISqlCreateTempTable}
 	 */
-	ISqlCreateTempTable newSqlCreateTempTable(String name, String type,
+	ISqlCreateTempTable newCreateTempTable(String name, String type,
 			List<? extends ISqlColumnDef> cols);
 
 	/**
@@ -467,7 +467,7 @@ public interface ISqlFactory {
 	 *            the name of the item to order by
 	 * @return the new {@code ISqlOrderByItem}
 	 */
-	ISqlOrderByItem newSqlOrderByItem(ISqlConstant orderByName);
+	ISqlOrderByItem newOrderByItem(ISqlConstant orderByName);
 
 	/**
 	 * Construct an {@code ISqlOrderByItem} for use in an {@code ORDER BY}
@@ -481,7 +481,7 @@ public interface ISqlFactory {
 	 *            indicates if nulls should be first or last
 	 * @return the new {@code ISqlOrderByItem}
 	 */
-	ISqlOrderByItem newSqlOrderByItem(ISqlConstant orderByName,
+	ISqlOrderByItem newOrderByItem(ISqlConstant orderByName,
 			ISqlOrderByItem.OrderType orderType,
 			ISqlOrderByItem.NullOrderType nullOrderType);
 

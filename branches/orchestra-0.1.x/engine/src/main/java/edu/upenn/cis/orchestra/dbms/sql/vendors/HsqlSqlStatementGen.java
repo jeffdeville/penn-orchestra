@@ -58,7 +58,7 @@ public class HsqlSqlStatementGen extends AbstractSqlStatementGen {
 	}
 	
 	public List<String> createTable(String tabName, List<? extends ISqlColumnDef> cols, boolean noLogging){
-		ISqlCreateTable cr = sqlFactory.newSqlCreateTable(tabName, "CACHED", cols, getLoggingMsg());
+		ISqlCreateTable cr = sqlFactory.newCreateTable(tabName, "CACHED", cols, getLoggingMsg());
 		
 		List<String> ret = new ArrayList<String>();
 		ret.add(cr.toString());

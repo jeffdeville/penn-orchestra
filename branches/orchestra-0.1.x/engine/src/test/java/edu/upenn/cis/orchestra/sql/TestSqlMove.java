@@ -34,7 +34,7 @@ public class TestSqlMove {
 	@Test()
 	public void testSqlMove() {
 		ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
-		ISqlMove sqlMove = sqlFactory.newSqlMove("DEST", "SOURCE", false);
+		ISqlMove sqlMove = sqlFactory.newMove("DEST", "SOURCE", false);
 		List<String> actualMoveStatements = sqlMove.toStringList();
 		List<String> expectedMoveStatements = newArrayList("DROP TABLE DEST",
 				"rename table SOURCE to DEST",
