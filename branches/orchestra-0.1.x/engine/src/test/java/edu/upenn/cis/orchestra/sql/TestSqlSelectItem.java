@@ -74,11 +74,10 @@ public class TestSqlSelectItem {
 	@Test
 	public void testSetExpression() {
 		ISqlSelectItem columnSelectItem = _sqlFactory.newSelectItem();
-		ISqlExpression count = (ISqlExpression) columnSelectItem
-				.setExpression(_sqlFactory.newExpression(Code.COUNT));
+		columnSelectItem.setExpression(_sqlFactory.newExpression(Code.COUNT));
 		// No operands means *
-		assertEquals(SqlUtil.normalizeStatement(columnSelectItem.toString()),
-				SqlUtil.normalizeStatement("COUNT(*)"));
+		assertEquals(SqlUtil.normalizeSqlFragment(columnSelectItem.toString()),
+				SqlUtil.normalizeSqlFragment("count(*)"));
 	}
 
 	/**

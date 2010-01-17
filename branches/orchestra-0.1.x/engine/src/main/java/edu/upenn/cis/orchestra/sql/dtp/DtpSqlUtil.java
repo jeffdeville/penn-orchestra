@@ -35,7 +35,7 @@ public class DtpSqlUtil implements ISqlUtil {
 
 	/** {@inheritDoc} */
 	@Override
-	public String stripWhiteSpaceAndComments(String sqlFragment) {
+	public String normalizeSqlFragment(String sqlFragment) {
 		return StatementHelper.stripWhiteSpace(upcaseNonDelimitedText(
 				StatementHelper.removeCommentsInSQL(sqlFragment, '"'), '"'),
 				'"');
@@ -78,7 +78,7 @@ public class DtpSqlUtil implements ISqlUtil {
 				.getQueryStatement();
 		queryStatement.getSourceInfo().getSqlFormat().setQualifyIdentifiers(
 				SQLQuerySourceFormat.QUALIFY_IDENTIFIERS_WITH_SCHEMA_NAMES);
-		return stripWhiteSpaceAndComments(queryStatement.getSQL());
+		return normalizeSqlFragment(queryStatement.getSQL());
 	}
 
 }
