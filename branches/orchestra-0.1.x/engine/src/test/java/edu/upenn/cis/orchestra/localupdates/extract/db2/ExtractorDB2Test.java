@@ -203,12 +203,12 @@ public class ExtractorDB2Test {
 	 * @throws SQLException
 	 */
 	private void setupSourceTable() throws SQLException {
-		ISqlSelectItem selectItem = sqlFactory.newSqlSelectItem("*");
+		ISqlSelectItem selectItem = sqlFactory.newSelectItem("*");
 		ISqlFromItem selectFrom = sqlFactory.newFromItem(sourceTableFQN);
 		ISqlSelect select = sqlFactory.newSelect(selectItem, selectFrom)
 				.addOrderBy(
 						Collections.singletonList(sqlFactory
-								.newSqlOrderByItem(sqlFactory.newConstant(
+								.newOrderByItem(sqlFactory.newConstant(
 										"RID", Type.COLUMNNAME))));
 		Statement statement = testConnection.createStatement(
 				ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);

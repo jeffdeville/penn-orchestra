@@ -269,7 +269,7 @@ public class SchemaConverterStatementsGen {
 							stat = stat + rel.getField(i).getName() +
 							" " + rel.getField(i).getSQLTypeName();
 
-							cols.add(_sqlFactory.newSqlColumnDef(rel.getField(i).getName(), 
+							cols.add(_sqlFactory.newColumnDef(rel.getField(i).getName(), 
 									rel.getField(i).getSQLTypeName(), null));
 						}
 						for (int i = 0; i < rel.getFields().size(); i++) {
@@ -278,10 +278,10 @@ public class SchemaConverterStatementsGen {
 
 							if (tablename.endsWith("_L_INS") || tablename.endsWith("_R_INS") ||
 									tablename.endsWith("_L_DEL") || tablename.endsWith("_R_DEL"))
-								cols.add(_sqlFactory.newSqlColumnDef(rel.getField(i).getName() + RelationField.LABELED_NULL_EXT, 
+								cols.add(_sqlFactory.newColumnDef(rel.getField(i).getName() + RelationField.LABELED_NULL_EXT, 
 										"INTEGER", "1"));
 							else
-								cols.add(_sqlFactory.newSqlColumnDef(rel.getField(i).getName() + RelationField.LABELED_NULL_EXT,
+								cols.add(_sqlFactory.newColumnDef(rel.getField(i).getName() + RelationField.LABELED_NULL_EXT,
 										"INTEGER", null));
 						}
 						stat = stat + ") ";
@@ -503,9 +503,9 @@ public class SchemaConverterStatementsGen {
 						if(tablename.endsWith("_L_DEL") || tablename.endsWith("_R_DEL") || 
 								tablename.endsWith("_L_INS") || tablename.endsWith("_R_INS")){
 
-							cols.add(_sqlFactory.newSqlColumnDef("STRATUM", "INTEGER", "0"));
+							cols.add(_sqlFactory.newColumnDef("STRATUM", "INTEGER", "0"));
 						}else{
-							cols.add(_sqlFactory.newSqlColumnDef("STRATUM", "INTEGER", null));
+							cols.add(_sqlFactory.newColumnDef("STRATUM", "INTEGER", null));
 						}
 					}
 
@@ -515,7 +515,7 @@ public class SchemaConverterStatementsGen {
 					if (type != AtomType.NONE) {
 
 						for (int i = 0; i < rel.getFields().size(); i++) {
-							cols.add(_sqlFactory.newSqlColumnDef(rel.getField(i).getName(), 
+							cols.add(_sqlFactory.newColumnDef(rel.getField(i).getName(), 
 									rel.getField(i).getSQLTypeName(), null));
 						}
 						if(rel.hasLabeledNulls()){
@@ -524,10 +524,10 @@ public class SchemaConverterStatementsGen {
 								if (!Config.useCompactNulls() || rel.isNullable(i)) {
 									if (tablename.endsWith("_L_INS") || tablename.endsWith("_R_INS") ||
 											tablename.endsWith("_L_DEL") || tablename.endsWith("_R_DEL"))
-										cols.add(_sqlFactory.newSqlColumnDef(rel.getField(i).getName() + RelationField.LABELED_NULL_EXT, 
+										cols.add(_sqlFactory.newColumnDef(rel.getField(i).getName() + RelationField.LABELED_NULL_EXT, 
 												"INTEGER", "1"));
 									else
-										cols.add(_sqlFactory.newSqlColumnDef(rel.getField(i).getName() + RelationField.LABELED_NULL_EXT, 
+										cols.add(_sqlFactory.newColumnDef(rel.getField(i).getName() + RelationField.LABELED_NULL_EXT, 
 												"INTEGER", null));
 								}
 							}
@@ -551,7 +551,7 @@ public class SchemaConverterStatementsGen {
 					for (RelationField fld : rel.getFields()) {
 						boolean fldInKey = rel.getPrimaryKey().getFields().contains(fld);
 						if(fldInKey){
-							v.add(_sqlFactory.newSqlColumnDef(fld.getName(), "", null));
+							v.add(_sqlFactory.newColumnDef(fld.getName(), "", null));
 						}
 					}
 
@@ -559,7 +559,7 @@ public class SchemaConverterStatementsGen {
 					if (!INDEX_ALL_FIELDS) {
 
 						//						TEMPORARY HACK
-						v.add(_sqlFactory.newSqlColumnDef("KID", "", null));
+						v.add(_sqlFactory.newColumnDef("KID", "", null));
 
 
 					} else {
@@ -568,7 +568,7 @@ public class SchemaConverterStatementsGen {
 							for (RelationField fld : rel.getFields())
 							{
 								if (!Config.useCompactNulls() || rel.isNullable(inx))
-									v.add(_sqlFactory.newSqlColumnDef(fld.getName() + RelationField.LABELED_NULL_EXT, "", null));
+									v.add(_sqlFactory.newColumnDef(fld.getName() + RelationField.LABELED_NULL_EXT, "", null));
 								
 								inx++;
 							}
@@ -698,7 +698,7 @@ public class SchemaConverterStatementsGen {
 			//			if(!fldInKey){
 			if ((!Config.useCompactNulls() || rel.isNullable(inx)) &&
 					!labNulls.contains(fld.getName() + RelationField.LABELED_NULL_EXT))
-				cols.add(_sqlFactory.newSqlColumnDef(fld.getName() + RelationField.LABELED_NULL_EXT,
+				cols.add(_sqlFactory.newColumnDef(fld.getName() + RelationField.LABELED_NULL_EXT,
 						"INTEGER", "1"));
 			//			statements.add ("ALTER TABLE " + rel.getFullQualifiedDbId() 
 			//			+ " ADD " + fld.getName() + ModelConstants.LABEL_NULL_EXT 

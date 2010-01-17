@@ -42,7 +42,7 @@ public class GenericSqlStatementGen extends AbstractSqlStatementGen {
 	 * @see edu.upenn.cis.orchestra.dbms.sql.generation.ISqlStatementGen#createTable(java.lang.String, java.util.List, boolean)
 	 */
 	public List<String> createTable(String tabName, List<? extends ISqlColumnDef> cols, boolean noLogging){
-		ISqlCreateTable cr = sqlFactory.newSqlCreateTable(tabName, "", cols, "");
+		ISqlCreateTable cr = sqlFactory.newCreateTable(tabName, "", cols, "");
 		
 		List<String> ret = new ArrayList<String>();
 		ret.add(cr.toString());

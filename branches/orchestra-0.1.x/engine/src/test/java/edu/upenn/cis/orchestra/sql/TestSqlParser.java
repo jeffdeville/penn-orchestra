@@ -26,7 +26,7 @@ public class TestSqlParser {
 	@Test()
 	public void test() throws ParseException {
 		ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
-		ISqlParser sqlParser = sqlFactory.newSqlParser();
+		ISqlParser sqlParser = sqlFactory.newParser();
 		sqlParser.initParser(new StringReader("select * from TEST_TABLE"));
 		ISqlSelect select = (ISqlSelect) sqlParser.readStatement();
 		Assert.assertEquals(SqlUtil.normalizeStatement(select.toString()),

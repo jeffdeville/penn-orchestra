@@ -53,8 +53,8 @@ public class TestSqlSelectItem {
 	@BeforeMethod
 	void setup() {
 		_sqlFactory = SqlFactories.getSqlFactory();
-		_allColumns = _sqlFactory.newSqlSelectItem("*");
-		_castQAsInt = _sqlFactory.newSqlSelectItem(CAST_Q_AS_INTEGER);
+		_allColumns = _sqlFactory.newSelectItem("*");
+		_castQAsInt = _sqlFactory.newSelectItem(CAST_Q_AS_INTEGER);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class TestSqlSelectItem {
 		assertEquals(_allColumns.getExpression(), null);
 
 		ISqlSelectItem columnSelectItem = _sqlFactory
-				.newSqlSelectItem("COLUMN_NAME");
+				.newSelectItem("COLUMN_NAME");
 		ISqlExp exp = columnSelectItem.getExpression();
 		assertEquals(exp.toString(), "COLUMN_NAME");
 	}
@@ -87,11 +87,11 @@ public class TestSqlSelectItem {
 	 */
 	@Test
 	public void testGetTable() {
-		ISqlSelectItem selectItem = _sqlFactory.newSqlSelectItem("A.B");
+		ISqlSelectItem selectItem = _sqlFactory.newSelectItem("A.B");
 		assertEquals(selectItem.getTable(), "A");
 
 		final ISqlSelectItem allColumns = _sqlFactory
-				.newSqlSelectItem("TABLE_NAME.*");
+				.newSelectItem("TABLE_NAME.*");
 		final String table = allColumns.getTable();
 		assertEquals(table, "TABLE_NAME");
 		assertEquals(_castQAsInt.getTable(), null);
@@ -103,7 +103,7 @@ public class TestSqlSelectItem {
 	 */
 	@Test
 	public void testGetColumn() {
-		final ISqlSelectItem selectItem = _sqlFactory.newSqlSelectItem("A.B");
+		final ISqlSelectItem selectItem = _sqlFactory.newSelectItem("A.B");
 		assertEquals(selectItem.getColumn(), "B");
 		assertEquals(StatementHelper.compareSQL(_castQAsInt.getColumn(),
 				CAST_Q_AS_INTEGER), 0);
@@ -118,7 +118,7 @@ public class TestSqlSelectItem {
 	@Test
 	public void testGetAndSetAlias() {
 		final ISqlSelectItem selectItem = _sqlFactory
-				.newSqlSelectItem("TABLE_NAME.COLUMN_NAME");
+				.newSelectItem("TABLE_NAME.COLUMN_NAME");
 		assertEquals(selectItem.getAlias(), null);
 
 		selectItem.setAlias("TEST_NAME_ALIAS");
@@ -127,7 +127,7 @@ public class TestSqlSelectItem {
 		assertEquals(selectItem.getColumn(), "COLUMN_NAME");
 
 		final ISqlSelectItem castNullAsVarchar = _sqlFactory
-				.newSqlSelectItem("CAST (NULL AS VARCHAR (255))");
+				.newSelectItem("CAST (NULL AS VARCHAR (255))");
 		assertEquals(castNullAsVarchar.getAlias(), null);
 		assertEquals(castNullAsVarchar.setAlias("TEST_ALIAS").getAlias(),
 				"TEST_ALIAS");

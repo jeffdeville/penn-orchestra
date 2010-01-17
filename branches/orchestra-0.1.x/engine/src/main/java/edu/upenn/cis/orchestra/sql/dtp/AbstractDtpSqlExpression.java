@@ -50,9 +50,21 @@ abstract class AbstractDtpSqlExpression<T extends SQLQueryObject> extends
 	 */
 	private Code _code;
 
-	protected AbstractDtpSqlExpression<T> setCode(
-			final Code code) {
+	/**
+	 * Set the code and, unless {@code code} is {@code Code._NOT_SUPPORTED}, set
+	 * the operator to {@code code.toString()}. If {@code code} is {@code Code._NOT_SUPPORTED}, set 
+	 * the operator to {@code null}. 
+	 * 
+	 * @param code the code
+	 * @return this
+	 */
+	protected AbstractDtpSqlExpression<T> setCode(final Code code) {
 		_code = code;
+		if (Code._NOT_SUPPORTED.equals(code)) {
+			_op = null;
+		} else {
+			_op = _code.toString();
+		}
 		return this;
 	}
 

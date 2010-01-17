@@ -116,7 +116,7 @@ public class TestUtil {
 			int failedDrops = 0;
 			for (String tableName : tablesToDrop) {
 				try {
-					ISqlDrop drop = sqlFactory.newSqlDrop(tableName);
+					ISqlDrop drop = sqlFactory.newDrop(tableName);
 					jdbcConnection.createStatement().execute(drop.toString());
 					logger.debug("Dropped table: {}", tableName);
 				} catch (SQLException e) {
@@ -134,7 +134,7 @@ public class TestUtil {
 		for (String schemaName : schemasToDrop) {
 			try {
 				ISqlDropSchema dropSchema = sqlFactory
-						.newSqlDropSchema(schemaName);
+						.newDropSchema(schemaName);
 				jdbcConnection.createStatement().execute(dropSchema.toString());
 				logger.debug("Dropped schema: {}", schemaName);
 			} catch (SQLException e) {

@@ -15,9 +15,10 @@
  */
 package edu.upenn.cis.orchestra.sql;
 
+import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 
 /**
  * Test the class returned by {@code
@@ -33,7 +34,6 @@ public class TestSqlExpression {
 	 * ISqlFactory.newSqlExpression(ISqlExpression.Code.NOT, someSqlExpression)}
 	 * .
 	 */
-	@Test
 	public void negatedNewSqlExpression() {
 		ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
 
@@ -49,5 +49,17 @@ public class TestSqlExpression {
 		Assert.assertEquals(SqlUtil.stripWhiteSpaceAndComments(notExpression
 				.toString()), SqlUtil
 				.stripWhiteSpaceAndComments("(NOT (44 = 45))"));
+	}
+
+	/**
+	 * For a UDF, test {@link ISqlExpression#getOperator()}.
+	 */
+	public void getOperatorForUDF() {
+		ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
+
+		ISqlExpression skolemStrExpression = sqlFactory
+				.newExpression("SKOLEMSTR");
+		Assert.assertEquals(skolemStrExpression.getOperator(), "SKOLEMSTR");
+
 	}
 }
