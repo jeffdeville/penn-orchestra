@@ -45,18 +45,17 @@ public class TestSqlCreateTable {
 
 		String expectedCreateTable = "create table testTableName (column1 INTEGER, column2 VARCHAR(10))";
 
-		Assert.assertEquals(SqlUtil.stripWhiteSpaceAndComments(create
-				.toString()), SqlUtil
-				.stripWhiteSpaceAndComments(expectedCreateTable));
+		Assert.assertEquals(SqlUtil.normalizeSqlFragment(create.toString()),
+				SqlUtil.normalizeSqlFragment(expectedCreateTable));
 
 		ISqlCreateStatement create2 = sqlFactory.newCreateTable(
-				"schemaName.testTableName", "temporary", columns, "not logged initially");
+				"schemaName.testTableName", "temporary", columns,
+				"not logged initially");
 
 		String expectedCreateSchemaTable = "create temporary table schemaName.testTableName (column1 INTEGER, column2 VARCHAR(10)) not logged initially";
 
-		Assert.assertEquals(SqlUtil.stripWhiteSpaceAndComments(create2
-				.toString()), SqlUtil
-				.stripWhiteSpaceAndComments(expectedCreateSchemaTable));
+		Assert.assertEquals(SqlUtil.normalizeSqlFragment(create2.toString()),
+				SqlUtil.normalizeSqlFragment(expectedCreateSchemaTable));
 
 		ISqlSelect select = sqlFactory.newSelect();
 
@@ -68,10 +67,9 @@ public class TestSqlCreateTable {
 
 		Assert
 				.assertEquals(
-						SqlUtil.stripWhiteSpaceAndComments(createTable
-								.toString()),
+						SqlUtil.normalizeSqlFragment(createTable.toString()),
 						SqlUtil
-								.stripWhiteSpaceAndComments("create table NEW_TABLE as (select * from SOURCE_TABLE) DEFINITION ONLY;"));
+								.normalizeSqlFragment("create table NEW_TABLE as (select * from SOURCE_TABLE) DEFINITION ONLY;"));
 
 	}
 

@@ -29,8 +29,8 @@ public class TestSqlParser {
 		ISqlParser sqlParser = sqlFactory.newParser();
 		sqlParser.initParser(new StringReader("select * from TEST_TABLE"));
 		ISqlSelect select = (ISqlSelect) sqlParser.readStatement();
-		Assert.assertEquals(SqlUtil.normalizeStatement(select.toString()),
-				SqlUtil.normalizeStatement("select * from TEST_TABLE"));
+		Assert.assertEquals(SqlUtil.normalizeSqlStatement(select.toString()),
+				SqlUtil.normalizeSqlStatement("select * from TEST_TABLE"));
 		sqlParser
 				.initParser(new StringReader(
 						"insert into INTERPRO.ENTRY_DEL "
@@ -42,9 +42,9 @@ public class TestSqlParser {
 		ISqlInsert sqlInsert = (ISqlInsert) sqlParser.readStatement();
 		Assert
 				.assertEquals(
-						SqlUtil.normalizeStatement(sqlInsert.toString()),
+						SqlUtil.normalizeSqlStatement(sqlInsert.toString()),
 						SqlUtil
-								.normalizeStatement("insert into INTERPRO.ENTRY_DEL "
+								.normalizeSqlStatement("insert into INTERPRO.ENTRY_DEL "
 										+ "(select distinct CAST(? AS INTEGER) STRATUM "
 										+ "from INTERPRO.ENTRY_L_DEL R0 where (not (exists "
 										+ "(select 1 from INTERPRO.ENTRY_DEL R1 where "
@@ -60,9 +60,9 @@ public class TestSqlParser {
 		ISqlDelete sqlDelete = (ISqlDelete) sqlParser.readStatement();
 		Assert
 				.assertEquals(
-						SqlUtil.normalizeStatement(sqlDelete.toString()),
+						SqlUtil.normalizeSqlStatement(sqlDelete.toString()),
 						SqlUtil
-								.normalizeStatement("DELETE FROM suppliers WHERE EXISTS( "
+								.normalizeSqlStatement("DELETE FROM suppliers WHERE EXISTS( "
 										+ "select customers.name from customers "
 										+ "where customers.customer_id = suppliers.supplier_id  "
 										+ "and customers.customer_name = 'IBM')"));

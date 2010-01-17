@@ -41,21 +41,21 @@ public class TestSqlMove {
 				"CREATE TABLE SOURCE AS (SELECT * FROM DEST WHERE (1 = 2)) DEFINITION ONLY");
 
 		Assert.assertEquals(SqlUtil
-				.stripWhiteSpaceAndComments(actualMoveStatements.get(0)
+				.normalizeSqlFragment(actualMoveStatements.get(0)
 						.toString()), SqlUtil
-				.stripWhiteSpaceAndComments(expectedMoveStatements.get(0)
+				.normalizeSqlFragment(expectedMoveStatements.get(0)
 						.toString()));
 
 		Assert.assertEquals(SqlUtil
-				.stripWhiteSpaceAndComments(actualMoveStatements.get(1)
+				.normalizeSqlFragment(actualMoveStatements.get(1)
 						.toString()), SqlUtil
-				.stripWhiteSpaceAndComments(expectedMoveStatements.get(1)
+				.normalizeSqlFragment(expectedMoveStatements.get(1)
 						.toString()));
 
 		Assert.assertEquals(SqlUtil
-				.stripWhiteSpaceAndComments(actualMoveStatements.get(2)
+				.normalizeSqlFragment(actualMoveStatements.get(2)
 						.toString()), SqlUtil
-				.stripWhiteSpaceAndComments(expectedMoveStatements.get(2)
+				.normalizeSqlFragment(expectedMoveStatements.get(2)
 						.toString()));
 	}
 }

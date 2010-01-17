@@ -29,25 +29,28 @@ public class SqlUtil {
 	/**
 	 * See {@link ISqlUtil#normalizeSqlStatement(String)}.
 	 * 
-	 * @param sqlStatement see {@link ISqlUtil#normalizeSqlStatement(String)}
+	 * @param sqlStatement
+	 *            see {@link ISqlUtil#normalizeSqlStatement(String)}
 	 * 
 	 * @return see {@link ISqlUtil#normalizeSqlStatement(String)}
 	 */
-	public static String normalizeStatement(String sqlStatement) {
+	public static String normalizeSqlStatement(String sqlStatement) {
 		return _sqlUtils.normalizeSqlStatement(sqlStatement);
 	}
 
 	/**
-	 * See {@link ISqlUtil#stripWhiteSpaceAndComments(String)}.
+	 * See {@link ISqlUtil#normalizeSqlFragment(String)}.
 	 * 
-	 * @param sqlFragment see {@link ISqlUtil#stripWhiteSpaceAndComments(String)}
+	 * @param sqlFragment
+	 *            see {@link ISqlUtil#normalizeSqlFragment(String)}
 	 * 
-	 * @return see {@link ISqlUtil#stripWhiteSpaceAndComments(String)}
+	 * @return see {@link ISqlUtil#normalizeSqlFragment(String)}
 	 */
-	public static String stripWhiteSpaceAndComments(String sqlFragment) {
-		return _sqlUtils.stripWhiteSpaceAndComments(sqlFragment);
+	public static String normalizeSqlFragment(String sqlFragment) {
+		return _sqlUtils.normalizeSqlFragment(sqlFragment);
 	}
 
 	/** Prevent inheritance and instantiation. */
-	private SqlUtil() {}
+	private SqlUtil() {
+	}
 }
