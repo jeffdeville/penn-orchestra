@@ -58,11 +58,11 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 			ISqlMove m;
 			if (false /*Config.isDB2()*/) {
 				//        	Alternative: ALTER TABLE ... ACTIVATE NOT LOGGED INITIALLY WITH EMPTY TABLE	
-				m = sqlFactory.newSqlMove(oldTable, newTable, false);
+				m = sqlFactory.newMove(oldTable, newTable, false);
 				ret = m.toStringList();
 				ret.addAll(turnOffLoggingAndResetStats(newTable));
 			} else {
-				m = sqlFactory.newSqlMove(oldTable, newTable, true);
+				m = sqlFactory.newMove(oldTable, newTable, true);
 			}
 			return m.toStringList();
 	//		ret.add(vol);
@@ -71,8 +71,8 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 	public String compareTables(String table1, String table2) {return "";}
 
 	public String subtractTables(String pos, String neg, String joinAtt) {
-		ISqlDelete d = sqlFactory.newSqlDelete(pos, "R1");
-		ISqlSelect q = sqlFactory.newSelect(sqlFactory.newSqlSelectItem("1"),
+		ISqlDelete d = sqlFactory.newDelete(pos, "R1");
+		ISqlSelect q = sqlFactory.newSelect(sqlFactory.newSelectItem("1"),
 				sqlFactory.newFromItem(neg + " R2"),
 				sqlFactory.newExpression(ISqlExpression.Code.EQ, 
 						sqlFactory.newConstant("R1." + joinAtt, ISqlConstant.Type.COLUMNNAME), 
@@ -90,14 +90,14 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 			boolean cluster, boolean noLogging) {
 				ISqlCreateIndex cr;
 				if(cluster && !indName.startsWith(sessionSchema))
-					cr = sqlFactory.newSqlCreateIndex(indName, tabName, cols);
+					cr = sqlFactory.newCreateIndex(indName, tabName, cols);
 				else
-					cr = sqlFactory.newSqlCreateIndex(indName, tabName, cols);
+					cr = sqlFactory.newCreateIndex(indName, tabName, cols);
 				return cr.toString();
 			}
 
 	public List<String> createTempTable(String tabName, List<? extends ISqlColumnDef> cols) {
-		ISqlCreateTempTable cr = sqlFactory.newSqlCreateTempTable(tabName, "", cols);
+		ISqlCreateTempTable cr = sqlFactory.newCreateTempTable(tabName, "", cols);
 		
 		List<String> ret = new ArrayList<String>();
 		ret.add(cr.toString());
@@ -110,7 +110,7 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 	}
 
 	public String dropTable(String tabName) {
-		ISqlDrop d = sqlFactory.newSqlDrop(tabName);
+		ISqlDrop d = sqlFactory.newDrop(tabName);
 		return d.toString();
 	}
 

@@ -55,7 +55,7 @@ public class OracleSqlStatementGen extends AbstractSqlStatementGen {
 	
 	@Override
 	public List<String> createTable(String tabName, List<? extends ISqlColumnDef> columns, boolean noLogging){
-		ISqlCreateStatement cr = sqlFactory.newSqlCreateTable(tabName, "", columns, getLoggingMsg());
+		ISqlCreateStatement cr = sqlFactory.newCreateTable(tabName, "", columns, getLoggingMsg());
 		
 		List<String> ret = new ArrayList<String>();
 		ret.add(cr.toString());

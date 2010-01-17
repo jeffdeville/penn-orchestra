@@ -176,7 +176,7 @@ public class RuleSqlGen implements IRuleCodeGen {
 				Atom lastAtom = m_rule.getBody().get(m_rule.getBody().size()-1);
 			if(lastAtom.isNeg() && lastAtom.getRelation().equals(m_rule.getHead().getRelation())
 					&& lastAtom.getType().equals(m_rule.getHead().getType())){
-				ISqlSelect exceptQuery = _sqlFactory.newSelect(_sqlFactory.newSqlSelectItem("*"), 
+				ISqlSelect exceptQuery = _sqlFactory.newSelect(_sqlFactory.newSelectItem("*"), 
 						_sqlFactory.newFromItem(lastAtom.toString3()),
 						null);
 				q1.addSet(_sqlFactory.newExpression(ISqlExpression.Code.EXCEPT, exceptQuery));
@@ -248,7 +248,7 @@ public List<String> getCode(UPDATE_TYPE u, int curIterCnt) {
 
 		ISqlExpression expr = _sqlFactory.newExpression(ISqlExpression.Code.EXISTS, n);
 
-		ISqlDelete d = _sqlFactory.newSqlDelete(rel.toString3(), "R0");
+		ISqlDelete d = _sqlFactory.newDelete(rel.toString3(), "R0");
 		d.addWhere(expr);
 		ret.add(d.toString());
 
@@ -925,7 +925,7 @@ protected ISqlSelectItem selectionNullForVariable(AtomVariable var,
 	if(var.isSkolem()){ // New Skolem case
 		String skolemTerm = getSkolemTerm(var.skolemDef());
 
-		ISqlSelectItem s = _sqlFactory.newSqlSelectItem(skolemTerm);
+		ISqlSelectItem s = _sqlFactory.newSelectItem(skolemTerm);
 		s.setAlias(lnAttName);
 		return s;
 	}else{
@@ -970,12 +970,12 @@ protected ISqlSelectItem selectionNullForConst(AtomConst c, RelationField attrib
 	ISqlSelectItem s;
 	if (c.isLabeledNull()){
 		String skolemValue = c.getLabeledNullValue();
-		s = _sqlFactory.newSqlSelectItem(skolemValue);
+		s = _sqlFactory.newSelectItem(skolemValue);
 	}else if (c.getValue()!=null && !"-".equals(c.getValue()) && !"_".equals(c.getValue())){
-		s = _sqlFactory.newSqlSelectItem("1");
+		s = _sqlFactory.newSelectItem("1");
 	}else{
 //		And this is the second part of the - for labeled null ...
-		s = _sqlFactory.newSqlSelectItem("-1");
+		s = _sqlFactory.newSelectItem("-1");
 	}
 	s.setAlias(attribute.getName() + RelationField.LABELED_NULL_EXT);
 	return s;
@@ -996,7 +996,7 @@ protected List<ISqlSelectItem> buildSelectForAtom(Atom a,
 //		Maybe add that this is the "proper" translation only for 
 //		"internal" orchestra rules?	
 		// && !m_rule.deleteFromHead()){
-		vs.add(_sqlFactory.newSqlSelectItem("1"));
+		vs.add(_sqlFactory.newSelectItem("1"));
 	}else{
 
 		if (m_stratified) {
@@ -1082,9 +1082,9 @@ protected List<ISqlSelectItem> buildSelect(int curIterCnt, List<ISqlFromItem> fr
 		if(Config.getValueProvenance()){
 			String prov = "(" + m_rule.getProvenance().getSqlValueExpression(m_varmap, m_vartype, m_rule, fr) + ") PROV__";
 			
-			ret.add(_sqlFactory.newSqlSelectItem(prov));
+			ret.add(_sqlFactory.newSelectItem(prov));
 		}else{
-			ret.add(_sqlFactory.newSqlSelectItem("(" + m_rule.getProvenance().getSqlExpression(m_varmap, m_vartype,
+			ret.add(_sqlFactory.newSelectItem("(" + m_rule.getProvenance().getSqlExpression(m_varmap, m_vartype,
 			"CHAR") + ") PROV__"));
 		}
 
@@ -1102,9 +1102,9 @@ protected List<ISqlSelectItem> buildSelect(int curIterCnt, List<ISqlFromItem> fr
 protected ISqlSelectItem typedNull(RelationField field, boolean useNLExt) {
 	ISqlSelectItem s;
 	if(useNLExt){
-		s = _sqlFactory.newSqlSelectItem("-1");
+		s = _sqlFactory.newSelectItem("-1");
 	}else{
-		s = _sqlFactory.newSqlSelectItem(m_sqlString.nullProjection(field.getSQLTypeName()));
+		s = _sqlFactory.newSelectItem(m_sqlString.nullProjection(field.getSQLTypeName()));
 	}
 	s.setAlias(field.getName());
 	return s;
@@ -1117,9 +1117,9 @@ protected ISqlSelectItem typedNull(RelationField field, boolean useNLExt) {
 protected ISqlSelectItem skolemNull(RelationField field, boolean useNLExt) {
 	ISqlSelectItem s;
 	if(useNLExt){
-		s = _sqlFactory.newSqlSelectItem("-1");
+		s = _sqlFactory.newSelectItem("-1");
 	}else{
-		s = _sqlFactory.newSqlSelectItem(m_sqlString.skolemNullProjection(field.getSQLTypeName()));
+		s = _sqlFactory.newSelectItem(m_sqlString.skolemNullProjection(field.getSQLTypeName()));
 	}
 	s.setAlias(field.getName());
 	return s;
@@ -1143,14 +1143,14 @@ protected ISqlSelectItem aliasedSelect(RelationField field, String name, String 
 		s = typedNull(field, isLabNull);
 	} else if(isLabNull){
 		if(replaceValsWithNulls){
-			s = _sqlFactory.newSqlSelectItem(m_sqlString.caseNull(name));
+			s = _sqlFactory.newSelectItem(m_sqlString.caseNull(name));
 			s.setAlias(alias);
 		}else{
-			s = _sqlFactory.newSqlSelectItem(name + ext);
+			s = _sqlFactory.newSelectItem(name + ext);
 			s.setAlias(alias);        	
 		}
 	}else{
-		s = _sqlFactory.newSqlSelectItem(name + ext);
+		s = _sqlFactory.newSelectItem(name + ext);
 		s.setAlias(alias);        	
 	}
 	return s;

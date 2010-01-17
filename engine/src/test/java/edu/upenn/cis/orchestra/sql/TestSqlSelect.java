@@ -36,12 +36,12 @@ import edu.upenn.cis.orchestra.sql.ISqlOrderByItem.OrderType;
 public class TestSqlSelect {
 
 	private ISqlFactory _sqlFactory = SqlFactories.getSqlFactory();
-	private ISqlParser _parser = SqlFactories.getSqlFactory().newSqlParser();
+	private ISqlParser _parser = SqlFactories.getSqlFactory().newParser();
 
 	public void testAddSelectFromWhereClause() {
 		ISqlSelect select = _sqlFactory.newSelect();
 		select.addSelectClause(newArrayList(_sqlFactory
-				.newSqlSelectItem("CAST(NULL AS VARCHAR(255))")));
+				.newSelectItem("CAST(NULL AS VARCHAR(255))")));
 		select
 				.addFromClause(newArrayList(_sqlFactory
 						.newFromItem("SOME_TABLE")));
@@ -110,13 +110,13 @@ public class TestSqlSelect {
 				.normalizeStatement("select * from some_table order by some_col, some_other_col desc nulls first");
 
 		ISqlSelect select = _sqlFactory.newSelect();
-		select.addSelectClause(newArrayList(_sqlFactory.newSqlSelectItem("*")));
+		select.addSelectClause(newArrayList(_sqlFactory.newSelectItem("*")));
 		select
 				.addFromClause(newArrayList(_sqlFactory
 						.newFromItem("SOME_TABLE")));
 		select.addOrderBy(newArrayList(_sqlFactory
-				.newSqlOrderByItem(_sqlFactory.newConstant("SOME_COL",
-						Type.COLUMNNAME)), _sqlFactory.newSqlOrderByItem(
+				.newOrderByItem(_sqlFactory.newConstant("SOME_COL",
+						Type.COLUMNNAME)), _sqlFactory.newOrderByItem(
 				_sqlFactory.newConstant("SOME_OTHER_COL", Type.COLUMNNAME),
 				OrderType.DESC, NullOrderType.NULLS_FIRST)));
 		final String actual = SqlUtil.normalizeStatement(select.toString());

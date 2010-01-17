@@ -29,6 +29,8 @@ public class ValueExpressionFunctionExpression extends
 
 	private ValueExpressionFunction valueExpressionFunction;
 
+	
+	
 	public ValueExpressionFunctionExpression(final String functionName) {
 
 		if ("AVG".equalsIgnoreCase(functionName)) {
@@ -46,6 +48,7 @@ public class ValueExpressionFunctionExpression extends
 		}
 		valueExpressionFunction = getSQLQueryParserFactory()
 				.createFunctionExpression(functionName, null, null, null);
+		setOperator(valueExpressionFunction.getName());
 	}
 
 	public ValueExpressionFunctionExpression(final Code code) {

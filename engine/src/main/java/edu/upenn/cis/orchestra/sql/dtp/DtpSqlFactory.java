@@ -50,7 +50,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlDelete newSqlDelete(final String tableName, final String alias) {
+	public ISqlDelete newDelete(final String tableName, final String alias) {
 		return new DtpSqlDelete(tableName, alias);
 	}
 
@@ -87,7 +87,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlSelectItem newSqlSelectItem(final String fullName) {
+	public ISqlSelectItem newSelectItem(final String fullName) {
 		return new DtpSqlSelectItem(fullName);
 	}
 
@@ -167,7 +167,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlParser newSqlParser() {
+	public ISqlParser newParser() {
 		return new DtpSqlParser();
 	}
 
@@ -180,13 +180,13 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlDelete newSqlDelete(final ITable table) {
+	public ISqlDelete newDelete(final ITable table) {
 		return new DtpSqlDelete(table);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlInsert newSqlInsert(final ITable table) {
+	public ISqlInsert newInsert(final ITable table) {
 		return new DtpSqlInsert(table);
 	}
 
@@ -224,7 +224,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlOrderByItem newSqlOrderByItem(ISqlConstant orderByName) {
+	public ISqlOrderByItem newOrderByItem(ISqlConstant orderByName) {
 		@SuppressWarnings("unchecked")
 		AbstractSQLQueryObject<QueryValueExpression> expression = (AbstractSQLQueryObject<QueryValueExpression>) orderByName;
 		return new DtpSqlOrderByItem(expression.getSQLQueryObject());
@@ -232,7 +232,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlOrderByItem newSqlOrderByItem(ISqlConstant orderByName,
+	public ISqlOrderByItem newOrderByItem(ISqlConstant orderByName,
 			OrderType orderType, NullOrderType nullOrderType) {
 		@SuppressWarnings("unchecked")
 		AbstractSQLQueryObject<QueryValueExpression> expression = (AbstractSQLQueryObject<QueryValueExpression>) orderByName;

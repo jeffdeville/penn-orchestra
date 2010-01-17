@@ -1871,14 +1871,14 @@ public class SqlDb implements IDb {
 		// boolean first = true;
 		if (addStratum) {
 			// buffStat.append("STRATUM INTEGER");
-			cols.add(_sqlFactory.newSqlColumnDef("STRATUM", "INTEGER", "0"));
+			cols.add(_sqlFactory.newColumnDef("STRATUM", "INTEGER", "0"));
 			// first = false;
 		}
 		if (addMRule) {
 			// if (!first)
 			// buffStat.append(",");
 			// buffStat.append("MRULE INTEGER");
-			cols.add(_sqlFactory.newSqlColumnDef(ProvenanceRelation.MRULECOLNAME, "INTEGER", null));
+			cols.add(_sqlFactory.newColumnDef(ProvenanceRelation.MRULECOLNAME, "INTEGER", null));
 			// first = false;
 		}
 
@@ -1893,9 +1893,9 @@ public class SqlDb implements IDb {
 			// buffStat.append(((!first) ? "," : "") + nam + " " +
 			// f.getSQLType());
 			if(Config.getValueProvenance() && Relation.valueAttrName.equals(nam))
-				cols.add(_sqlFactory.newSqlColumnDef(nam, f.getSQLType(), "1"));
+				cols.add(_sqlFactory.newColumnDef(nam, f.getSQLType(), "1"));
 			else
-				cols.add(_sqlFactory.newSqlColumnDef(nam, f.getSQLType(), null));
+				cols.add(_sqlFactory.newColumnDef(nam, f.getSQLType(), null));
 			// first = false;
 
 			if (addLabeledNulls) {
@@ -1903,7 +1903,7 @@ public class SqlDb implements IDb {
 				// + " INTEGER");
 				if (!Config.useCompactNulls() || rel.isNullable(inx))
 					if(nam != ProvenanceRelation.MRULECOLNAME){
-						labNullCols.add(_sqlFactory.newSqlColumnDef(nam
+						labNullCols.add(_sqlFactory.newColumnDef(nam
 								+ RelationField.LABELED_NULL_EXT, "INTEGER", null));
 					}
 			}
@@ -1983,7 +1983,7 @@ public class SqlDb implements IDb {
 			//			}
 
 			// buff.append(nam);
-			cols.add(_sqlFactory.newSqlColumnDef(nam, "", null));
+			cols.add(_sqlFactory.newColumnDef(nam, "", null));
 		}
 
 		if (addLabeledNulls) {
@@ -1992,13 +1992,13 @@ public class SqlDb implements IDb {
 					// buff.append(",");
 					if (normalizeNames) {
 						// buff.append("C" + i + RelationField.LABELED_NULL_EXT);
-						cols.add(_sqlFactory.newSqlColumnDef("C" + i
+						cols.add(_sqlFactory.newColumnDef("C" + i
 								+ RelationField.LABELED_NULL_EXT, "", null));
 					} else {
 						if(rel.getField(i).getName() != ProvenanceRelation.MRULECOLNAME){
 							// buff.append(rel.getField(i).getName() +
 							// RelationField.LABELED_NULL_EXT);
-							cols.add(_sqlFactory.newSqlColumnDef(rel.getField(i).getName()
+							cols.add(_sqlFactory.newColumnDef(rel.getField(i).getName()
 									+ RelationField.LABELED_NULL_EXT, "", null));
 						}
 					}
