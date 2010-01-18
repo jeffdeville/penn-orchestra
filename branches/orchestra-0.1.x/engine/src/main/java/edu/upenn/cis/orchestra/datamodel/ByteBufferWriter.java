@@ -20,7 +20,6 @@ import java.net.InetSocketAddress;
 
 import edu.upenn.cis.orchestra.reconciliation.PidAndRecno;
 import edu.upenn.cis.orchestra.util.ByteArrayWrapper;
-import rice.pastry.socket.SocketNodeHandle;
 
 
 public class ByteBufferWriter {
@@ -179,19 +178,6 @@ public class ByteBufferWriter {
 	 */
 	public void addToBuffer(boolean b) {
 		addToBuffer((byte) (b ? 1 : 0));
-	}
-
-	public void addToBuffer(SocketNodeHandle snh) {
-		if (snh == null) {
-			addToBuffer(true);
-			return;
-		} else {
-			addToBuffer(false);
-		}
-		InetSocketAddress isa = snh.getAddress();
-		addToBuffer(isa.getPort());
-		addToBuffer(isa.getAddress().getAddress());
-		addToBuffer(snh.getId().toByteArray());
 	}
 
 	public void addToBuffer(PidAndRecno par) {

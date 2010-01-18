@@ -17,6 +17,7 @@ package edu.upenn.cis.orchestra.datamodel.iterators;
 
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.JUNIT4_TESTNG_GROUP;
+import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertTrue;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 
+@org.testng.annotations.Test(groups = {REQUIRES_DATABASE_TESTNG_GROUP})
 public class TestResultSetIterator {
 	private static String jdbcUrl = "jdbc:db2://localhost:50000/orchestr";
 	private static String username = "";

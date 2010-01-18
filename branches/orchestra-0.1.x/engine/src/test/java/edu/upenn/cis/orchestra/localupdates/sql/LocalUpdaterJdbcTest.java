@@ -16,6 +16,7 @@
 package edu.upenn.cis.orchestra.localupdates.sql;
 
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
+import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 
 import java.io.File;
 import java.net.URL;
@@ -42,7 +43,7 @@ import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
  * @author John Frommeyer
  * 
  */
-@Test(groups = { FAST_TESTNG_GROUP })
+@Test(groups = { FAST_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP })
 public class LocalUpdaterJdbcTest {
 	private OrchestraSystem system;
 	private JdbcDatabaseTester tester;

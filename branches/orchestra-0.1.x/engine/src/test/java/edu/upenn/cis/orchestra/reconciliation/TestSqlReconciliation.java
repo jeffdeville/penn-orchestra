@@ -15,6 +15,8 @@
  */
 package edu.upenn.cis.orchestra.reconciliation;
 
+import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
+
 import java.sql.SQLException;
 
 import org.testng.annotations.Parameters;
@@ -23,7 +25,7 @@ import org.testng.annotations.Test;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore.Factory;
 
-@Test
+@Test(groups = {REQUIRES_DATABASE_TESTNG_GROUP})
 public class TestSqlReconciliation extends TestReconciliation {
 	private String jdbcUrl = "jdbc:db2://localhost:50000/orchestr";
 	private String username = "";
