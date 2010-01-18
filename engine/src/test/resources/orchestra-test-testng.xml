@@ -11,7 +11,7 @@
 	<!-- <parameter name="run-mode" value="generate" /> -->
 	<test name="local-ins-insert">
 		<parameter name="test-data-dir" value="local-ins-insert" />
-		<groups><run><exclude name="broken" /><exclude name="development" /></run></groups>
+		<groups><run><exclude name="broken" /><exclude name="development" /><exclude name="requires-database" /></run></groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.MultiOrchestraSystemTest" />
 		</classes>
@@ -19,7 +19,7 @@
 	<test name="reject-ins-insert">
 		<parameter name="test-data-dir" value="reject-ins-insert" />
 		<parameter name="db-state" value="no-pre-existing" />
-		<groups><run><exclude name="broken" /><exclude name="development" /></run></groups>
+		<groups><run><exclude name="broken" /><exclude name="development" /><exclude name="requires-database" /></run></groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
 		</classes>
@@ -27,7 +27,7 @@
 	<test name="stop-start">
 		<parameter name="test-data-dir" value="stop-start" />
 		<parameter name="db-state" value="no-pre-existing" />
-		<groups><run><exclude name="broken" /><exclude name="development" /></run></groups>
+		<groups><run><exclude name="broken" /><exclude name="development" /><exclude name="requires-database" /></run></groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
 		</classes>
@@ -35,7 +35,7 @@
 	<test name="pre-existing">
 		<parameter name="test-data-dir" value="pre-existing" />
 		<parameter name="db-state" value="pre-existing" />
-		<groups><run><exclude name="broken" /><exclude name="development" /></run></groups>
+		<groups><run><exclude name="broken" /><exclude name="development" /><exclude name="requires-database" /></run></groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
 		</classes>

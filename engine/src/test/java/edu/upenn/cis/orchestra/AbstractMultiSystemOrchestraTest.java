@@ -18,6 +18,7 @@ package edu.upenn.cis.orchestra;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.TestUtil.DEV_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.SLOW_TESTNG_GROUP;
+import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.getChildElements;
 
 import java.io.File;
@@ -100,7 +101,7 @@ import edu.upenn.cis.orchestra.util.DomUtils;
  * @author Sam Donnelly
  * @author John Frommeyer
  */
-@Test(groups = { SLOW_TESTNG_GROUP, DEV_TESTNG_GROUP })
+@Test(groups = { SLOW_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP,  DEV_TESTNG_GROUP })
 public abstract class AbstractMultiSystemOrchestraTest {
 
 	/**

@@ -37,7 +37,6 @@ import edu.upenn.cis.orchestra.datamodel.iterators.IntegerIterator;
 import edu.upenn.cis.orchestra.datamodel.iterators.IteratorException;
 import edu.upenn.cis.orchestra.datamodel.iterators.ResultIterator;
 import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreClient;
-import edu.upenn.cis.orchestra.reconciliation.p2pstore.PastryStoreFactory;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
 public abstract class UpdateStore implements TransactionDecisions {
@@ -452,19 +451,17 @@ public abstract class UpdateStore implements TransactionDecisions {
 	abstract public Map<TxnPeerID, List<Update>> getTransactionsAcceptedAtRecno(int recno) throws USException;
 
 
-	static public UpdateStore.Factory deserialize(Element update) throws XMLParseException {
+	static public UpdateStore.Factory deserialize(Element update)
+			throws XMLParseException {
 		String type = update.getAttribute("type");
-		try {
-			if (type.compareToIgnoreCase("p2p") == 0) {
-				return PastryStoreFactory.deserialize(update);
-			} else if (type.compareToIgnoreCase("sql") == 0) {
-				return SqlUpdateStore.Factory.deserialize(update);
-			} else if (type.compareToIgnoreCase("bdb") == 0) {
-				return BerkeleyDBStoreClient.Factory.deserialize(update);
-			} 
-		} catch (DatabaseException e) {
-			throw new XMLParseException(e.getMessage(), e.getCause());
+
+		if (type.compareToIgnoreCase("sql") == 0) {
+			return SqlUpdateStore.Factory.deserialize(update);
+		} else if (type.compareToIgnoreCase("bdb") == 0) {
+			return BerkeleyDBStoreClient.Factory.deserialize(update);
 		}
-		throw new XMLParseException("Unrecognized update store type '" + type + "'", update);
+
+		throw new XMLParseException("Unrecognized update store type '" + type
+				+ "'", update);
 	}
 }
