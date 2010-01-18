@@ -16,6 +16,7 @@
 package edu.upenn.cis.orchestra.localupdates.apply.sql;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
@@ -59,7 +60,7 @@ import edu.upenn.cis.orchestra.localupdates.apply.IApplier;
  * @author John Frommeyer
  * 
  */
-@Test
+@Test(groups = {REQUIRES_DATABASE_TESTNG_GROUP})
 public class ApplierSqlTest {
 	private Peer localPeer;
 	private Schema schema;

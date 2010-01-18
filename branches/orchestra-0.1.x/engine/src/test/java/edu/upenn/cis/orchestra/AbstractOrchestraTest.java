@@ -17,6 +17,7 @@ package edu.upenn.cis.orchestra;
 
 import static edu.upenn.cis.orchestra.TestUtil.DEV_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.SLOW_TESTNG_GROUP;
+import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 
 import java.io.File;
 import java.io.IOException;
@@ -117,7 +118,7 @@ import edu.upenn.cis.orchestra.datamodel.Relation;
  * @author Sam Donnelly
  * @author John Frommeyer
  */
-@Test(groups = { SLOW_TESTNG_GROUP, DEV_TESTNG_GROUP })
+@Test(groups = { SLOW_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP, DEV_TESTNG_GROUP })
 public abstract class AbstractOrchestraTest {
 
 	/**

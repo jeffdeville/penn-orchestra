@@ -18,6 +18,7 @@ package edu.upenn.cis.orchestra.localupdates.extract.db2;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newTreeMap;
 import static edu.upenn.cis.orchestra.TestUtil.DEV_TESTNG_GROUP;
+import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -74,7 +75,7 @@ import edu.upenn.cis.orchestra.sql.ISqlExpression.Code;
  * @author John Frommeyer
  * 
  */
-@Test(groups = DEV_TESTNG_GROUP)
+@Test(groups = {REQUIRES_DATABASE_TESTNG_GROUP, DEV_TESTNG_GROUP})
 public class ExtractorDB2Test {
 
 	private Connection testConnection;

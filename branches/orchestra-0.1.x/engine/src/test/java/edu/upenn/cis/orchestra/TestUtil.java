@@ -74,6 +74,9 @@ public class TestUtil {
 
 	/** A testng group name for testng tests still in development. */
 	public static final String DEV_TESTNG_GROUP = "development";
+	
+	/** A testng group name for tests requiring access to a database */
+	public static final String REQUIRES_DATABASE_TESTNG_GROUP = "requires-database";
 
 	/**
 	 * A testng group name for testng tests which require parameters to set up

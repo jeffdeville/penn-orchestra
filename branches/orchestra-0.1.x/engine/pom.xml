@@ -200,24 +200,9 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.declarativa</groupId>
-			<artifactId>interprolog</artifactId>
-			<version>2.1.2</version>
-		</dependency>
-		<dependency>
 			<groupId>com.sleepycat</groupId>
 			<artifactId>je</artifactId>
 			<version>3.3.69</version>
-		</dependency>
-		<dependency>
-			<groupId>rice</groupId>
-			<artifactId>freepastry</artifactId>
-			<version>2.0_03</version>
-		</dependency>
-		<dependency>
-			<groupId>sesame</groupId>
-			<artifactId>openrdf-model</artifactId>
-			<version>1.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>dom4j</groupId>
