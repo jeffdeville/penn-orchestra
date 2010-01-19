@@ -57,7 +57,7 @@ public class TestByteifying extends TestCase {
 	
 
 	Schema s;
-	SchemaIDBinding scm;
+	ISchemaIDBinding scm;
 	Relation rs;
 	Tuple tN1;
 	Tuple tM4;
@@ -73,30 +73,12 @@ public class TestByteifying extends TestCase {
 	Update ins;
 	Update del;
 	TrustConditions tc;
-	Environment e;
 	
 	@Override
 	@BeforeMethod
 	protected void setUp() throws Exception {
 		super.setUp();
-		
 
-		File f = new File("dbenv");//_" + getClass().getSimpleName());
-		if (f.exists()) {
-			File[] files = f.listFiles();
-			for (File file : files) {
-				file.delete();
-			}
-		} else {
-			f.mkdir();
-		}
-		EnvironmentConfig ec = new EnvironmentConfig();
-		ec.setAllowCreate(true);
-		ec.setTransactional(true);
-		e = new Environment(f, ec);
-		
-		scm = new SchemaIDBinding(e); 
-		
 		s = new Schema(getClass().getSimpleName() + "_schema");
 		s.setDescription("");
 		rs = s.addRelation("R");
@@ -108,9 +90,9 @@ public class TestByteifying extends TestCase {
 		
 		List<Schema> schemas = new ArrayList<Schema>();
 		schemas.add(s);
-		Map<AbstractPeerID,Integer> peerMap = new HashMap<AbstractPeerID,Integer>();
-		peerMap.put(new StringPeerID("a"), 0);
-		scm.registerAllSchemas("test", schemas, peerMap);
+		Map<AbstractPeerID,Schema> peerIDToSchema = new HashMap<AbstractPeerID,Schema>();
+		peerIDToSchema.put(new StringPeerID("a"), s);
+		scm = new LocalSchemaIDBinding(peerIDToSchema);
 
 		tN1 = new Tuple(rs);
 		tN1.set(0, "Nick");
@@ -143,14 +125,6 @@ public class TestByteifying extends TestCase {
 		tc = new TrustConditions(ipi1);
 		Predicate p = new AndPred(ComparePredicate.createTwoCols(rs, "val",ComparePredicate.Op.NE,"val3"), ComparePredicate.createColLit(rs, "name", ComparePredicate.Op.EQ, "Nick"));
 		tc.addTrustCondition(ipi1234567890, rs.getRelationID(), p, 10);
-	}
-	
-	@After
-	@AfterMethod
-	public void tearDownSchemaBinding() throws DatabaseException {
-		scm.clear(e);
-		scm.quit();
-		e.close();
 	}
 	
 	public void testInt() {

@@ -72,8 +72,7 @@ public final class OrchestraTest extends AbstractOrchestraTest {
 		Assert.assertTrue(orchestraSystem.storeServerRunning(),
 				"Store server is not started.");
 		
-		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"),
-				orchestraSchemaName);
+		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"));
 		operationFactory = new OrchestraSystemOperationFactory(orchestraSystem,
 				orchestraSchema, testDataDirectory, onlyGenerateDataSets,
 				dbTester, bdbDataSetFactory);

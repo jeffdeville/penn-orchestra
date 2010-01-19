@@ -32,13 +32,17 @@ import org.dom4j.Element;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.EnvironmentLockedException;
 
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferReader;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.TxnPeerID;
+import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
+import edu.upenn.cis.orchestra.reconciliation.LocalSchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 
 /**
@@ -144,7 +148,7 @@ public class UpdateStoreBdbEnv {
 			dataInfo.clear();
 
 			updateStoreFormat = new BdbEnvironment("updateStore_env", databases);
-			
+
 		} catch (Throwable e) {
 			throw new ExceptionInInitializerError(e);
 		}
@@ -153,21 +157,59 @@ public class UpdateStoreBdbEnv {
 	 * Clients may need a {@code SchemaIDBinding} for creating {@code
 	 * ByteBufferReader}s.
 	 */
-	private SchemaIDBinding binding;
+	private ISchemaIDBinding binding;
 
 	/**
-	 * Sets up {@code env} and opens all databases.
+	 * Creates an {@code UpdateStoreBdbEnv} using a schema binding which is not dependent on
+	 * the Berkeley environment. Sets up {@code env} and opens all databases.
+	 * 
+	 * @param peerIDToSchema
+	 * @throws Exception 
+	 */
+	UpdateStoreBdbEnv(File envHome, Map<AbstractPeerID, Schema> peerIDToSchema) throws Exception {
+		EnvironmentConfig myEnvConfig = new EnvironmentConfig();
+		myEnvConfig.setTransactional(true);
+		// myEnvConfig.setReadOnly(true);
+
+		// Open the environment
+		env = new Environment(envHome, myEnvConfig);
+
+		binding = new LocalSchemaIDBinding(peerIDToSchema);
+
+		DatabaseConfig dbConfig = new DatabaseConfig();
+		dbConfig.setAllowCreate(false);
+		dbConfig.setReadOnly(true);
+
+		List<String> dbNames = env.getDatabaseNames();
+		for (String dbName : dbNames) {
+			if (dbName.startsWith("recon")) {
+				dbConfig.setSortedDuplicates(true);
+			} else {
+				dbConfig.setSortedDuplicates(false);
+			}
+			if (dbName.equals("schemaInfo")) {
+				dbConfig.setTransactional(false);
+			} else {
+				dbConfig.setTransactional(true);
+			}
+			myDbs.add(env.openDatabase(null, dbName, dbConfig));
+
+		}
+	}
+
+	/**
+	 * Creates an {@code UpdateStoreBdbEnv} using a schema binding dependent on
+	 * the Berkeley environment. Sets up {@code env} and opens all databases.
 	 * 
 	 * @param envHome
-	 * @param orchestraSchemaName
 	 * @throws Exception
 	 */
-	public void setup(File envHome, String orchestraSchemaName)
-			throws Exception {
+	@Deprecated
+	UpdateStoreBdbEnv(File envHome) throws Exception {
 
 		EnvironmentConfig myEnvConfig = new EnvironmentConfig();
 		myEnvConfig.setTransactional(true);
-		//myEnvConfig.setReadOnly(true);
+		// myEnvConfig.setReadOnly(true);
 
 		// Open the environment
 		env = new Environment(envHome, myEnvConfig);
@@ -177,7 +219,8 @@ public class UpdateStoreBdbEnv {
 		Map<AbstractPeerID, Integer> peerSchemas = Collections.emptyMap();
 		// Empty collections work because registerAllSchemas(...) first checks
 		// the bdb for a saved SchemaMap.
-		//binding.registerAllSchemas(orchestraSchemaName, schemas, peerSchemas);
+		// binding.registerAllSchemas(orchestraSchemaName, schemas,
+		// peerSchemas);
 
 		DatabaseConfig dbConfig = new DatabaseConfig();
 		dbConfig.setAllowCreate(false);
@@ -220,11 +263,15 @@ public class UpdateStoreBdbEnv {
 				for (Database db : myDbs) {
 					db.close();
 				}
-				binding.clear(env);
-				binding.quit();
+				if (binding instanceof SchemaIDBinding) {
+					SchemaIDBinding berkeleyBinding = (SchemaIDBinding) binding;
+					berkeleyBinding.clear(env);
+					berkeleyBinding.quit();
+				}
 				env.close();
 			} catch (Exception e) {
-				throw new IllegalStateException("Error closing UpdateStoreBdbEnv.", e);
+				throw new IllegalStateException(
+						"Error closing UpdateStoreBdbEnv.", e);
 			}
 		}
 	}
@@ -239,11 +286,11 @@ public class UpdateStoreBdbEnv {
 	}
 
 	/**
-	 * Returns a {@code SchemaIDBinding}.
+	 * Returns a {@code ISchemaIDBinding}.
 	 * 
 	 * @return the schemaIDBinding.
 	 */
-	public SchemaIDBinding getSchemaIDBinding() {
+	public ISchemaIDBinding getSchemaIDBinding() {
 		return binding;
 	}
 

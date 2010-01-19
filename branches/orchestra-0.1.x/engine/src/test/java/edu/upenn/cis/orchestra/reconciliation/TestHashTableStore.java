@@ -24,7 +24,7 @@ import edu.upenn.cis.orchestra.datamodel.Schema;
 @Test
 public class TestHashTableStore extends TestStore {
 
-	StateStore getStore(AbstractPeerID ipi, SchemaIDBinding sch, Schema s) throws Exception {
+	StateStore getStore(AbstractPeerID ipi, ISchemaIDBinding sch, Schema s) throws Exception {
 		return new HashTableStore(ipi, sch, -1);
 	}
 
@@ -32,7 +32,6 @@ public class TestHashTableStore extends TestStore {
 	@AfterMethod
 	public void tearDown() throws Exception {
 		super.tearDown();
-		e.close();
 	}
 	
 	
