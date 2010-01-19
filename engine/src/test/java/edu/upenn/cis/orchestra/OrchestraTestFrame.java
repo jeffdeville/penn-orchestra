@@ -151,9 +151,9 @@ public class OrchestraTestFrame {
 	}
 
 	/**
-	 * DOCUMENT ME
+	 * Returns the name of the peer for this test frame.
 	 * 
-	 * @return
+	 * @return the name of the peer for this test frame
 	 */
 	String getPeerName() {
 		return peerName;

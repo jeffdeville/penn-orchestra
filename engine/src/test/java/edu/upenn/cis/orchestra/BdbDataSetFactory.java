@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StringReader;
 import java.util.List;
+import java.util.Map;
 
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.DefaultDataSet;
@@ -38,7 +39,10 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
+import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferReader;
+import edu.upenn.cis.orchestra.datamodel.Schema;
+import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 
 /**
@@ -58,14 +62,24 @@ public class BdbDataSetFactory {
 	 * representation of the update store.
 	 * 
 	 * @param bdbDirectory the directory containing the update store.
-	 * @param orchestraSchemaName the name of the Orchestra schema.
 	 * @throws Exception
 	 */
-	public BdbDataSetFactory(File bdbDirectory, String orchestraSchemaName)
+	@Deprecated
+	public BdbDataSetFactory(File bdbDirectory)
 			throws Exception {
 
-		env = new UpdateStoreBdbEnv();
-		env.setup(bdbDirectory, orchestraSchemaName);
+		env = new UpdateStoreBdbEnv(bdbDirectory);
+	}
+	
+	/**
+	 * Creates a {@code BdbDataSetFactory}.
+
+	 * @param bdbDirectory 
+	 * @param peerIDToSchema
+	 * @throws Exception 
+	 */
+	public BdbDataSetFactory(File bdbDirectory, Map<AbstractPeerID, Schema> peerIDToSchema) throws Exception {
+		env = new UpdateStoreBdbEnv(bdbDirectory, peerIDToSchema);
 	}
 
 	/**
@@ -85,7 +99,7 @@ public class BdbDataSetFactory {
 		DefaultDataSet dataset = new DefaultDataSet();
 		BdbEnvironment envFormat = env.getFormat();
 
-		SchemaIDBinding schemaIDBinding = env.getSchemaIDBinding();
+		ISchemaIDBinding schemaIDBinding = env.getSchemaIDBinding();
 		List<Database> dbs = env.getDbs();
 
 		for (Database db : dbs) {
@@ -140,7 +154,7 @@ public class BdbDataSetFactory {
 		 */
 
 		BdbDataSetFactory factory = new BdbDataSetFactory(new File(
-				"updateStore_env"), "ppodLN");
+				"updateStore_env"));
 		// factory.printBdb();
 		try {
 			FlatXmlDataSet ds = factory.getDataSet();
@@ -181,7 +195,7 @@ public class BdbDataSetFactory {
 	 */
 	private static void byteBufferRead(Element root, String dbName,
 			DatabaseEntry key, DatabaseEntry data, BdbDatabase dbFormat,
-			SchemaIDBinding schemaIDBinding) {
+			ISchemaIDBinding schemaIDBinding) {
 
 		Element row = root.addElement(dbName);
 
@@ -202,7 +216,7 @@ public class BdbDataSetFactory {
 	 * @param schemaIDBinding
 	 */
 	private static void entryToAttributes(Element row, DatabaseEntry entry,
-			List<BdbEntryInfo> entryFormat, SchemaIDBinding schemaIDBinding) {
+			List<BdbEntryInfo> entryFormat, ISchemaIDBinding schemaIDBinding) {
 		ByteBufferReader keyReader = new ByteBufferReader(schemaIDBinding,
 				entry.getData());
 		for (BdbEntryInfo info : entryFormat) {

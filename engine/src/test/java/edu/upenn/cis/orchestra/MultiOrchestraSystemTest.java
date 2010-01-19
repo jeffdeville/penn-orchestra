@@ -16,13 +16,18 @@
 package edu.upenn.cis.orchestra;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
+import static org.testng.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Map;
 
 import org.testng.Assert;
 
+import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
+import edu.upenn.cis.orchestra.datamodel.Peer;
+import edu.upenn.cis.orchestra.datamodel.Schema;
 
 /**
  * @see edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest
@@ -76,9 +81,17 @@ public final class MultiOrchestraSystemTest extends
 					.put(testFrame.getPeerName(), systemFrame);
 
 		}
+		assertTrue(peerToOrchestraSystemFrame.values().size() > 0);
+		OrchestraSystemTestFrame systemTestFrame = peerToOrchestraSystemFrame.values().iterator().next();
+		Map<AbstractPeerID, Schema> peerIDToSchema = newHashMap();
+		Collection<Peer> peers = systemTestFrame.getOrchestraSystem().getPeers();
+		for (Peer peer : peers) {
+			Collection<Schema> schemas = peer.getSchemas();
+			assertTrue(schemas.size() == 1);
+			peerIDToSchema.put(peer.getPeerId(), schemas.iterator().next());
+		}
 
-		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"),
-				orchestraSchemaName);
+		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"), peerIDToSchema);
 		operationFactory = new MultiOrchestraSystemOperationFactory(
 				peerToOrchestraSystemFrame, orchestraSchema, testDataDirectory,
 				onlyGenerateDataSets, bdbDataSetFactory);

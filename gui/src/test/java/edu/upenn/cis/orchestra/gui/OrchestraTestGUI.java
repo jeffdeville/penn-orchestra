@@ -88,8 +88,7 @@ public final class OrchestraTestGUI extends AbstractOrchestraTest {
 		FailOnThreadViolationRepaintManager.install();
 		robot = BasicRobot.robotWithNewAwtHierarchy();
 		window = GUITestUtils.launchOrchestra(robot);
-		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"),
-				orchestraSchemaName);
+		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"));
 		IOrchestraOperationFactory factory = new GUIOperationFactory(window,
 				orchestraSchema, testDataDirectory, onlyGenerateDataSets,
 				dbTester, bdbDataSetFactory);

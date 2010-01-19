@@ -15,10 +15,13 @@
  */
 package edu.upenn.cis.orchestra.reconciliation;
 
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -46,34 +49,18 @@ import edu.upenn.cis.orchestra.datamodel.iterators.ResultIterator;
 abstract public class TestStore extends TestCase {
 	Relation r, s, t;
 	Schema schema;
-	SchemaIDBinding schMap;
+	ISchemaIDBinding schMap;
 	Tuple tN1, tN2, tN3, tM4, tM5, tN6, tS1, tT1;
 	Update insN1, insN2, insN3, modN1N3, insM4, modM4M5, modN1M5, delN1, modN3N6, insS1, insT1;
 	List<Update> insN1t, insN2t, delN1t, modN1N3t, modN3N6t, insN3t, insM4t, insS1t, insT1t;
 	StateStore ss;
 	int r0;
-	Environment e;
 	
-	abstract StateStore getStore(AbstractPeerID ipi, SchemaIDBinding sm, Schema s) throws Exception;
+	abstract StateStore getStore(AbstractPeerID ipi, ISchemaIDBinding sm, Schema s) throws Exception;
 	
 	@BeforeMethod
 	protected void setUp() throws Exception {
 		super.setUp();
-		EnvironmentConfig ec = new EnvironmentConfig();
-		ec.setAllowCreate(true);
-		ec.setTransactional(true);
-		File f = new File("dbenv");
-		if (f.exists()) {
-			File[] files = f.listFiles();
-			for (File file : files) {
-				file.delete();
-			}
-		} else {
-			f.mkdir();
-		}
-		e = new Environment(f, ec);
-		
-		schMap = new SchemaIDBinding(e); 
 		
 		schema = new Schema(getClass().getSimpleName() + "_schema");
 		s = schema.addRelation("S");
@@ -89,7 +76,9 @@ abstract public class TestStore extends TestCase {
 		schema.markFinished();
 		Peer peer = new Peer("0", "localhost", "TestStore peer");
 		AbstractPeerID peerID = peer.getPeerId();
-		schMap.registerAllSchemas("test", Collections.singletonList(schema), Collections.singletonMap(peerID, 0));
+		Map<AbstractPeerID, Schema> peerIDToSchema = newHashMap();
+		peerIDToSchema.put(peerID, schema);
+		schMap = new LocalSchemaIDBinding(peerIDToSchema);
 		ss = getStore(peerID, schMap, schema);
 
 		ss.reset();
@@ -151,8 +140,6 @@ abstract public class TestStore extends TestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		schMap.clear(e);
-		schMap.quit();
 	}
 	
 	public void testPrimaryInsertion() throws Exception {
