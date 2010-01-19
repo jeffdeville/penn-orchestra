@@ -16,6 +16,7 @@
 package edu.upenn.cis.orchestra.datamodel;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
 import static edu.upenn.cis.orchestra.TestUtil.JUNIT4_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
 import static org.testng.AssertJUnit.assertEquals;
@@ -44,38 +45,24 @@ import edu.upenn.cis.orchestra.predicate.AndPred;
 import edu.upenn.cis.orchestra.predicate.ComparePredicate;
 import edu.upenn.cis.orchestra.predicate.Predicate;
 import edu.upenn.cis.orchestra.predicate.ComparePredicate.Op;
+import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
+import edu.upenn.cis.orchestra.reconciliation.LocalSchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 import edu.upenn.cis.orchestra.util.DomUtils;
 
 @org.testng.annotations.Test(groups = { TestUtil.FAST_TESTNG_GROUP})
 public class TestTrustConditions {
 
-	SchemaIDBinding scm;
+	ISchemaIDBinding scm;
 	Schema ownersSchema;
 	TrustConditions tc;
 	AbstractPeerID ownerPeerID;
 	List<Peer> peers = new ArrayList<Peer>();
-	Environment e;
 	
 	@Before
 	@BeforeMethod(groups = JUNIT4_TESTNG_GROUP)
 	public void setUp() throws Exception {
 		peers.clear();
-		File f = new File("dbenv");//_" + getClass().getSimpleName());
-		if (f.exists()) {
-			File[] files = f.listFiles();
-			for (File file : files) {
-				file.delete();
-			}
-		} else {
-			f.mkdir();
-		}
-		EnvironmentConfig ec = new EnvironmentConfig();
-		ec.setAllowCreate(true);
-		ec.setTransactional(true);
-		e = new Environment(f, ec);
-
-		scm = new SchemaIDBinding(e);
 
 		String ownerID = "me";
 		String other1ID = "512";
@@ -94,7 +81,7 @@ public class TestTrustConditions {
 
 		Relation ownersRelation = null;
 		List<Schema> schemas = newArrayList();
-		
+		Map<AbstractPeerID, Schema> peerIDToSchema = newHashMap(); 
 		for (Peer p : peers) {
 			Schema s = new Schema(p.getId()
 					+ "_schema");
@@ -109,6 +96,7 @@ public class TestTrustConditions {
 				ownersRelation = rs;
 				ownersSchema = s;
 			}
+			peerIDToSchema.put(p.getPeerId(), s);
 		}
 		AssertJUnit.assertNotNull(ownersRelation);
 		AssertJUnit.assertNotNull(ownersSchema);
@@ -133,15 +121,15 @@ public class TestTrustConditions {
 		for (int i = 0; i < peers.size(); i++) {
 			peerSchema.put(peers.get(i).getPeerId(), i);
 		}
-		scm.registerAllSchemas("test", schemas, peerSchema);
+		scm = new LocalSchemaIDBinding(peerIDToSchema);
 	}
 	
 	@After
 	@AfterMethod
 	public void tearDownSchemaBinding() throws DatabaseException {
-		scm.clear(e);
+		/*scm.clear(e);
 		scm.quit();
-		e.close();
+		e.close();*/
 	}
 	
 	@Test

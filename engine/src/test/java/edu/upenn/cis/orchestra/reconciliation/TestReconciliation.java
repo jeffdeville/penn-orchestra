@@ -15,6 +15,7 @@
  */
 package edu.upenn.cis.orchestra.reconciliation;
 
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
 import static edu.upenn.cis.orchestra.TestUtil.BROKEN_TESTNG_GROUP;
 
 import java.io.File;
@@ -59,7 +60,7 @@ public abstract class TestReconciliation extends TestCase {
 	protected static final String SCHEMA_NAME = "test";
 	protected ArrayList<Db> dbs;
 	Schema s;
-	private SchemaIDBinding scm;
+	private ISchemaIDBinding scm;
 	OrchestraSystem sys;
 	Relation rs;
 	Tuple tN1, tN2, tN3, tN4, tN5, tM4, tM5, tNull;
@@ -67,7 +68,6 @@ public abstract class TestReconciliation extends TestCase {
 	ArrayList<AbstractPeerID> peers;
 	ArrayList<TrustConditions> tcs;
 	UpdateStore.Factory factory;
-	private Environment env;
 	
 	static protected final int numPeers = 5;
 	protected List<Schema> schemas;
@@ -125,21 +125,9 @@ public abstract class TestReconciliation extends TestCase {
 	@BeforeMethod
 	protected void setUp() throws Exception {
 		super.setUp();
-		File f = new File("dbenv");
-		if (f.exists()) {
-			File[] files = f.listFiles();
-			for (File file : files) {
-				file.delete();
-			}
-		} else {
-			f.mkdir();
-		}
-		EnvironmentConfig ec = new EnvironmentConfig();
-		ec.setAllowCreate(true);
-		ec.setTransactional(true);
-		env = new Environment(f, ec);
-		scm = new SchemaIDBinding(env); 
-		
+
+		Map<AbstractPeerID, Schema> peerIDToSchema = newHashMap();
+
 		factory = getStoreFactory();
 		s = new Schema(getClass().getSimpleName() + "_schema");
 		rs = s.addRelation("R");
@@ -162,12 +150,14 @@ public abstract class TestReconciliation extends TestCase {
 		for (int i = 0; i < 3; ++i) {
 			peers.add(new IntPeerID(i));
 			peerMap.put(peers.get(i), 0);
+			peerIDToSchema.put(peers.get(i), s);
 		}
 		for (int i = 3; i < numPeers; ++i) {
 			peers.add(new StringPeerID("Peer #" + i));
 			peerMap.put(peers.get(i), 0);
+			peerIDToSchema.put(peers.get(i), s);
 		}
-		scm.registerAllSchemas(SCHEMA_NAME, schemas, peerMap);
+		scm = new LocalSchemaIDBinding(peerIDToSchema);
 		sys = new OrchestraSystem(scm);
 		for (int i = 0; i < 3; ++i) {
 			sys.addPeer(new Peer(String.valueOf(i), "", ""));
@@ -225,10 +215,10 @@ public abstract class TestReconciliation extends TestCase {
 		for (int i = 0; i < numPeers; ++i) {
 			dbs.get(i).disconnect();
 		}
+		/*
 		scm.clear(env);
 		scm.quit();
-		env.close();
-		
+		env.close();*/
 		
 	}
 

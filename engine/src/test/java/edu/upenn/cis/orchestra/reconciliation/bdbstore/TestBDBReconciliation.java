@@ -44,6 +44,7 @@ public class TestBDBReconciliation extends TestReconciliation {
 		EnvironmentConfig ec = new EnvironmentConfig();
 		ec.setAllowCreate(true);
 		ec.setTransactional(true);
+		ec.setCachePercent(1);
 		if (envDir.isDirectory()) {
 			for (File f : envDir.listFiles()) {
 				f.delete();
