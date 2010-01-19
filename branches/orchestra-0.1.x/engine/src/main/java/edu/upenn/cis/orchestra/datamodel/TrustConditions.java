@@ -405,7 +405,7 @@ public class TrustConditions {
 	 * @param schemaIDBinding
 	 * @see TrustConditions#serialize(Document, Element, Schema)
 	 */
-	public void serialize(Document d, Element el, SchemaIDBinding schemaIDBinding) {
+	public void serialize(Document d, Element el, ISchemaIDBinding schemaIDBinding) {
 		for (int relId : trustConds.keySet()) {
 			Map<Integer,Set<Trusts>> priorities = trustConds.get(relId);
 			Relation rs = schemaIDBinding.getRelationFor(relId);
