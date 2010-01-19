@@ -15,16 +15,35 @@
  */
 package edu.upenn.cis.orchestra.reconciliation;
 
+import java.io.File;
+
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
 
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 
 @Test
 public class TestBerkeleyDBStore extends TestStore {
+	private Environment e;
 	@Override
-	StateStore getStore(AbstractPeerID pi, SchemaIDBinding scm, Schema s) throws Exception {
+	StateStore getStore(AbstractPeerID pi, ISchemaIDBinding scm, Schema s) throws Exception {
+		EnvironmentConfig ec = new EnvironmentConfig();
+		ec.setAllowCreate(true);
+		ec.setTransactional(true);
+		File f = new File("dbenv");
+		if (f.exists()) {
+			File[] files = f.listFiles();
+			for (File file : files) {
+				file.delete();
+			}
+		} else {
+			f.mkdir();
+		}
+		e = new Environment(f, ec);
 		return new BerkeleyDBStore(e, "state", "updates", pi, scm, -1);
 
 	}
