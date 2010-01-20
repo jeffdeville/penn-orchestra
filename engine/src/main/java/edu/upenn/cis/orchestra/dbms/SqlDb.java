@@ -376,7 +376,7 @@ public class SqlDb implements IDb {
 	public long time4CommitLogging = 0;
 	public long time4EmptyChecking = 0;
 
-	public OrchestraSystem _system;
+	private OrchestraSystem _system;
 	protected List<String> _allTables;
 	protected List<Schema> _schemas;
 
@@ -1353,7 +1353,7 @@ public class SqlDb implements IDb {
 		int count = this.convert(logicalTable, new RelationContext(baseTable,
 				s, p, false), AtomType.INS, pubDb);
 		pubDb.publish();
-
+		_system.translate();
 		System.out.println("Converted " + count + " tuples from import of "
 				+ imported + " into " + logicalTable.getName() + " ("
 				+ logicalTable.getRelationID() + ")");
@@ -2126,16 +2126,6 @@ public class SqlDb implements IDb {
 		ResultSetIterator<Tuple> result = null;
 		try { 
 			result = evalQueryRule(rul);
-			//The updates have to come after the query since evalUpdateRule(rul) modifies rul.
-			int updateCount = 0;
-			if (typ == AtomType.INS && rc.getRelation().isInternalRelation()) {
-				updateCount = evalUpdateRule(rul);
-				RelationContext baseRelation = new RelationContext(rc.getPeer(), rc.getSchema(), log);
-				Atom updateHead = new Atom(baseRelation, a, AtomType.NONE);
-				Rule updateRule = new Rule(updateHead, b, null, this.getBuiltInSchemas());
-				evalUpdateRule(updateRule);
-			}
-
 			int count = 0;
 			while (result != null && result.hasNext()) {
 				Tuple tuple = result.next();

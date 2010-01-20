@@ -32,6 +32,7 @@
   <PPOD2.OTU_L_INV/>
   <PPOD2.OTU_L_NEW/>
   <PPOD2.OTU_NEW/>
+  <PPOD2.OTU_PREV/>
   <PPOD2.OTU_R/>
   <PPOD2.OTU_R_DEL/>
   <PPOD2.OTU_R_INS STRATUM="0" OTU_ID="7" LABEL="Carnivora" OBJ_VERSION="8" PPOD_VERSION="9" OTU_ID_LN="1" LABEL_LN="1" OBJ_VERSION_LN="1" PPOD_VERSION_LN="1"/>
@@ -45,17 +46,27 @@
   <PPOD2.PM0_INS/>
   <PPOD2.PM0_INV/>
   <PPOD2.PM0_NEW/>
+  <decisions peerID="@pPODPeer1" txnPeerID="0@pPODPeer1" accepted="true" recno="0"/>
+  <decisions peerID="@pPODPeer1" txnPeerID="1@pPODPeer1" accepted="true" recno="1"/>
+  <decisions peerID="@pPODPeer1" txnPeerID="2@pPODPeer1" accepted="true" recno="2"/>
   <decisions peerID="@pPODPeer2" txnPeerID="0@pPODPeer1" accepted="true" recno="0"/>
   <decisions peerID="@pPODPeer2" txnPeerID="1@pPODPeer1" accepted="true" recno="1"/>
   <decisions peerID="@pPODPeer2" txnPeerID="2@pPODPeer1" accepted="true" recno="3"/>
   <epochContents epoch="0" txnPeerID_0="0@pPODPeer1"/>
   <epochContents epoch="1" txnPeerID_0="1@pPODPeer1"/>
   <epochContents epoch="2" txnPeerID_0="2@pPODPeer1"/>
+  <lastRecno peerID="@pPODPeer1" recno="2"/>
   <lastRecno peerID="@pPODPeer2" recno="3"/>
+  <recnoEpochs peerID="@pPODPeer1" recno="0" epoch="0"/>
+  <recnoEpochs peerID="@pPODPeer1" recno="1" epoch="1"/>
+  <recnoEpochs peerID="@pPODPeer1" recno="2" epoch="2"/>
   <recnoEpochs peerID="@pPODPeer2" recno="0" epoch="0"/>
   <recnoEpochs peerID="@pPODPeer2" recno="1" epoch="1"/>
   <recnoEpochs peerID="@pPODPeer2" recno="2" epoch="1"/>
   <recnoEpochs peerID="@pPODPeer2" recno="3" epoch="2"/>
+  <reconAcceptedTxns peerID="@pPODPeer1" recno="0" txnPeerID="0@pPODPeer1"/>
+  <reconAcceptedTxns peerID="@pPODPeer1" recno="1" txnPeerID="1@pPODPeer1"/>
+  <reconAcceptedTxns peerID="@pPODPeer1" recno="2" txnPeerID="2@pPODPeer1"/>
   <reconAcceptedTxns peerID="@pPODPeer2" recno="0" txnPeerID="0@pPODPeer1"/>
   <reconAcceptedTxns peerID="@pPODPeer2" recno="1" txnPeerID="1@pPODPeer1"/>
   <reconAcceptedTxns peerID="@pPODPeer2" recno="3" txnPeerID="2@pPODPeer1"/>
