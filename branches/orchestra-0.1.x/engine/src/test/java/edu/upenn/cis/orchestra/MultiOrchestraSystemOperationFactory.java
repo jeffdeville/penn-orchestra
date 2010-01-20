@@ -198,7 +198,7 @@ public final class MultiOrchestraSystemOperationFactory extends
 			OrchestraSystemTestFrame systemTestFrame = localPeerToSystemFrame
 					.get(peerName);
 			OrchestraSystem localSystem = systemTestFrame.getOrchestraSystem();
-			localSystem.fetch();
+			localSystem.publishAndMap();
 			DbUnitUtil.dumpOrCheck(datasetFile, orchestraSchema, dumpDatasets,
 					systemTestFrame.getDbTester(), bdbDataSetFactory);
 		}

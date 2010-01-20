@@ -5,7 +5,7 @@
 	<!--
 		Maven's testResouce filtering is turned on in the POM so that you can
 		specify locally appropriate values for the
-		testng.db-{url,user,password} properties below.
+		testng.db-{url,user,password} parameters below.
 	-->
 	<parameter name="db-url"
 		value="${testng.db-url}" />
