@@ -18,7 +18,7 @@
 				<include name="fast" />
 				<exclude name="broken" />
 				<exclude name="development" />
-				<exclude name="requires-database" />
+				<exclude name="${testng.requires.database}" />
 			</run>
 		</groups>
 		<packages>
