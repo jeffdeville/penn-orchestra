@@ -17,7 +17,7 @@
   <PPOD1.OTU_R_INV/>
   <PPOD1.OTU_R_NEW/>
   <PPOD1.OTU_RCH/>
-  <PPOD2.OTU/>
+  <PPOD2.OTU OTU_ID="1" LABEL="Primates" OBJ_VERSION="3" PPOD_VERSION="4" OTU_ID_LN="1" LABEL_LN="1" OBJ_VERSION_LN="1" PPOD_VERSION_LN="1"/>
   <PPOD2.OTU_DEL/>
   <PPOD2.OTU_INS/>
   <PPOD2.OTU_INV/>
@@ -33,16 +33,16 @@
   <PPOD2.OTU_R_INV/>
   <PPOD2.OTU_R_NEW/>
   <PPOD2.OTU_RCH/>
-  <PPOD2.PM0/>
+  <PPOD2.PM0 C0="1" C1="Primates" C2="3" C3="4" C0_LN="1" C1_LN="1" C2_LN="1" C3_LN="1"/>
   <PPOD2.PM0_DEL/>
   <PPOD2.PM0_INS/>
   <PPOD2.PM0_INV/>
   <PPOD2.PM0_NEW/>
-  <decisions/>
+  <decisions peerID="@pPODPeer1" txnPeerID="0@pPODPeer1" accepted="true" recno="0"/>
   <epochContents epoch="0" txnPeerID_0="0@pPODPeer1"/>
-  <lastRecno/>
-  <recnoEpochs/>
-  <reconAcceptedTxns/>
+  <lastRecno peerID="@pPODPeer1" recno="0"/>
+  <recnoEpochs peerID="@pPODPeer1" recno="0" epoch="0"/>
+  <reconAcceptedTxns peerID="@pPODPeer1" recno="0" txnPeerID="0@pPODPeer1"/>
   <reconRejectedTxns/>
   <txns txnPeerID="0@pPODPeer1" update_0="+OTU(1,Primates,3,4) [0@pPODPeer1]"/>
 </dataset>

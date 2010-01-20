@@ -1474,6 +1474,18 @@ public class OrchestraSystem {
 		getRecDb(_localPeer.getId()).publish();
 		return count;
 	}
+	
+	/**
+	 * Publishes the local peer's updates and then performs an update exchange mapping.
+	 * 
+	 * @return the number of update transactions published
+	 * @throws Exception
+	 */
+	public int publishAndMap() throws Exception {
+		int transactions = fetch();
+		translate();
+		return transactions;
+	}
 
 	/**
 	 * Imports data into the local peers instance.

@@ -2,16 +2,31 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="functional-tests" verbose="1">
+
 	<!--
-		Maven's testResouce filtering is turned on in the POM so that you can
-		specify locally appropriate values for the
-		testng.db-{url,user,password} properties below.
+		The tests in this suite are only run by Maven if the
+		'requires-database-tests' profile is active.
+		
+		The files associated with each of these tests can be found in the directory
+		src/test/resources/<orchestra-schema-name>/<test-data-dir> where the
+		last two elements of the path are the values of the parameters defined
+		below.
+		
+		Among the files found there might be one called <orchestra-schema-name>.peers.xml.
+		This file can contain variables which will be interpolated by Maven during the build
+		process. So, if you are going to run one of these tests, you should check the
+		associated file for variables, and be sure to give them values in your Maven
+		environment. 
 	-->
 	<parameter name="orchestra-schema-name" value="ppodLN" />
 	<!-- <parameter name="run-mode" value="generate" /> -->
 	<test name="local-ins-insert">
 		<parameter name="test-data-dir" value="local-ins-insert" />
-		<groups><run><exclude name="broken" /></run></groups>
+		<groups>
+			<run>
+				<exclude name="broken" />
+			</run>
+		</groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.MultiOrchestraSystemTest" />
 		</classes>
@@ -19,7 +34,13 @@
 	<test name="reject-ins-insert">
 		<parameter name="test-data-dir" value="reject-ins-insert" />
 		<parameter name="db-state" value="no-pre-existing" />
-		<groups><run><exclude name="broken" /><exclude name="development" /><exclude name="requires-database" /></run></groups>
+		<groups>
+			<run>
+				<exclude name="broken" />
+				<exclude name="development" />
+				<exclude name="requires-database" />
+			</run>
+		</groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
 		</classes>
@@ -27,7 +48,13 @@
 	<test name="stop-start">
 		<parameter name="test-data-dir" value="stop-start" />
 		<parameter name="db-state" value="no-pre-existing" />
-		<groups><run><exclude name="broken" /><exclude name="development" /><exclude name="requires-database" /></run></groups>
+		<groups>
+			<run>
+				<exclude name="broken" />
+				<exclude name="development" />
+				<exclude name="requires-database" />
+			</run>
+		</groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
 		</classes>
@@ -35,7 +62,13 @@
 	<test name="pre-existing">
 		<parameter name="test-data-dir" value="pre-existing" />
 		<parameter name="db-state" value="pre-existing" />
-		<groups><run><exclude name="broken" /><exclude name="development" /><exclude name="requires-database" /></run></groups>
+		<groups>
+			<run>
+				<exclude name="broken" />
+				<exclude name="development" />
+				<exclude name="requires-database" />
+			</run>
+		</groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.OrchestraTest" />
 		</classes>
