@@ -108,13 +108,13 @@ public class PeerDetailInfoPanel extends JPanel
 	
 			
 			final JPanel pubRecPanel = new JPanel (); 
-			final JButton btnPublish = new JButton ("Publish");
+			final JButton btnPublish = new JButton ("Publish and Reconcile");
 			if (_sys.isLocalPeer(p)) {
 			btnPublish.addActionListener(new ActionListener ()
 							{
 									public void actionPerformed(ActionEvent arg0) {
 										_context.setRefreshTransactions();
-										PeerCommands.publish(getParent(), _sys, _transIntf);
+										PeerCommands.publishAndReconcile(getParent(), _sys, _transIntf);
 									}
 							});
 			} else {

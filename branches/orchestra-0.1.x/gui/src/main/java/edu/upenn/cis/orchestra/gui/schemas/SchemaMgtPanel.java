@@ -392,14 +392,14 @@ public class SchemaMgtPanel extends JPanel
 		final SchemaMgtPanel scPanel = this;
 		if (_sys.getRecMode())
 		{
-			JButton btnCommit = new JButton ("Publish");
+			JButton btnCommit = new JButton ("Publish and Reconcile");
 			if (_sys.isLocalPeer(_p)) {
 			btnCommit.addActionListener(new ActionListener ()
 					{
 						public void actionPerformed(ActionEvent evt) 
 						{
 							_peerTransIntf.setRecomputeTransactions();
-							PeerCommands.publish(scPanel, _sys, _peerTransIntf);
+							PeerCommands.publishAndReconcile(scPanel, _sys, _peerTransIntf);
 						}
 					});
 			} else {

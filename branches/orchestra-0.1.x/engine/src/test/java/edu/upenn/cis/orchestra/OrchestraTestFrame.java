@@ -124,10 +124,14 @@ public class OrchestraTestFrame {
 				File datasetFile = new File(testDataDirectory,
 						orchestraSchemaName + "-" + peerName
 								+ "-preOrchestra.xml");
-				DbUnitUtil.executeDbUnitOperation(
-						DatabaseOperation.CLEAN_INSERT, datasetFile, dbTester);
-				DbUnitUtil.checkDatabase(datasetFile, new IncludeTableFilter(
-						dbSchemaNameRegexps), dbTester, null);
+				if (datasetFile.exists()) {
+					DbUnitUtil.executeDbUnitOperation(
+							DatabaseOperation.CLEAN_INSERT, datasetFile,
+							dbTester);
+					DbUnitUtil.checkDatabase(datasetFile,
+							new IncludeTableFilter(dbSchemaNameRegexps),
+							dbTester, null);
+				}
 			} else {
 				logger.debug("Assuming no pre-existing tables.");
 			}
@@ -160,11 +164,11 @@ public class OrchestraTestFrame {
 	}
 
 	/**
-	 * Returns the {@code JdbcDatabaseTester} for this
-	 * {@code OrchestraTestFrame}.
+	 * Returns the {@code JdbcDatabaseTester} for this {@code
+	 * OrchestraTestFrame}.
 	 * 
-	 * @return the {@code JdbcDatabaseTester} for this
-	 * {@code OrchestraTestFrame}
+	 * @return the {@code JdbcDatabaseTester} for this {@code
+	 *         OrchestraTestFrame}
 	 */
 	JdbcDatabaseTester getDbTester() {
 		return dbTester;
