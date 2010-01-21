@@ -1371,19 +1371,16 @@ public class SqlDb implements IDb {
 	}
 
 	private void dropExistingData(Relation r) throws SQLException {
-		Statement st = _con.createStatement();
-		if (Config.getApply())
-			st.execute("DELETE FROM " + r.getFullQualifiedDbId());
-		else
-			Debug.println("DELETE FROM " + r.getFullQualifiedDbId());
+		dropExistingData(r.getFullQualifiedDbId());
 	}
 
 	private void dropExistingData(String r) throws SQLException {
 		Statement st = _con.createStatement();
-		if (Config.getApply())
-			st.execute("DELETE FROM " + r);
-		else
-			Debug.println("DELETE FROM " + r);
+		String sql = "DELETE FROM " + r;
+		_log.debug(sql);
+		if (Config.getApply()) {
+			st.execute(sql);
+		}
 	}
 
 	/**

@@ -24,7 +24,6 @@ import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.exchange.IEngine;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 
 /**
  * Creates {@code IOrchestraOperation}s which deal directly with a collection
@@ -288,10 +287,7 @@ public final class MultiOrchestraSystemOperationFactory extends
 					.get(peerName);
 			OrchestraSystemTestFrame newSystemFrame = new OrchestraSystemTestFrame(
 					orchestraSchema, oldSystemFrame.getOrchestraTestFrame());
-			OrchestraSystem localSystem = newSystemFrame.getOrchestraSystem();
-			if (!localSystem.storeServerRunning()) {
-				localSystem.startStoreServer();
-			}
+
 			localPeerToSystemFrame.put(peerName, newSystemFrame);
 
 			MetaDataChecker checker = new MetaDataChecker.Builder()
@@ -333,7 +329,6 @@ public final class MultiOrchestraSystemOperationFactory extends
 					.get(peerName);
 			OrchestraSystem localSystem = systemTestFrame.getOrchestraSystem();
 
-			localSystem.stopStoreServer();
 			localSystem.getMappingDb().finalize();
 
 			MetaDataChecker checker = new MetaDataChecker.Builder()
@@ -342,7 +337,6 @@ public final class MultiOrchestraSystemOperationFactory extends
 					orchestraSchema, dumpDatasets, systemTestFrame
 							.getDbTester(), bdbDataSetFactory);
 
-			SchemaIDBinding.resetRelationId();
 
 		}
 	}

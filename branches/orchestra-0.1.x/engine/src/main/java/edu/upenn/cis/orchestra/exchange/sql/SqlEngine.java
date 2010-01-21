@@ -673,6 +673,7 @@ public class SqlEngine extends BasicEngine {
 
 		try {
 			moveExistingData();
+			//_system.publishAndMap();
 		} catch (Exception se) {
 			System.err.println("Error importing existing data");
 			se.printStackTrace();
@@ -747,7 +748,10 @@ public class SqlEngine extends BasicEngine {
 
 //					List<SqlStatement> tableConversionStatements = statementsGen.createTableConversionStatements(statements, 
 //					!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), getMappingDb().getSqlTranslator().getLoggingMsg()));
-
+					/*if (!p.isLocalPeer()){
+						statements.addAll(statementsGen.createNecessaryTables(!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), 
+								getMappingDb().getSqlTranslator().getLoggingMsg().length() == 0, getMappingDb()));
+					}*/
 					map.putAll(statementsGen.createTableConversionStatements(statements, 
 							!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), 
 							getMappingDb().getSqlTranslator().getLoggingMsg(), getMappingDb(), _system.isBidirectional()));
