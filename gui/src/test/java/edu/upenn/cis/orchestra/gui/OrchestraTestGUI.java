@@ -15,13 +15,10 @@
  */
 package edu.upenn.cis.orchestra.gui;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.util.Map;
 
 import org.fest.swing.annotation.GUITest;
 import org.fest.swing.core.BasicRobot;
@@ -29,34 +26,31 @@ import org.fest.swing.core.Robot;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
 import org.fest.swing.fixture.FrameFixture;
 import org.testng.Assert;
-import org.xml.sax.SAXException;
 
-import edu.upenn.cis.orchestra.AbstractOrchestraTest;
+import edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest;
 import edu.upenn.cis.orchestra.BdbDataSetFactory;
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.IOrchestraOperationFactory;
-import edu.upenn.cis.orchestra.OrchestraOperationExecutor;
+import edu.upenn.cis.orchestra.MultiSystemOrchestraOperationExecutor;
+import edu.upenn.cis.orchestra.OrchestraTestFrame;
 
 /**
  * An Orchestra test via the GUI.
  * 
- * @see edu.upenn.cis.orchestra.AbstractOrchestraTest
+ * @see edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest
  * @author John Frommeyer
  * 
  */
 @GUITest
-public final class OrchestraTestGUI extends AbstractOrchestraTest {
-
-	/**
-	 * FEST wrapper for the main ORCHESTRA frame.
-	 */
-	private FrameFixture window;
+public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 
 	/** The robot for our test. */
 	private Robot robot;
 
 	/** Translates Berkeley update store into DbUnit dataset. */
 	private BdbDataSetFactory bdbDataSetFactory;
+
+	private final Map<String, OrchestraGUITestFrame> peerNameToTestFrame = newHashMap();
 
 	/*
 	 * (non-Javadoc)
@@ -84,15 +78,18 @@ public final class OrchestraTestGUI extends AbstractOrchestraTest {
 			Assert.assertTrue(contents.length == 0,
 					"Store server did not clear.");
 		}
-		modifyOrchestraSchemaFile();
 		FailOnThreadViolationRepaintManager.install();
-		robot = BasicRobot.robotWithNewAwtHierarchy();
-		window = GUITestUtils.launchOrchestra(robot);
+		Robot robot = BasicRobot.robotWithNewAwtHierarchy();
+		for (OrchestraTestFrame testFrame : testFrames) {
+			OrchestraGUITestFrame guiTestFrame = new OrchestraGUITestFrame(
+					orchestraSchema, testFrame, robot);
+			peerNameToTestFrame.put(testFrame.getPeerName(), guiTestFrame);
+		}
 		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"));
-		IOrchestraOperationFactory factory = new GUIOperationFactory(window,
-				orchestraSchema, testDataDirectory, onlyGenerateDataSets,
-				dbTester, bdbDataSetFactory);
-		executor = new OrchestraOperationExecutor(factory);
+		IOrchestraOperationFactory factory = new MultiGUIOperationFactory(
+				peerNameToTestFrame, orchestraSchema, testDataDirectory,
+				onlyGenerateDataSets, bdbDataSetFactory);
+		executor = new MultiSystemOrchestraOperationExecutor(factory);
 	}
 
 	/*
@@ -102,37 +99,26 @@ public final class OrchestraTestGUI extends AbstractOrchestraTest {
 	 */
 	@Override
 	protected void shutdownImpl() throws Exception {
-		// This setting allows us to exit the GUI without also exiting the JVM.
-		String previousGuiMode = Config.getProperty("gui.mode");
-		Config.setProperty("gui.mode", "Ajax");
-		window.menuItemWithPath("File", "Exit").click();
-		if (previousGuiMode == null) {
-			Config.removeProperty("gui.mode");
-		} else {
-			Config.setProperty("gui.mode", previousGuiMode);
-		}
-		if (window != null) {
-			window.cleanUp();
+		for (OrchestraGUITestFrame guiTestFrame : peerNameToTestFrame.values()) {
+			FrameFixture window = guiTestFrame.getWindowFrameFixture();
+			if (window != null) {
+				window.component().toFront();
+				// This setting allows us to exit the GUI without also exiting
+				// the
+				// JVM.
+				String previousGuiMode = Config.getProperty("gui.mode");
+				Config.setProperty("gui.mode", "Ajax");
+				window.menuItemWithPath("File", "Exit").click();
+				if (previousGuiMode == null) {
+					Config.removeProperty("gui.mode");
+				} else {
+					Config.setProperty("gui.mode", previousGuiMode);
+				}
+				window.cleanUp();
+			}
 		}
 		if (bdbDataSetFactory != null) {
 			bdbDataSetFactory.close();
 		}
-	}
-
-	/**
-	 * Write out the modified Orchestra schema file.
-	 * 
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 * @throws XPathExpressionException
-	 */
-	private void modifyOrchestraSchemaFile()
-			throws ParserConfigurationException, SAXException, IOException,
-			URISyntaxException, XPathExpressionException {
-
-		File file = new File(new URI(Config.getSchemaFile()));
-		orchestraSchema.write(file, dbURL, dbUser, dbPassword);
 	}
 }
