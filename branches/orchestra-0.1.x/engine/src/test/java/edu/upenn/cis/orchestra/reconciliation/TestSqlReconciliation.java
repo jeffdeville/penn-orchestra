@@ -34,7 +34,7 @@ public class TestSqlReconciliation extends TestReconciliation {
 
 	SqlUpdateStore.Factory factory;
 
-	@Parameters( { "jdbc-url", "username", "password", "jdbc-driver" })
+	@Parameters( { "db-url", "db-user", "db-password", "jdbc-driver" })
 	public TestSqlReconciliation(String jdbcUrlParam, String usernameParam,
 			String passwordParam, String jdbcDriverParam)
 			throws ClassNotFoundException, SQLException,

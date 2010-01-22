@@ -2,23 +2,13 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="Fast Suite" verbose="1">
-	<!--
-		Maven's testResouce filtering is turned on in the POM so that you can
-		specify locally appropriate values for the
-		testng.db-{url,user,password} parameters below.
-	-->
-	<parameter name="db-url"
-		value="${testng.db-url}" />
-	<parameter name="db-user" value="${testng.db-user}" />
-	<parameter name="db-password" value="${testng.db-password}" />
-	<parameter name="jdbc-driver" value="com.ibm.db2.jcc.DB2Driver" />
 	<test name="Fast Tests">
 		<groups>
 			<run>
 				<include name="fast" />
 				<exclude name="broken" />
 				<exclude name="development" />
-				<exclude name="${testng.requires.database}" />
+				<exclude name="requires-database" />
 			</run>
 		</groups>
 		<packages>
@@ -44,10 +34,9 @@
 			<class name="edu.upenn.cis.orchestra.reconciliation.TestByteifying" />
 			<class name="edu.upenn.cis.orchestra.reconciliation.TestConflicts" />
 			<class name="edu.upenn.cis.orchestra.reconciliation.TestFlatten" />
-			<!-- <class name="edu.upenn.cis.orchestra.reconciliation.TestSqlReconciliation" /> -->
 			<class
 				name="edu.upenn.cis.orchestra.reconciliation.bdbstore.TestBDBReconciliation" />
-				<class
+			<class
 				name="edu.upenn.cis.orchestra.reconciliation.bdbstore.StartStopServerTest" />
 			<class name="edu.upenn.cis.orchestra.reconciliation.TestBerkeleyDBStore" />
 			<class name="edu.upenn.cis.orchestra.reconciliation.TestHashTableStore" />
