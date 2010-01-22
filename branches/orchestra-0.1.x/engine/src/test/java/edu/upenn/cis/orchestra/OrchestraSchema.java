@@ -196,6 +196,24 @@ public class OrchestraSchema {
 		DomUtils.write(TestUtil.replaceMappingElement(orchestraSchema, dbURL,
 				dbUser, dbPassword, "sql"), new FileWriter(file));
 	}
+	
+	/**
+	 * Writes the underlying Orchestra schema to {@code file}. Any existing
+	 * {@code /catalog/engine/mappings} elements are replaced by one which has
+	 * been created on the fly using the passed in parameters.
+	 * 
+	 * @param file
+	 * @param dbURL
+	 * @param dbUser
+	 * @param dbPassword
+	 * @param localPeer 
+	 * @throws IOException
+	 */
+	public void write(File file, String dbURL, String dbUser, String dbPassword, String localPeer)
+			throws IOException {
+		DomUtils.write(TestUtil.setLocalPeer(TestUtil.replaceMappingElement(orchestraSchema, dbURL,
+				dbUser, dbPassword, "sql"), localPeer), new FileWriter(file));
+	}
 
 	/**
 	 * Returns the underlying Orchestra schema as a XML {@code String}.

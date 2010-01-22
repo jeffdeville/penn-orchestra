@@ -142,15 +142,30 @@ public class OrchestraTestFrame {
 		}
 	}
 
-	String getDbURL() {
+	/**
+	 * Returns the URL of the database for this frame.
+	 * 
+	 * @return the URL of the database for this frame
+	 */
+	public String getDbURL() {
 		return dbURL;
 	}
 
-	String getDbUser() {
+	/**
+	 * Returns the database user for this frame.
+	 * 
+	 * @return the database user for this frame
+	 */
+	public String getDbUser() {
 		return dbUser;
 	}
 
-	String getDbPassword() {
+	/**
+	 * Returns the database password for this frame.
+	 * 
+	 * @return the database password for this frame
+	 */
+	public String getDbPassword() {
 		return dbPassword;
 	}
 
@@ -159,7 +174,7 @@ public class OrchestraTestFrame {
 	 * 
 	 * @return the name of the peer for this test frame
 	 */
-	String getPeerName() {
+	public String getPeerName() {
 		return peerName;
 	}
 
@@ -170,7 +185,7 @@ public class OrchestraTestFrame {
 	 * @return the {@code JdbcDatabaseTester} for this {@code
 	 *         OrchestraTestFrame}
 	 */
-	JdbcDatabaseTester getDbTester() {
+	public JdbcDatabaseTester getDbTester() {
 		return dbTester;
 	}
 
