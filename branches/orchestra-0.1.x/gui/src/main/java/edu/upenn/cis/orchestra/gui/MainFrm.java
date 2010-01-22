@@ -263,6 +263,7 @@ public class MainFrm extends JFrame
 	public MainFrm() throws HeadlessException
 	{
 		super ("ORCHESTRA Collaborative Data Sharing System");
+		setName(Config.getTestSchemaName());
 		if ("Ajax".equals(Config.getProperty("gui.mode"))){
 			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		} else {

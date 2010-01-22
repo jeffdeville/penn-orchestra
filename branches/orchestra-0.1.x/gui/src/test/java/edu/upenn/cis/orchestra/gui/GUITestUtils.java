@@ -90,6 +90,22 @@ public class GUITestUtils {
 	}
 	
 	/**
+	 * Returns a FEST {@code FrameFixture} which wraps a running ORCHESTRA
+	 * {#code MainFrm}. 
+	 * 
+	 * @param robot testClass' robot.
+	 * @param frameName the name of the frame which will be launched.
+	 * 
+	 * @return a {@code FrameFixture} of a running ORCHESTRA session.
+	 */
+	public static FrameFixture launchOrchestra(Robot robot, String frameName) {
+		ApplicationLauncher.application(MainFrm.class).start();
+		FrameFixture fixture = WindowFinder.findFrame(frameName).using(
+				robot);
+		return fixture;
+	}
+	
+	/**
 	 * This will connect to the in-memory HSQL DB {@code dbName} and issue
 	 * {@code CREATE SCHEMA} commands for each schema named in {@code
 	 * schemaNames}.
