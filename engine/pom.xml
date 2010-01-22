@@ -94,7 +94,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<suiteXmlFiles>
-        				<suiteXmlFile>target/test-classes/testng.xml,target/test-classes/orchestra-test-testng.xml</suiteXmlFile>
+        				<suiteXmlFile>target/test-classes/testng.xml,target/test-classes/requires-database-testng.xml,target/test-classes/orchestra-test-testng.xml</suiteXmlFile>
       				</suiteXmlFiles>
       				<excludedGroups>fullgui-tests</excludedGroups>
 					<forkMode>once</forkMode>
