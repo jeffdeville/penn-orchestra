@@ -20,7 +20,7 @@ Here's the way that we set up our development environment:
 
 = Running the tests =
 
-Some of the tests require access to a DB2 instance. (The main test suite found at _engine/src/test/resource/testng.xml_ runs without DB2.) The connection information is supplied to the tests via Maven resource filtering, so the following variables need to be set as described [http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html here]:
+Some of the tests require access to a DB2 instance. The default Maven build runs without these tests. To have Maven run these tests the profile {{{requires-database-tests}}} must be active. The connection information is supplied to the tests via Maven resource filtering, so the following variables need to be set as described [http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html here]:
    * {{{testng.db-url}}}
    * {{{testng.db-user}}}
    * {{{testng.db-password}}}
