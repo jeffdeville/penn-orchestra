@@ -62,14 +62,12 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 	 * passed in through {@code fullname}. These expression should be built up
 	 * using {@code edu.upenn.cis.orchestra.sql} classes, but that is not
 	 * supported yet.
-	 * <p>
-	 * For expediency, we allow {@code count} functions here.
 	 * 
 	 * @param fullname
 	 *            a string that represents a column name or wildcard (example:
 	 *            <code>SCHEMA.TABLE.*</code> or <code>TABLE.*</code> or
 	 *            <code>*</code>), a {@code skolemstr(...)} udf, {@code cast}
-	 *            expression, a {@code count}
+	 *            expression
 	 */
 	DtpSqlSelectItem(final String fullname) {
 		final String fullnameTrimmed = fullname.trim();
@@ -79,7 +77,6 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 
 		if (fullnameTrimmedLowerCaseNoSpaces.startsWith("skolemstr(")
 				|| fullnameTrimmedLowerCaseNoSpaces.startsWith("cast(")
-				|| fullnameTrimmedLowerCaseNoSpaces.startsWith("count(")
 				|| (fullnameTrimmed.startsWith("'") && fullnameTrimmed
 						.endsWith("'")) || fullnameTrimmed.equals("1")) {
 			_queryResultSpecification = getSQLQueryParserFactory()
@@ -113,7 +110,8 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 		}
 	}
 
-	public DtpSqlSelectItem() {	}
+	public DtpSqlSelectItem() {
+	}
 
 	/**
 	 * Return {@code true} if this is a wildcard ({@code "[table.]*"}), {@code
