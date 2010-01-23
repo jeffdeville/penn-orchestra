@@ -117,13 +117,14 @@ public class ApplierSql implements IApplier<Connection> {
 			ISqlSelect selectTemplate, ISqlExpression valuesTemplate) {
 
 		selectTemplate.addSelectClause(Collections.singletonList(sqlFactory
-				.newSelectItem("COUNT(*)")));
+				.newSelectItem().setExpression(
+						sqlFactory.newExpression(Code.COUNT))));
 		int ncol = relation.getNumCols();
 		ISqlExpression whereClause = sqlFactory.newExpression(Code.AND);
 		for (int i = 0; i < ncol; i++) {
-			whereClause.addOperand(sqlFactory.newExpression(Code.EQ,
-					sqlFactory.newConstant(relation.getColName(i),
-							Type.COLUMNNAME), sqlFactory.newConstant("?",
+			whereClause.addOperand(sqlFactory.newExpression(Code.EQ, sqlFactory
+					.newConstant(relation.getColName(i), Type.COLUMNNAME),
+					sqlFactory.newConstant("?",
 							Type.PREPARED_STATEMENT_PARAMETER)));
 			valuesTemplate.addOperand(sqlFactory.newConstant("?",
 					Type.PREPARED_STATEMENT_PARAMETER));
