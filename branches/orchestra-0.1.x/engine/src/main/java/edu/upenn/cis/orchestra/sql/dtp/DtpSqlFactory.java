@@ -29,6 +29,7 @@ import edu.upenn.cis.orchestra.sql.ISqlOrderByItem;
 import edu.upenn.cis.orchestra.sql.ISqlParser;
 import edu.upenn.cis.orchestra.sql.ISqlSelect;
 import edu.upenn.cis.orchestra.sql.ISqlSelectItem;
+import edu.upenn.cis.orchestra.sql.ISqlSimpleExpression;
 import edu.upenn.cis.orchestra.sql.ISqlUtil;
 import edu.upenn.cis.orchestra.sql.ITable;
 import edu.upenn.cis.orchestra.sql.ISqlFromItem.Join;
@@ -159,9 +160,8 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlFromItem newFromItem(final Join type,
-			final ISqlFromItem left, final ISqlFromItem right,
-			final ISqlExp cond) {
+	public ISqlFromItem newFromItem(final Join type, final ISqlFromItem left,
+			final ISqlFromItem right, final ISqlExp cond) {
 		return new DtpSqlFromItem(type, left, right, cond);
 	}
 
@@ -240,14 +240,21 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 				nullOrderType);
 	}
 
+	/** {@inheritDoc} */
 	@Override
-	public ISqlExpression newExpression(String functionName,
-			ISqlExp... operands) {
+	public ISqlExpression newExpression(final String functionName,
+			final ISqlExp... operands) {
 		final ISqlExpression sqlExpression = new ValueExpressionFunctionExpression(
 				functionName);
 		for (ISqlExp operand : operands) {
 			sqlExpression.addOperand(operand);
 		}
 		return sqlExpression;
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public ISqlSimpleExpression newSimpleExpression(final String value) {
+		return new ValueExpressionSimpleExpression().setValue(value);
 	}
 }

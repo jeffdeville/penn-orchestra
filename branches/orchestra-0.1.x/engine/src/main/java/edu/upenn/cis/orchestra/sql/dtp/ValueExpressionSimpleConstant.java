@@ -43,8 +43,7 @@ class ValueExpressionSimpleConstant extends
 	private final ValueExpressionSimple _valueExpressionSimple;
 
 	/**
-	 * The type of this <code>ISqlConstant</code>, as defined by the
-	 * <code>static int</code>s in <code>ISqlConstant</code>.
+	 * The type of this <code>ISqlConstant</code>.
 	 * <p>
 	 * Defaults to {@code ISqlConstant.Type.UNKNOWN}.
 	 */
@@ -63,7 +62,7 @@ class ValueExpressionSimpleConstant extends
 		switch (type) {
 		case UNKNOWN:
 			_valueExpressionSimple = getSQLQueryParserFactory()
-					.createSimpleExpression(value);
+			.createSimpleExpression(value);
 			_valueExpressionSimple.setDataType(getSQLQueryParserFactory()
 					.createDataTypeCharacterString(
 							PrimitiveType.CHARACTER_VARYING, value.length(),
@@ -102,7 +101,7 @@ class ValueExpressionSimpleConstant extends
 							null));
 			break;
 		default:
-			throw new IllegalArgumentException("Unsupported type " + type + ".");
+			throw new IllegalArgumentException("Unsupported type " + type);
 		}
 		_logger.debug("type[{}]value[{}]", type, value);
 
