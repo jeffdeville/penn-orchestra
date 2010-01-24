@@ -24,13 +24,11 @@ import org.eclipse.datatools.modelbase.sql.query.ValueExpressionFunction;
 import edu.upenn.cis.orchestra.sql.ISqlExp;
 import edu.upenn.cis.orchestra.sql.ISqlExpression;
 
-public class ValueExpressionFunctionExpression extends
-		AbstractDtpSqlExpression<ValueExpressionFunction> {
+class ValueExpressionFunctionExpression extends
+AbstractDtpSqlExpression<ValueExpressionFunction> {
 
 	private ValueExpressionFunction valueExpressionFunction;
 
-	
-	
 	public ValueExpressionFunctionExpression(final String functionName) {
 
 		if ("AVG".equalsIgnoreCase(functionName)) {

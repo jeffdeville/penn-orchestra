@@ -49,22 +49,22 @@ public interface ISqlConstant extends ISqlExp {
 		/** A JDBC prepared statement parameter. */
 		PREPARED_STATEMENT_PARAMETER("PREPARED_STATEMENT_PARAMETER");
 		
-		/** String representation of this {@code OptimizerType}. */
+		/** String representation of this {@code Type}. */
 		private final String _type;
 
 		/**
-		 * Construct a {@code OptimizerType} with the given type string.
+		 * Construct a {@code Type} with the given type string.
 		 * 
-		 * @param type the {@code toString()} value.
+		 * @param type the {@code toString()} value
 		 */
 		private Type(String type) {
 			_type = type;
 		}
 
 		/**
-		 * String representation of this {@code OptimizerType}.
+		 * String representation of this {@code Type}.
 		 * 
-		 * @return string representation of this {@code OptimizerType}.
+		 * @return string representation of this {@code Type}
 		 */
 		@Override
 		public String toString() {

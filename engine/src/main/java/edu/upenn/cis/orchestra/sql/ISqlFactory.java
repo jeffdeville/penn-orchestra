@@ -484,5 +484,8 @@ public interface ISqlFactory {
 	ISqlOrderByItem newOrderByItem(ISqlConstant orderByName,
 			ISqlOrderByItem.OrderType orderType,
 			ISqlOrderByItem.NullOrderType nullOrderType);
+	
+	ISqlSimpleExpression newSimpleExpression(String value);
+		
 
 }
