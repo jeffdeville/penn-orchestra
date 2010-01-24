@@ -58,16 +58,16 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 	 * column} position.
 	 * <p>
 	 * For backwards compatibility with the ZQL {@code SqlSelectItem}, we allow
-	 * also {@code skolemstr(...)} udf's and {@code cast} expressions to be
-	 * passed in through {@code fullname}. These expression should be built up
-	 * using {@code edu.upenn.cis.orchestra.sql} classes, but that is not
-	 * supported yet.
+	 * {@code skolemstr(...)} udf's, {@code cast} expressions, {@code 1}
+	 * expressions, (as in {@code SELECT 1}), and string constants ({@code '}
+	 * delimited strings) to be passed in through {@code fullname}.
 	 * 
 	 * @param fullname
 	 *            a string that represents a column name or wildcard (example:
-	 *            <code>SCHEMA.TABLE.*</code> or <code>TABLE.*</code> or
+	 *            <code>SCHEMA.TABLE.*</code> or <code>TABLE.*</code>,
 	 *            <code>*</code>), a {@code skolemstr(...)} udf, {@code cast}
-	 *            expression
+	 *            expression, {@code 1} expressions, and string constants (
+	 *            {@code '} delimited strings)
 	 */
 	DtpSqlSelectItem(final String fullname) {
 		final String fullnameTrimmed = fullname.trim();
@@ -110,7 +110,7 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 		}
 	}
 
-	public DtpSqlSelectItem() {
+	DtpSqlSelectItem() {
 	}
 
 	/**

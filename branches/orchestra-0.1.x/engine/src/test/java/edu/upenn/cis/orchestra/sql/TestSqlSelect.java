@@ -114,11 +114,11 @@ public class TestSqlSelect {
 		select
 				.addFromClause(newArrayList(_sqlFactory
 						.newFromItem("SOME_TABLE")));
-		select.addOrderBy(newArrayList(_sqlFactory
-				.newOrderByItem(_sqlFactory.newConstant("SOME_COL",
-						Type.COLUMNNAME)), _sqlFactory.newOrderByItem(
-				_sqlFactory.newConstant("SOME_OTHER_COL", Type.COLUMNNAME),
-				OrderType.DESC, NullOrderType.NULLS_FIRST)));
+		select.addOrderBy(newArrayList(_sqlFactory.newOrderByItem(_sqlFactory
+				.newConstant("SOME_COL", Type.COLUMNNAME)), _sqlFactory
+				.newOrderByItem(_sqlFactory.newConstant("SOME_OTHER_COL",
+						Type.COLUMNNAME), OrderType.DESC,
+						NullOrderType.NULLS_FIRST)));
 		final String actual = SqlUtil.normalizeSqlStatement(select.toString());
 		assertEquals(actual, expected);
 	}
@@ -131,12 +131,27 @@ public class TestSqlSelect {
 				.normalizeSqlStatement("select least (33, 23, 10, 7) as least_value from dual");
 		final ISqlSelect select = _sqlFactory.newSelect();
 		final ISqlSelectItem selectItem = _sqlFactory.newSelectItem();
-		selectItem.setExpression(
-				_sqlFactory.newExpression("least", 
-				_sqlFactory.newConstant("33", Type.NUMBER), 
-				_sqlFactory.newConstant("23", Type.NUMBER), 
-				_sqlFactory.newConstant("10", Type.NUMBER),
+		selectItem.setExpression(_sqlFactory.newExpression("least", _sqlFactory
+				.newConstant("33", Type.NUMBER), _sqlFactory.newConstant("23",
+				Type.NUMBER), _sqlFactory.newConstant("10", Type.NUMBER),
 				_sqlFactory.newConstant("7", Type.NUMBER)));
+		selectItem.setAlias("least_value");
+		select.addSelectClause(newArrayList(selectItem));
+		select.addFromClause(newArrayList(_sqlFactory.newFromItem("dual")));
+		assertEquals(SqlUtil.normalizeSqlStatement(select.toString()), expected);
+	}
+
+	/**
+	 * Test select with a nested LEAST in the the select clause built with a
+	 * {@link ISqlSimpleExpression}.
+	 */
+	public void selectNestedLeastWSimpleExpression() {
+		final String expected = SqlUtil
+				.normalizeSqlStatement("select least (33, least(23, 10), 7) as least_value from dual");
+		final ISqlSelect select = _sqlFactory.newSelect();
+		final ISqlSelectItem selectItem = _sqlFactory.newSelectItem();
+		selectItem.setExpression(_sqlFactory
+				.newSimpleExpression("least (33, least(23, 10), 7)"));
 		selectItem.setAlias("least_value");
 		select.addSelectClause(newArrayList(selectItem));
 		select.addFromClause(newArrayList(_sqlFactory.newFromItem("dual")));
