@@ -8,6 +8,7 @@ import org.fest.swing.core.Robot;
 import org.fest.swing.fixture.FrameFixture;
 
 import edu.upenn.cis.orchestra.Config;
+import edu.upenn.cis.orchestra.ITestFrameWrapper;
 import edu.upenn.cis.orchestra.OrchestraSchema;
 import edu.upenn.cis.orchestra.OrchestraTestFrame;
 
@@ -17,7 +18,7 @@ import edu.upenn.cis.orchestra.OrchestraTestFrame;
  * @author John Frommeyer
  * 
  */
-public class OrchestraGUITestFrame {
+public class OrchestraGUITestFrame implements ITestFrameWrapper<FrameFixture>{
 	/** The test frame */
 	private final OrchestraTestFrame testFrame;
 	private final FrameFixture window;
@@ -40,30 +41,19 @@ public class OrchestraGUITestFrame {
 		Config.setTestSchemaName(oldSchemaName);
 	}
 
-	/**
-	 * @return the window
+	/**  {@inheritDoc}
+	 * @see edu.upenn.cis.orchestra.ITestFrameWrapper#getOrchestraController()
 	 */
-	public FrameFixture getWindowFrameFixture() {
+	@Override
+	public FrameFixture getOrchestraController() {
 		return window;
 	}
 
-	/**
-	 * Returns the appropriate {@code JdbcDatabaseTester} for the underlying
-	 * {@code OrchestraSystem}.
-	 * 
-	 * @return the appropriate {@code JdbcDatabaseTester} for the underlying
-	 *         {@code OrchestraSystem}
+	/**  {@inheritDoc}
+	 * @see edu.upenn.cis.orchestra.ITestFrameWrapper#getTestFrame()
 	 */
-	JdbcDatabaseTester getDbTester() {
-		return testFrame.getDbTester();
-	}
-
-	/**
-	 * Returns the {@code OrchestraTestFrame}.
-	 * 
-	 * @return the {@code OrchestraTestFrame}
-	 */
-	OrchestraTestFrame getOrchestraTestFrame() {
+	@Override
+	public OrchestraTestFrame getTestFrame() {
 		return testFrame;
 	}
 }

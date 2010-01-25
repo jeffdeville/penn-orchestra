@@ -24,6 +24,7 @@ import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.exchange.IEngine;
+import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
 
 /**
  * Creates {@code IOrchestraOperation}s which deal directly with a collection
@@ -35,7 +36,7 @@ import edu.upenn.cis.orchestra.exchange.IEngine;
  * 
  */
 public final class MultiOrchestraSystemOperationFactory extends
-		AbstractDsFileOperationFactory {
+		AbstractDsFileOperationFactory<OrchestraSystem> {
 
 	/**
 	 * An Orchestra Create operation.
@@ -64,9 +65,10 @@ public final class MultiOrchestraSystemOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			OrchestraSystemTestFrame systemTestFrame = localPeerToSystemFrame
+			ITestFrameWrapper<OrchestraSystem> testFrameWrapper = peerToTestFrameWrapper
 					.get(peerName);
-			OrchestraSystem localSystem = systemTestFrame.getOrchestraSystem();
+			OrchestraSystem localSystem = testFrameWrapper
+					.getOrchestraController();
 
 			IEngine mappingEngine = localSystem.getMappingEngine();
 			mappingEngine.createBaseSchemaRelations();
@@ -74,8 +76,8 @@ public final class MultiOrchestraSystemOperationFactory extends
 			MetaDataChecker checker = new MetaDataChecker.Builder()
 					.checkTypes().build();
 			DbUnitUtil.dumpOrCheckAndMetaCheck(datasetFile, checker,
-					orchestraSchema, dumpDatasets, systemTestFrame
-							.getDbTester(), bdbDataSetFactory);
+					orchestraSchema, dumpDatasets, testFrameWrapper
+							.getTestFrame().getDbTester(), bdbDataSetFactory);
 		}
 	}
 
@@ -106,16 +108,17 @@ public final class MultiOrchestraSystemOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			OrchestraSystemTestFrame systemTestFrame = localPeerToSystemFrame
+			ITestFrameWrapper<OrchestraSystem> testFrameWrapper = peerToTestFrameWrapper
 					.get(peerName);
-			OrchestraSystem localSystem = systemTestFrame.getOrchestraSystem();
+			OrchestraSystem localSystem = testFrameWrapper
+					.getOrchestraController();
 			localSystem.getMappingEngine().migrate();
 
 			MetaDataChecker checker = new MetaDataChecker.Builder()
 					.checkTypes().checkForLabeledNulls().build();
 			DbUnitUtil.dumpOrCheckAndMetaCheck(datasetFile, checker,
-					orchestraSchema, dumpDatasets, systemTestFrame
-							.getDbTester(), bdbDataSetFactory);
+					orchestraSchema, dumpDatasets, testFrameWrapper
+							.getTestFrame().getDbTester(), bdbDataSetFactory);
 		}
 	}
 
@@ -149,9 +152,10 @@ public final class MultiOrchestraSystemOperationFactory extends
 		public void execute() throws Exception {
 			ArrayList<String> succeeded = OrchestraUtil.newArrayList();
 			ArrayList<String> failed = OrchestraUtil.newArrayList();
-			OrchestraSystemTestFrame systemTestFrame = localPeerToSystemFrame
+			ITestFrameWrapper<OrchestraSystem> testFrameWrapper = peerToTestFrameWrapper
 					.get(peerName);
-			OrchestraSystem localSystem = systemTestFrame.getOrchestraSystem();
+			OrchestraSystem localSystem = testFrameWrapper
+					.getOrchestraController();
 
 			localSystem.importUpdates(testDataDirectory.getPath(), succeeded,
 					failed);
@@ -160,7 +164,8 @@ public final class MultiOrchestraSystemOperationFactory extends
 			Assert.assertTrue(failed.isEmpty());
 
 			DbUnitUtil.dumpOrCheck(datasetFile, orchestraSchema, dumpDatasets,
-					systemTestFrame.getDbTester(), bdbDataSetFactory);
+					testFrameWrapper.getTestFrame().getDbTester(),
+					bdbDataSetFactory);
 
 		}
 	}
@@ -194,12 +199,14 @@ public final class MultiOrchestraSystemOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			OrchestraSystemTestFrame systemTestFrame = localPeerToSystemFrame
+			ITestFrameWrapper<OrchestraSystem> testFrameWrapper = peerToTestFrameWrapper
 					.get(peerName);
-			OrchestraSystem localSystem = systemTestFrame.getOrchestraSystem();
+			OrchestraSystem localSystem = testFrameWrapper
+					.getOrchestraController();
 			localSystem.publishAndMap();
 			DbUnitUtil.dumpOrCheck(datasetFile, orchestraSchema, dumpDatasets,
-					systemTestFrame.getDbTester(), bdbDataSetFactory);
+					testFrameWrapper.getTestFrame().getDbTester(),
+					bdbDataSetFactory);
 		}
 	}
 
@@ -233,9 +240,10 @@ public final class MultiOrchestraSystemOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			OrchestraSystemTestFrame systemTestFrame = localPeerToSystemFrame
+			ITestFrameWrapper<OrchestraSystem> testFrameWrapper = peerToTestFrameWrapper
 					.get(peerName);
-			OrchestraSystem localSystem = systemTestFrame.getOrchestraSystem();
+			OrchestraSystem localSystem = testFrameWrapper
+					.getOrchestraController();
 
 			if (localSystem.getRecMode()) {
 				localSystem.reconcile();
@@ -252,7 +260,8 @@ public final class MultiOrchestraSystemOperationFactory extends
 			// DomUtils.write(translationState, new FileWriter("ts-" +
 			// datasetFile.getName()));
 			DbUnitUtil.dumpOrCheck(datasetFile, orchestraSchema, dumpDatasets,
-					systemTestFrame.getDbTester(), bdbDataSetFactory);
+					testFrameWrapper.getTestFrame().getDbTester(),
+					bdbDataSetFactory);
 		}
 	}
 
@@ -283,18 +292,19 @@ public final class MultiOrchestraSystemOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			OrchestraSystemTestFrame oldSystemFrame = localPeerToSystemFrame
+			ITestFrameWrapper<OrchestraSystem> oldFrameWrapper = peerToTestFrameWrapper
 					.get(peerName);
-			OrchestraSystemTestFrame newSystemFrame = new OrchestraSystemTestFrame(
-					orchestraSchema, oldSystemFrame.getOrchestraTestFrame());
 
-			localPeerToSystemFrame.put(peerName, newSystemFrame);
+			ITestFrameWrapper<OrchestraSystem> newSystemFrame = new OrchestraSystemTestFrame(
+					orchestraSchema, oldFrameWrapper.getTestFrame());
+
+			peerToTestFrameWrapper.put(peerName, newSystemFrame);
 
 			MetaDataChecker checker = new MetaDataChecker.Builder()
 					.checkTypes().build();
 			DbUnitUtil.dumpOrCheckAndMetaCheck(datasetFile, checker,
-					orchestraSchema, dumpDatasets,
-					newSystemFrame.getDbTester(), bdbDataSetFactory);
+					orchestraSchema, dumpDatasets, newSystemFrame
+							.getTestFrame().getDbTester(), bdbDataSetFactory);
 		}
 	}
 
@@ -325,44 +335,40 @@ public final class MultiOrchestraSystemOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			OrchestraSystemTestFrame systemTestFrame = localPeerToSystemFrame
+			ITestFrameWrapper<OrchestraSystem> testFrameWrapper = peerToTestFrameWrapper
 					.get(peerName);
-			OrchestraSystem localSystem = systemTestFrame.getOrchestraSystem();
+			OrchestraSystem localSystem = testFrameWrapper
+					.getOrchestraController();
 
 			localSystem.getMappingDb().finalize();
 
 			MetaDataChecker checker = new MetaDataChecker.Builder()
 					.checkTypes().build();
 			DbUnitUtil.dumpOrCheckAndMetaCheck(datasetFile, checker,
-					orchestraSchema, dumpDatasets, systemTestFrame
-							.getDbTester(), bdbDataSetFactory);
-
+					orchestraSchema, dumpDatasets, testFrameWrapper
+							.getTestFrame().getDbTester(), bdbDataSetFactory);
 
 		}
 	}
 
-	private final Map<String, OrchestraSystemTestFrame> localPeerToSystemFrame;
-
 	/**
 	 * Creates an {@code OrchestraSystemOperationFactory} which will use the
 	 * {@code localPeerToSystem} collection to implement operations.
-	 * 
-	 * @param localPeerToSystemFrame
 	 * @param orchestraSchema
 	 * @param testDataDirectory
 	 * @param dumpDatasets
-	 * @param dbTester
+	 * @param localPeerToSystemFrame
 	 * @param bdbDataSetFactory
+	 * @param dbTester
 	 */
 	public MultiOrchestraSystemOperationFactory(
-			@SuppressWarnings("hiding") final Map<String, OrchestraSystemTestFrame> localPeerToSystemFrame,
 			@SuppressWarnings("hiding") final OrchestraSchema orchestraSchema,
 			@SuppressWarnings("hiding") final File testDataDirectory,
 			@SuppressWarnings("hiding") final boolean dumpDatasets,
+			final Map<String, ITestFrameWrapper<OrchestraSystem>> localPeerToSystemFrame,
 			@SuppressWarnings("hiding") final BdbDataSetFactory bdbDataSetFactory) {
 		super(orchestraSchema, testDataDirectory, dumpDatasets,
-				bdbDataSetFactory);
-		this.localPeerToSystemFrame = localPeerToSystemFrame;
+				localPeerToSystemFrame, bdbDataSetFactory);
 	}
 
 	/**
@@ -426,16 +432,6 @@ public final class MultiOrchestraSystemOperationFactory extends
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * edu.upenn.cis.orchestra.IOrchestraOperationFactory#getOrchestraTestFrame
-	 * (java.lang.String)
-	 */
-	@Override
-	public OrchestraTestFrame getOrchestraTestFrame(String peerName) {
-		return localPeerToSystemFrame.get(peerName).getOrchestraTestFrame();
-	}
+	
 
 }

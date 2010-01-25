@@ -47,6 +47,8 @@ import org.dbunit.ext.mysql.MySqlDataTypeFactory;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 
+import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
+
 
 /**
  * Utility methods for using DbUnit.

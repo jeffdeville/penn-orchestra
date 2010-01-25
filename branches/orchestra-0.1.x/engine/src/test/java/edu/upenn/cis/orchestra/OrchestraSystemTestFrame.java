@@ -15,8 +15,6 @@
  */
 package edu.upenn.cis.orchestra;
 
-import org.dbunit.JdbcDatabaseTester;
-
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.repository.dao.RepositorySchemaDAO;
 import edu.upenn.cis.orchestra.repository.dao.flatfile.FlatFileRepositoryDAO;
@@ -28,7 +26,7 @@ import edu.upenn.cis.orchestra.repository.dao.flatfile.FlatFileRepositoryDAO;
  * @author John Frommeyer
  * 
  */
-class OrchestraSystemTestFrame {
+class OrchestraSystemTestFrame implements ITestFrameWrapper<OrchestraSystem> {
 	/** The test frame */
 	private final OrchestraTestFrame testFrame;
 	private final OrchestraSystem system;
@@ -38,35 +36,29 @@ class OrchestraSystemTestFrame {
 		testFrame = orchestraTestFrame;
 		RepositorySchemaDAO repositorySchemaDAO = new FlatFileRepositoryDAO(
 				orchestraSchema.toDocument(testFrame.getDbURL(), testFrame
-						.getDbUser(), testFrame.getDbPassword(), testFrame.getPeerName()));
+						.getDbUser(), testFrame.getDbPassword(), testFrame
+						.getPeerName()));
 		system = repositorySchemaDAO.loadAllPeers();
 
 	}
 
 	/**
-	 * @return the system
+	 * {@inheritDoc}
+	 * 
+	 * @see edu.upenn.cis.orchestra.ITestFrameWrapper#getOrchestraController()
 	 */
-	public OrchestraSystem getOrchestraSystem() {
+	@Override
+	public OrchestraSystem getOrchestraController() {
 		return system;
 	}
 
 	/**
-	 * Returns the appropriate {@code JdbcDatabaseTester} for the underlying
-	 * {@code OrchestraSystem}.
+	 * {@inheritDoc}
 	 * 
-	 * @return the appropriate {@code JdbcDatabaseTester} for the underlying
-	 * {@code OrchestraSystem}
+	 * @see edu.upenn.cis.orchestra.ITestFrameWrapper#getTestFrame()
 	 */
-	JdbcDatabaseTester getDbTester() {
-		return testFrame.getDbTester();
-	}
-
-	/**
-	 * Returns the {@code OrchestraTestFrame}.
-	 * 
-	 * @return the {@code OrchestraTestFrame}
-	 */
-	OrchestraTestFrame getOrchestraTestFrame() {
+	@Override
+	public OrchestraTestFrame getTestFrame() {
 		return testFrame;
 	}
 }

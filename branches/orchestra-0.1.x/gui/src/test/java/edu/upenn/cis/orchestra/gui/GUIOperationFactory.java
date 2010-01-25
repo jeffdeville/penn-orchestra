@@ -34,13 +34,13 @@ import org.fest.swing.timing.Timeout;
 import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.AbstractDsFileOperationFactory;
-import edu.upenn.cis.orchestra.BdbDataSetFactory;
 import edu.upenn.cis.orchestra.DbUnitUtil;
 import edu.upenn.cis.orchestra.IOrchestraOperation;
 import edu.upenn.cis.orchestra.MetaDataChecker;
 import edu.upenn.cis.orchestra.OrchestraSchema;
 import edu.upenn.cis.orchestra.gui.peers.PeerCommands;
 import edu.upenn.cis.orchestra.gui.peers.PeersMgtPanel;
+import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
 
 /**
  * Creates {@code IOrchestraOperation}s which carry out operations via the GUI.
@@ -50,7 +50,7 @@ import edu.upenn.cis.orchestra.gui.peers.PeersMgtPanel;
  * @author John Frommeyer
  * 
  */
-public final class GUIOperationFactory extends AbstractDsFileOperationFactory {
+public final class GUIOperationFactory extends AbstractDsFileOperationFactory<Void> {
 	/**
 	 * An Orchestra Create operation.
 	 * 
