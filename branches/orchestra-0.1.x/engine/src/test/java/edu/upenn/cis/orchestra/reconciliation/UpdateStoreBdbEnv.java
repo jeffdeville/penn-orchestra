@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra;
+package edu.upenn.cis.orchestra.reconciliation;
 
-import static edu.upenn.cis.orchestra.BdbEntryInfo.getByteBufferReaderMethod;
+import static edu.upenn.cis.orchestra.reconciliation.BdbEntryInfo.getByteBufferReaderMethod;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.ObjectInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -32,18 +34,19 @@ import org.dom4j.Element;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
-import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
-import com.sleepycat.je.EnvironmentLockedException;
+import com.sleepycat.je.LockMode;
+import com.sleepycat.je.OperationStatus;
 
+import edu.upenn.cis.orchestra.OrchestraUtil;
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferReader;
+import edu.upenn.cis.orchestra.datamodel.ByteBufferWriter;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.TxnPeerID;
-import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
-import edu.upenn.cis.orchestra.reconciliation.LocalSchemaIDBinding;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
+import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding.SchemaMap;
 
 /**
  * Encapsulates some of the work needed to open a Berkeley database holding an
@@ -160,20 +163,21 @@ public class UpdateStoreBdbEnv {
 	private ISchemaIDBinding binding;
 
 	/**
-	 * Creates an {@code UpdateStoreBdbEnv} using a schema binding which is not dependent on
-	 * the Berkeley environment. Sets up {@code env} and opens all databases.
+	 * Creates an {@code UpdateStoreBdbEnv} using a schema binding which is not
+	 * dependent on a new {@code SchemaIDBinding} instance. Sets up {@code env}
+	 * and opens all databases.
 	 * 
 	 * @param peerIDToSchema
-	 * @throws Exception 
+	 * @throws Exception
 	 */
-	UpdateStoreBdbEnv(File envHome, Map<AbstractPeerID, Schema> peerIDToSchema) throws Exception {
+	UpdateStoreBdbEnv(File envHome, Map<AbstractPeerID, Schema> peerIDToSchema)
+			throws Exception {
 		EnvironmentConfig myEnvConfig = new EnvironmentConfig();
 		myEnvConfig.setTransactional(true);
 		// myEnvConfig.setReadOnly(true);
 
 		// Open the environment
 		env = new Environment(envHome, myEnvConfig);
-
 		binding = new LocalSchemaIDBinding(peerIDToSchema);
 
 		DatabaseConfig dbConfig = new DatabaseConfig();
@@ -198,29 +202,19 @@ public class UpdateStoreBdbEnv {
 	}
 
 	/**
-	 * Creates an {@code UpdateStoreBdbEnv} using a schema binding dependent on
-	 * the Berkeley environment. Sets up {@code env} and opens all databases.
+	 * Creates an {@code UpdateStoreBdbEnv}. Sets up {@code env} and opens all
+	 * databases.
 	 * 
-	 * @param envHome
+	 * @param peerIDToSchema
 	 * @throws Exception
 	 */
-	@Deprecated
-	UpdateStoreBdbEnv(File envHome) throws Exception {
-
+	UpdateStoreBdbEnv(File envHome, String cdssName) throws Exception {
 		EnvironmentConfig myEnvConfig = new EnvironmentConfig();
 		myEnvConfig.setTransactional(true);
-		// myEnvConfig.setReadOnly(true);
 
 		// Open the environment
 		env = new Environment(envHome, myEnvConfig);
-
-		binding = new SchemaIDBinding(env);
-		List<Schema> schemas = Collections.emptyList();
-		Map<AbstractPeerID, Integer> peerSchemas = Collections.emptyMap();
-		// Empty collections work because registerAllSchemas(...) first checks
-		// the bdb for a saved SchemaMap.
-		// binding.registerAllSchemas(orchestraSchemaName, schemas,
-		// peerSchemas);
+		binding = initializeBinding(env, cdssName);
 
 		DatabaseConfig dbConfig = new DatabaseConfig();
 		dbConfig.setAllowCreate(false);
@@ -241,7 +235,43 @@ public class UpdateStoreBdbEnv {
 			myDbs.add(env.openDatabase(null, dbName, dbConfig));
 
 		}
+	}
 
+	private static ISchemaIDBinding initializeBinding(Environment e, String cdss)
+			throws Exception {
+		Database peerSchemaInfo = null;
+		try {
+			ByteBufferWriter bbw = new ByteBufferWriter();
+			bbw.addToBuffer(cdss);
+
+			DatabaseEntry key = new DatabaseEntry(bbw.getByteArray());
+
+			DatabaseEntry data = new DatabaseEntry();
+			DatabaseConfig dbConfig = new DatabaseConfig();
+			dbConfig.setAllowCreate(false);
+			dbConfig.setReadOnly(true);
+			dbConfig.setTransactional(false);
+			peerSchemaInfo = e.openDatabase(null, "schemaInfo", dbConfig);
+
+			OperationStatus os2 = peerSchemaInfo.get(null, key, data,
+					LockMode.DEFAULT);
+
+			if (os2 == OperationStatus.SUCCESS) {
+				ByteArrayInputStream schMap = new ByteArrayInputStream(data
+						.getData());
+
+				ObjectInputStream os = new ObjectInputStream(schMap);
+
+				SchemaMap map = (SchemaMap) os.readObject();
+				return new LocalSchemaIDBinding(map._peerSchemaMap);
+			}
+			throw new IllegalStateException(
+					"Could not find peer to schema map for CDSS: " + cdss);
+		} finally {
+			if (peerSchemaInfo != null) {
+				peerSchemaInfo.close();
+			}
+		}
 	}
 
 	/**
@@ -262,11 +292,6 @@ public class UpdateStoreBdbEnv {
 			try {
 				for (Database db : myDbs) {
 					db.close();
-				}
-				if (binding instanceof SchemaIDBinding) {
-					SchemaIDBinding berkeleyBinding = (SchemaIDBinding) binding;
-					berkeleyBinding.clear(env);
-					berkeleyBinding.quit();
 				}
 				env.close();
 			} catch (Exception e) {

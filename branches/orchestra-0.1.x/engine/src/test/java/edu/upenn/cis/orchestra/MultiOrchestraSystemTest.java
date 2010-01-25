@@ -19,15 +19,12 @@ import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
 import static org.testng.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Map;
 
 import org.testng.Assert;
 
-import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
-import edu.upenn.cis.orchestra.datamodel.Peer;
-import edu.upenn.cis.orchestra.datamodel.Schema;
+import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
 
 /**
  * @see edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest
@@ -38,7 +35,7 @@ public final class MultiOrchestraSystemTest extends
 		AbstractMultiSystemOrchestraTest {
 
 	/** The Orchestra systems which will be created and tested. */
-	private Map<String, OrchestraSystemTestFrame> peerToOrchestraSystemFrame  = newHashMap();
+	private Map<String, ITestFrameWrapper<OrchestraSystem>> peerToOrchestraSystemFrame = newHashMap();
 
 	/** The factory this test will use to create Orchestra operations. */
 	private MultiOrchestraSystemOperationFactory operationFactory;
@@ -49,7 +46,7 @@ public final class MultiOrchestraSystemTest extends
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see edu.upenn.cis.orchestra.AbstractOrchestraTest#beforePrepare()
+	 * @see edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest#beforePrepare()
 	 */
 	@Override
 	protected final void beforePrepareImpl() {}
@@ -57,12 +54,11 @@ public final class MultiOrchestraSystemTest extends
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see
-	 * edu.upenn.cis.orchestra.AbstractOrchestraTest#betweenPrepareAndTest()
+	 * @see edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest#betweenPrepareAndTest()
 	 */
 	@Override
 	protected void betweenPrepareAndTestImpl() throws Exception {
-		//boolean firstSystem = true;
+		// boolean firstSystem = true;
 		File f = new File("updateStore_env");
 		if (f.exists() && f.isDirectory()) {
 			File[] contents = f.listFiles();
@@ -73,40 +69,34 @@ public final class MultiOrchestraSystemTest extends
 		}
 
 		for (OrchestraTestFrame testFrame : testFrames) {
-			OrchestraSystemTestFrame systemFrame = new OrchestraSystemTestFrame(
+			ITestFrameWrapper<OrchestraSystem> systemFrame = new OrchestraSystemTestFrame(
 					orchestraSchema, testFrame);
-			Assert.assertEquals(systemFrame.getOrchestraSystem().getName(),
+			Assert.assertEquals(systemFrame.getOrchestraController().getName(),
 					orchestraSchemaName);
 			peerToOrchestraSystemFrame
 					.put(testFrame.getPeerName(), systemFrame);
 
 		}
 		assertTrue(peerToOrchestraSystemFrame.values().size() > 0);
-		OrchestraSystemTestFrame systemTestFrame = peerToOrchestraSystemFrame.values().iterator().next();
-		Map<AbstractPeerID, Schema> peerIDToSchema = newHashMap();
-		Collection<Peer> peers = systemTestFrame.getOrchestraSystem().getPeers();
-		for (Peer peer : peers) {
-			Collection<Schema> schemas = peer.getSchemas();
-			assertTrue(schemas.size() == 1);
-			peerIDToSchema.put(peer.getPeerId(), schemas.iterator().next());
-		}
 
-		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"), peerIDToSchema);
+		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"),
+				orchestraSchema.getName());
 		operationFactory = new MultiOrchestraSystemOperationFactory(
-				peerToOrchestraSystemFrame, orchestraSchema, testDataDirectory,
-				onlyGenerateDataSets, bdbDataSetFactory);
+				orchestraSchema, testDataDirectory, onlyGenerateDataSets,
+				peerToOrchestraSystemFrame, bdbDataSetFactory);
 		executor = new MultiSystemOrchestraOperationExecutor(operationFactory);
 	}
 
-
-	/**  {@inheritDoc}
+	/**
+	 * {@inheritDoc}
+	 * 
 	 * @see edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest#shutdownImpl()
 	 */
 	@Override
 	protected void shutdownImpl() throws Exception {
-		for (OrchestraSystemTestFrame frame : peerToOrchestraSystemFrame
+		for (ITestFrameWrapper<OrchestraSystem> frame : peerToOrchestraSystemFrame
 				.values()) {
-			OrchestraSystem orchestraSystem = frame.getOrchestraSystem();
+			OrchestraSystem orchestraSystem = frame.getOrchestraController();
 			if (orchestraSystem != null) {
 				orchestraSystem.stopStoreServer();
 				orchestraSystem.getMappingDb().disconnect();
