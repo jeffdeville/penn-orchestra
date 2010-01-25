@@ -16,10 +16,13 @@
 package edu.upenn.cis.orchestra;
 
 import java.io.File;
+import java.util.Map;
 
 import org.dbunit.JdbcDatabaseTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
 
 /**
  * Common ancestor for {@code IOpertationFactory} implementation which are based
@@ -35,11 +38,12 @@ import org.slf4j.LoggerFactory;
  * database step to the file, although not in the given directory, but the
  * working directory of the JVM.
  * 
- * @see edu.upenn.cis.orchestra.OrchestraOperationExecutor
+ * @see edu.upenn.cis.orchestra.MultiSystemOrchestraOperationExecutor
  * @author John Frommeyer
+ * @param <T> 
  * 
  */
-public abstract class AbstractDsFileOperationFactory implements
+public abstract class AbstractDsFileOperationFactory<T> implements
 		IOrchestraOperationFactory {
 
 	/** The logger. */
@@ -52,13 +56,16 @@ public abstract class AbstractDsFileOperationFactory implements
 	protected final boolean dumpDatasets;
 	/** The DbUnit tester. */
 	protected JdbcDatabaseTester dbTester;
-	
+
 	/** Translates Berkeley update store into DbUnit dataset. */
 	protected final BdbDataSetFactory bdbDataSetFactory;
+	
+	/** Map from local peer name to that peers test frame. */
+	protected Map<String, ITestFrameWrapper<T>> peerToTestFrameWrapper;
 
 	/**
-	 * Creates an {@code IOrchestraOperationFactory} which will use DbUnit XML dataset
-	 * files to configure operations.
+	 * Creates an {@code IOrchestraOperationFactory} which will use DbUnit XML
+	 * dataset files to configure operations.
 	 * 
 	 * @param orchestraSchema
 	 * @param testDataDirectory
@@ -78,10 +85,10 @@ public abstract class AbstractDsFileOperationFactory implements
 		this.dbTester = dbTester;
 		this.bdbDataSetFactory = bdbDataSetFactory;
 	}
-	
+
 	/**
-	 * Creates an {@code IOrchestraOperationFactory} which will use DbUnit XML dataset
-	 * files to configure operations.
+	 * Creates an {@code IOrchestraOperationFactory} which will use DbUnit XML
+	 * dataset files to configure operations.
 	 * 
 	 * @param orchestraSchema
 	 * @param testDataDirectory
@@ -96,6 +103,28 @@ public abstract class AbstractDsFileOperationFactory implements
 		this.orchestraSchema = orchestraSchema;
 		this.testDataDirectory = testDataDirectory;
 		this.dumpDatasets = dumpDatasets;
+		this.bdbDataSetFactory = bdbDataSetFactory;
+	}
+
+	/**
+	 * Creates an {@code IOrchestraOperationFactory} which will use DbUnit XML
+	 * dataset files to configure operations.
+	 * 
+	 * @param orchestraSchema
+	 * @param testDataDirectory
+	 * @param dumpDatasets
+	 * @param bdbDataSetFactory
+	 */
+	protected AbstractDsFileOperationFactory(
+			@SuppressWarnings("hiding") final OrchestraSchema orchestraSchema,
+			@SuppressWarnings("hiding") final File testDataDirectory,
+			@SuppressWarnings("hiding") final boolean dumpDatasets,
+			@SuppressWarnings("hiding") final Map<String, ITestFrameWrapper<T>> peerToTestFrameWrapper,
+			@SuppressWarnings("hiding") final BdbDataSetFactory bdbDataSetFactory) {
+		this.orchestraSchema = orchestraSchema;
+		this.testDataDirectory = testDataDirectory;
+		this.dumpDatasets = dumpDatasets;
+		this.peerToTestFrameWrapper = peerToTestFrameWrapper;
 		this.bdbDataSetFactory = bdbDataSetFactory;
 	}
 
@@ -137,7 +166,7 @@ public abstract class AbstractDsFileOperationFactory implements
 		logger.debug("Operation {} on {}.", operation, peer);
 		return operation(operation, peer, datasetFile);
 	}
-	
+
 	@Override
 	public boolean getDumpDatasets() {
 		return dumpDatasets;
@@ -159,9 +188,10 @@ public abstract class AbstractDsFileOperationFactory implements
 	}
 
 	@Override
-	public OrchestraTestFrame getOrchestraTestFrame(String peerName) {
-		// TODO Auto-generated method stub
-		return null;
+	public OrchestraTestFrame getOrchestraTestFrame(String localPeerName) {
+		ITestFrameWrapper<T> testFrameWrapper = peerToTestFrameWrapper
+				.get(localPeerName);
+		return testFrameWrapper.getTestFrame();
 	}
 
 }

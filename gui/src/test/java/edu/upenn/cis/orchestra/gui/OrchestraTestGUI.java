@@ -28,11 +28,12 @@ import org.fest.swing.fixture.FrameFixture;
 import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest;
-import edu.upenn.cis.orchestra.BdbDataSetFactory;
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.IOrchestraOperationFactory;
+import edu.upenn.cis.orchestra.ITestFrameWrapper;
 import edu.upenn.cis.orchestra.MultiSystemOrchestraOperationExecutor;
 import edu.upenn.cis.orchestra.OrchestraTestFrame;
+import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
 
 /**
  * An Orchestra test via the GUI.
@@ -44,13 +45,10 @@ import edu.upenn.cis.orchestra.OrchestraTestFrame;
 @GUITest
 public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 
-	/** The robot for our test. */
-	private Robot robot;
-
 	/** Translates Berkeley update store into DbUnit dataset. */
 	private BdbDataSetFactory bdbDataSetFactory;
 
-	private final Map<String, OrchestraGUITestFrame> peerNameToTestFrame = newHashMap();
+	private final Map<String, ITestFrameWrapper<FrameFixture>> peerNameToTestFrame = newHashMap();
 
 	/*
 	 * (non-Javadoc)
@@ -81,14 +79,15 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 		FailOnThreadViolationRepaintManager.install();
 		Robot robot = BasicRobot.robotWithNewAwtHierarchy();
 		for (OrchestraTestFrame testFrame : testFrames) {
-			OrchestraGUITestFrame guiTestFrame = new OrchestraGUITestFrame(
+			ITestFrameWrapper<FrameFixture> guiTestFrame = new OrchestraGUITestFrame(
 					orchestraSchema, testFrame, robot);
 			peerNameToTestFrame.put(testFrame.getPeerName(), guiTestFrame);
 		}
-		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"));
+		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"),
+				orchestraSchema.getName());
 		IOrchestraOperationFactory factory = new MultiGUIOperationFactory(
-				peerNameToTestFrame, orchestraSchema, testDataDirectory,
-				onlyGenerateDataSets, bdbDataSetFactory);
+				orchestraSchema, testDataDirectory, onlyGenerateDataSets,
+				peerNameToTestFrame, bdbDataSetFactory);
 		executor = new MultiSystemOrchestraOperationExecutor(factory);
 	}
 
@@ -99,8 +98,9 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 	 */
 	@Override
 	protected void shutdownImpl() throws Exception {
-		for (OrchestraGUITestFrame guiTestFrame : peerNameToTestFrame.values()) {
-			FrameFixture window = guiTestFrame.getWindowFrameFixture();
+		for (ITestFrameWrapper<FrameFixture> guiTestFrame : peerNameToTestFrame
+				.values()) {
+			FrameFixture window = guiTestFrame.getOrchestraController();
 			if (window != null) {
 				window.component().toFront();
 				// This setting allows us to exit the GUI without also exiting

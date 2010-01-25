@@ -16,19 +16,28 @@
 package edu.upenn.cis.orchestra;
 
 /**
- * Carries out a sequence of Orchestra and/or database operations.
+ * Combines an {@code OrchestraTestFrame} with some kind of object which can be
+ * used to control an Orchestra instance.
  * 
  * @author John Frommeyer
- * @see edu.upenn.cis.orchestra.MultiSystemOrchestraOperationExecutor
+ * @param <T> the type of the Orchestra controller
+ * 
  */
-public interface IOperationExecutor {
+public interface ITestFrameWrapper<T> {
 
 	/**
-	 * Carries out all the operations.
+	 * Returns the wrapped {@code OrchestraTestFrame}.
 	 * 
-	 * @throws Exception
-	 * 
+	 * @return the wrapped {@code OrchestraTestFrame}
 	 */
-	public void execute() throws Exception;
-	
+	public OrchestraTestFrame getTestFrame();
+
+	/**
+	 * Returns the {@code T} which is used to control the associated Orchestra
+	 * object.
+	 * 
+	 * @return the {@code T} which is used to control the associated Orchestra
+	 *         object
+	 */
+	public T getOrchestraController();
 }

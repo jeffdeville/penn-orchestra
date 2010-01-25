@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra;
+package edu.upenn.cis.orchestra.reconciliation;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -42,8 +42,6 @@ import com.sleepycat.je.OperationStatus;
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferReader;
 import edu.upenn.cis.orchestra.datamodel.Schema;
-import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 
 /**
  * This class can be used to create a DbUnit dataset from a Berkeley database
@@ -58,28 +56,29 @@ public class BdbDataSetFactory {
 	private final UpdateStoreBdbEnv env;
 
 	/**
-	 * Creates a factory which can be used to get a DbUnit XML dataset
-	 * representation of the update store.
+	 * Creates a {@code BdbDataSetFactory}.
 	 * 
-	 * @param bdbDirectory the directory containing the update store.
+	 * @param bdbDirectory
+	 * @param peerIDToSchema
 	 * @throws Exception
 	 */
-	@Deprecated
-	public BdbDataSetFactory(File bdbDirectory)
-			throws Exception {
-
-		env = new UpdateStoreBdbEnv(bdbDirectory);
-	}
-	
-	/**
-	 * Creates a {@code BdbDataSetFactory}.
-
-	 * @param bdbDirectory 
-	 * @param peerIDToSchema
-	 * @throws Exception 
-	 */
-	public BdbDataSetFactory(File bdbDirectory, Map<AbstractPeerID, Schema> peerIDToSchema) throws Exception {
+	public BdbDataSetFactory(File bdbDirectory,
+			Map<AbstractPeerID, Schema> peerIDToSchema) throws Exception {
 		env = new UpdateStoreBdbEnv(bdbDirectory, peerIDToSchema);
+	}
+
+	/**
+	 * Creates a {@code BdbDataSetFactory}. Assumes that the schema for {@code
+	 * cdssName} has already been loaded in the Berkeley database.
+	 * 
+	 * @param bdbDirectory
+	 * @param cdssName
+	 * @param peerIDToSchema
+	 * @throws Exception
+	 */
+	public BdbDataSetFactory(File bdbDirectory, String cdssName)
+			throws Exception {
+		env = new UpdateStoreBdbEnv(bdbDirectory, cdssName);
 	}
 
 	/**
@@ -154,7 +153,7 @@ public class BdbDataSetFactory {
 		 */
 
 		BdbDataSetFactory factory = new BdbDataSetFactory(new File(
-				"updateStore_env"));
+				"updateStore_env"), "ppodLN");
 		// factory.printBdb();
 		try {
 			FlatXmlDataSet ds = factory.getDataSet();

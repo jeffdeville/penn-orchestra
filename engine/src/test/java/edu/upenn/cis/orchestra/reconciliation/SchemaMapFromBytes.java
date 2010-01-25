@@ -17,7 +17,6 @@ package edu.upenn.cis.orchestra.reconciliation;
 
 import java.io.IOException;
 
-import edu.upenn.cis.orchestra.BdbDataSetFactory;
 import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding.SchemaMap;
 
 /**
