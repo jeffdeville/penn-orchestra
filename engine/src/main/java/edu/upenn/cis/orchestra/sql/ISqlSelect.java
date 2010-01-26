@@ -52,7 +52,7 @@ public interface ISqlSelect extends ISqlExp, ISqlStatement {
 	 * <code>INTERSECT</code>, or <code>MINUS</code>).
 	 * 
 	 * @param setClause an SQL Expression (generally <code>UNION</code>,
-	 *            <code>INTERSECT</code>, or <code>MINUS</code)
+	 *            <code>INTERSECT</code>, or <code>MINUS</code>)
 	 */
 	void addSet(ISqlExpression setClause);
 
