@@ -71,7 +71,7 @@ class QueryCombinedExpression extends AbstractDtpSqlExpression<QueryCombined> {
 			break;
 		default:
 			throw new IllegalStateException("Too many operands: "
-					+ getOperandCount() + 1);
+					+ (getOperandCount() + 1));
 		}
 		incrementOperandCount();
 		return this;
