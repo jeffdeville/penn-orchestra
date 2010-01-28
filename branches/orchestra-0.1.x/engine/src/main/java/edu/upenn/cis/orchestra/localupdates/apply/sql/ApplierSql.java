@@ -186,10 +186,10 @@ public class ApplierSql implements IApplier<Connection> {
 				.prepareStatement(selectTemplate.toString());
 		int ncol = tuple.getNumCols();
 		for (int i = 0; i < ncol; i++) {
-			insInsertStatement.setObject(i + 1, tuple.get(i), relation
-					.getColType(i).getSqlTypeCode());
-			selectStatement.setObject(i + 1, tuple.get(i), relation.getColType(
-					i).getSqlTypeCode());
+			Object object = tuple.get(i);
+			int type = relation.getColType(i).getSqlTypeCode();
+			insInsertStatement.setObject(i + 1, object, type);
+			selectStatement.setObject(i + 1, object, type);
 		}
 		insInsertStatement.executeUpdate();
 		ResultSet foundInDelTableResult = selectStatement.executeQuery();

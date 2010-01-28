@@ -63,7 +63,6 @@ import edu.upenn.cis.orchestra.localupdates.extract.exceptions.SchemaIncoherentW
 @Test(groups = { FAST_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP })
 public class ExtractorDefaultTest {
 
-	private Connection testConnection;
 	private Connection extractorConnection;
 
 	private String testSchema = "EXTRACTSCHEMA";
@@ -93,8 +92,6 @@ public class ExtractorDefaultTest {
 		connectionProperties.setProperty("password", dbPassword);
 		System.setProperty("jdbc.drivers", jdbcDriver);
 
-		testConnection = DriverManager.getConnection(dbURL,
-				connectionProperties);
 		extractorConnection = DriverManager.getConnection(dbURL,
 				connectionProperties);
 		extractorConnection.setAutoCommit(false);
@@ -192,9 +189,6 @@ public class ExtractorDefaultTest {
 	 */
 	@AfterClass(alwaysRun = true)
 	public final void close() throws SQLException {
-		if (testConnection != null) {
-			testConnection.close();
-		}
 		// In real life the ILocalUpdater would take care of this.
 		if (extractorConnection != null) {
 			extractorConnection.close();

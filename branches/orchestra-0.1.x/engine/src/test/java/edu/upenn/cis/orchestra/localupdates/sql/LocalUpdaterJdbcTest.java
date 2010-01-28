@@ -15,95 +15,137 @@
  */
 package edu.upenn.cis.orchestra.localupdates.sql;
 
+import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+import static edu.upenn.cis.orchestra.TestUtil.DEV_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collections;
+import java.sql.SQLException;
 import java.util.List;
 
-import org.dbunit.Assertion;
 import org.dbunit.JdbcDatabaseTester;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatDtdDataSet;
+import org.dbunit.dataset.filter.IncludeTableFilter;
+import org.dbunit.operation.DatabaseOperation;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.DbUnitUtil;
-import edu.upenn.cis.orchestra.OrchestraSchema;
-import edu.upenn.cis.orchestra.TestUtil;
-import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
+import edu.upenn.cis.orchestra.datamodel.IntType;
+import edu.upenn.cis.orchestra.datamodel.Peer;
+import edu.upenn.cis.orchestra.datamodel.Relation;
+import edu.upenn.cis.orchestra.datamodel.RelationField;
+import edu.upenn.cis.orchestra.datamodel.Schema;
+import edu.upenn.cis.orchestra.datamodel.StringType;
+import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateRelationIdException;
+import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateSchemaIdException;
+import edu.upenn.cis.orchestra.localupdates.ILocalUpdater;
 
 /**
  * 
  * @author John Frommeyer
  * 
  */
-@Test(groups = { FAST_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP })
+@Test(groups = { FAST_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP, DEV_TESTNG_GROUP })
 public class LocalUpdaterJdbcTest {
-	private OrchestraSystem system;
+
+	private String testSchema = "EXTRACTSCHEMA";
+	private String baseTable = "BASE";
 	private JdbcDatabaseTester tester;
-	private FlatDtdDataSet expected;
+	private Peer localPeer;
 
 	/**
-	 * Initializes the XML document.
+	 * Setting up the test. Right now we only have the DB2 version.
 	 * 
 	 * @param jdbcDriver
 	 * @param dbURL
 	 * @param dbUser
 	 * @param dbPassword
-	 * 
-	 * @throws Exception
-	 * 
+	 * @throws SQLException
 	 */
 	@BeforeClass
 	@Parameters(value = { "jdbc-driver", "db-url", "db-user", "db-password" })
-	public void initializeSystem(String jdbcDriver, String dbURL,
-			String dbUser, String dbPassword) throws Exception {
-		URL url = Config.class.getResource("ppodLN/ppodLN.schema");
-		OrchestraSchema orchestraSchema = new OrchestraSchema(new File(url
-				.toURI()));
-		system = OrchestraSystem.deserialize2(orchestraSchema.toDocument(dbURL,
-				dbUser, dbPassword, "pPODPeer2"));
-		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
+	public final void init(String jdbcDriver, String dbURL, String dbUser,
+			String dbPassword) throws SQLException {
 		Config.setJDBCDriver(jdbcDriver);
-		//Class.forName(jdbcDriver);
-		IDatabaseConnection connection = DbUnitUtil
-				.getConfiguredDbUnitConnection(tester);
-		List<String> empty = Collections.emptyList();
-		TestUtil.clearDb(connection.getConnection(), Collections
-				.singletonList("PPOD2.OTU_PREV"), empty);
-		expected = new FlatDtdDataSet(getClass().getResourceAsStream(
-				"expectedPrevTableMetaData.dtd"));
-		connection.close();
+		Config.setSQLServer(dbURL);
+		Config.setUser(dbUser);
+		Config.setPassword(dbPassword);
 	}
 
 	/**
-	 * Tests the default {@code ILocalUpdater} properly prepares DB (via its
-	 * {@code OrchestraSystem}.
+	 * Sets up dbunit with parameters passed in by testng.
 	 * 
+	 * @param jdbcDriver
+	 * @param dbURL
+	 * @param dbUser
+	 * @param dbPassword
 	 * @throws Exception
+	 */
+	@BeforeClass
+	@Parameters(value = { "jdbc-driver", "db-url", "db-user", "db-password" })
+	public final void initDBUnit(String jdbcDriver, String dbURL,
+			String dbUser, String dbPassword) throws Exception {
+		//Properties connectionProperties = new Properties();
+		//connectionProperties.setProperty("user", dbUser);
+		//connectionProperties.setProperty("password", dbPassword);
+		System.setProperty("jdbc.drivers", jdbcDriver);
+		
+		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
+		URL initalStateURL = getClass().getResource("initialState.xml");
+		File initalStateFile = new File(initalStateURL.getPath());
+		DbUnitUtil.executeDbUnitOperation(DatabaseOperation.CLEAN_INSERT,
+				initalStateFile, tester);
+	}
+
+	/**
+	 * @throws DuplicateRelationIdException
+	 * @throws DuplicateSchemaIdException
 	 * 
 	 */
-	public void prepareDbTest() throws Exception {
-		IDatabaseConnection testConnection = null;
-		system.getMappingDb().connect();
-		try {
-			system.prepareSystemForLocalUpdater();
-			testConnection = DbUnitUtil.getConfiguredDbUnitConnection(tester);
-			IDataSet actual = testConnection.createDataSet(new String[] { "PPOD2.OTU_PREV" });
-			Assertion.assertEquals(expected, actual);
-		} finally {
-			system.clearStoreServer();
-			system.stopStoreServer();
-			system.getMappingDb().finalize();
-			if (testConnection != null) {
-				testConnection.close();
-			}
-		}
+	@BeforeClass
+	public void setUpLocalPeer() throws DuplicateRelationIdException,
+			DuplicateSchemaIdException {
+		Schema schema = new Schema("LocalUpdaterTestSchema");
+		Relation relation = createRelation("");
+		schema.addRelation(relation);
+		Relation relationLocal = createRelation("_L");
+		schema.addRelation(relationLocal);
+		Relation relationReject = createRelation("_R");
+		schema.addRelation(relationReject);
+		localPeer = new Peer("LocalUpdaterTestPeer", "",
+				"Extract Update Test Peer");
+		localPeer.addSchema(schema);
+
+	}
+
+	private Relation createRelation(String suffix) {
+		List<RelationField> fields = newArrayList();
+		fields.add(new RelationField("RID", "The R ID", new IntType(false,
+				false)));
+		fields.add(new RelationField("RSTR", "The R STR", new StringType(false,
+				false, true, 10)));
+		String relationName = baseTable + suffix;
+		Relation newRelation = new Relation(null, testSchema, relationName,
+				relationName, "The description", true, true, fields);
+		newRelation.markFinished();
+		return newRelation;
+	}
+
+	/**
+	 * Test that the extractor and applier work together correctly.
+	 * 
+	 * @throws Exception
+	 */
+	public final void updateExtractionAndApplicationTest() throws Exception {
+		ILocalUpdater updater = new LocalUpdaterJdbc();
+		updater.extractAndApplyLocalUpdates(localPeer);
+		File expected = new File(getClass().getResource("finalState.xml")
+				.toURI());
+		DbUnitUtil.checkDatabase(expected, new IncludeTableFilter(
+				new String[] { testSchema + ".*" }), tester, null);
 	}
 }

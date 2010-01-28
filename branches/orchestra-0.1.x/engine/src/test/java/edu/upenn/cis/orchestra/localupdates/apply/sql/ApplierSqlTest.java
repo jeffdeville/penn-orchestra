@@ -88,7 +88,7 @@ public class ApplierSqlTest {
 		relationReject = createRelation("_R");
 		schema.addRelation(relationReject);
 		localPeer = new Peer("ExtractUpdateTestPeer", "",
-				"Extract Update Test Peer");
+				"Apply Update Test Peer");
 		localPeer.addSchema(schema);
 
 	}
