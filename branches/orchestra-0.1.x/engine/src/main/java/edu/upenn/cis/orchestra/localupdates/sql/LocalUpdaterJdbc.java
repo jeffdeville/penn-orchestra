@@ -23,11 +23,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.dbms.IDb;
-import edu.upenn.cis.orchestra.dbms.SqlDb;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdater;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.apply.IApplier;
@@ -48,9 +46,9 @@ import edu.upenn.cis.orchestra.localupdates.extract.sql.ExtractorFactoryJdbc;
  */
 public class LocalUpdaterJdbc implements ILocalUpdater {
 
-	private static final String SERVER = Config.getSQLServer();
-	private static final String USER = Config.getUser();
-	private static final String PASSWORD = Config.getPassword();
+	private final String server;
+	private final String user;
+	private final String password;
 	private static final Logger logger = LoggerFactory
 			.getLogger(LocalUpdaterJdbc.class);
 
@@ -60,13 +58,19 @@ public class LocalUpdaterJdbc implements ILocalUpdater {
 	/**
 	 * Constructor.
 	 * 
-	 * @param peer
+	 * @param user
+	 * @param password
+	 * @param server
 	 * 
-	 * @param extractor
-	 * @param applier
 	 * @throws NoExtractorClassException
 	 */
-	public LocalUpdaterJdbc() throws NoExtractorClassException {
+	public LocalUpdaterJdbc(@SuppressWarnings("hiding") final String user,
+			@SuppressWarnings("hiding") final String password,
+			@SuppressWarnings("hiding") final String server)
+			throws NoExtractorClassException {
+		this.user = user;
+		this.password = password;
+		this.server = server;
 		IExtractorFactory<Connection> factory = new ExtractorFactoryJdbc();
 		this.extractor = factory.getExtractUpdateInst();
 		IApplierFactory<Connection> appFactory = new ApplierFactoryJdbc();
@@ -122,10 +126,11 @@ public class LocalUpdaterJdbc implements ILocalUpdater {
 	// @Override
 	public void extractAndApplyLocalUpdates(Peer peer)
 			throws DBConnectionError, LocalUpdatesException {
+
 		ILocalUpdates updates = null;
 		Connection connection = null;
 		try {
-			connection = DriverManager.getConnection(SERVER, USER, PASSWORD);
+			connection = DriverManager.getConnection(server, user, password);
 			connection.setAutoCommit(false);
 		} catch (SQLException e) {
 			if (connection != null) {
@@ -153,20 +158,18 @@ public class LocalUpdaterJdbc implements ILocalUpdater {
 	 */
 	@Override
 	public void prepare(IDb db, List<? extends Relation> relations) {
-		SqlDb sqlDb = (SqlDb) db;
-		List<String> code = null;
-		for (Relation rel : relations) {
-			code = sqlDb.createSQLTableCode(
-					"_PREV", rel, false, false, false,
-					false);
-		}
-		logger.debug("Database server: {}", sqlDb.getServer());
-		logger.debug("Prepare code: {}", code);
-		if (code != null) {
-			for (String create : code) {
-				sqlDb.evaluate(create);
-			}
-		}
+		extractor.prepare(db, relations);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see edu.upenn.cis.orchestra.localupdates.ILocalUpdater#postReconcileHook(edu.upenn.cis.orchestra.dbms.IDb,
+	 *      java.util.List)
+	 */
+	@Override
+	public void postReconcileHook(IDb db, List<? extends Relation> relations) {
+		extractor.postReconcileHook(db, relations);
 	}
 
 }

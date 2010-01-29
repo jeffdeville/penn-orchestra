@@ -15,10 +15,13 @@
  */
 package edu.upenn.cis.orchestra.localupdates.extract.sql;
 
+import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,8 @@ import edu.upenn.cis.orchestra.datamodel.Tuple;
 import edu.upenn.cis.orchestra.datamodel.Update;
 import edu.upenn.cis.orchestra.datamodel.AbstractRelation.NameNotFound;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
+import edu.upenn.cis.orchestra.dbms.IDb;
+import edu.upenn.cis.orchestra.dbms.SqlDb;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.LocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.LocalUpdates.Builder;
@@ -58,7 +63,6 @@ public class ExtractorDefault implements IExtractor<Connection> {
 	private final ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -76,8 +80,10 @@ public class ExtractorDefault implements IExtractor<Connection> {
 			for (Relation relation : s.getRelations()) {
 				if (!relation.isInternalRelation()) {
 					try {
-						processRelation(relation, Operation.DELETION, s, connection, builder);
-						processRelation(relation, Operation.INSERTION, s, connection, builder);
+						processRelation(relation, Operation.DELETION, s,
+								connection, builder);
+						processRelation(relation, Operation.INSERTION, s,
+								connection, builder);
 					} catch (SQLException e) {
 						throw new RDBMSExtractError(e);
 					}
@@ -87,7 +93,6 @@ public class ExtractorDefault implements IExtractor<Connection> {
 		return builder.buildLocalUpdates();
 	}
 
-	
 	private void processRelation(Relation relation, Operation op, Schema s,
 			Connection connection, Builder builder) throws SQLException,
 			RDBMSExtractError {
@@ -96,11 +101,9 @@ public class ExtractorDefault implements IExtractor<Connection> {
 		Statement statement = null;
 		try {
 			statement = connection.createStatement();
-			ResultSet updateSet = statement.executeQuery(diff
-					.toString());
+			ResultSet updateSet = statement.executeQuery(diff.toString());
 			while (updateSet.next()) {
-				extractUpdate(s, relation, updateSet, op,
-						builder);
+				extractUpdate(s, relation, updateSet, op, builder);
 			}
 		} finally {
 			if (statement != null) {
@@ -170,4 +173,45 @@ public class ExtractorDefault implements IExtractor<Connection> {
 		return firstMinusSecond;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see edu.upenn.cis.orchestra.localupdates.extract.IExtractor#prepare(edu.upenn.cis.orchestra.dbms.IDb,
+	 *      java.util.List)
+	 */
+	@Override
+	public void prepare(IDb db, List<? extends Relation> relations) {
+		SqlDb sqlDb = (SqlDb) db;
+		List<String> code = newArrayList();
+		for (Relation rel : relations) {
+			code.addAll(sqlDb.createSQLTableCode("_PREV", rel, false, false,
+					false, false));
+		}
+		logger.debug("Database server: {}", sqlDb.getServer());
+		logger.debug("Prepare code: {}", code);
+		if (code != null) {
+			for (String create : code) {
+				sqlDb.evaluate(create);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see edu.upenn.cis.orchestra.localupdates.extract.IExtractor#postReconcileHook(edu.upenn.cis.orchestra.dbms.IDb,
+	 *      java.util.List)
+	 */
+	@Override
+	public void postReconcileHook(IDb db, List<? extends Relation> relations) {
+		SqlDb sqlDb = (SqlDb) db;
+		for (Relation rel : relations) {
+			try {
+				sqlDb.mirrorTable(rel, "", "_PREV");
+			} catch (SQLException e) {
+				logger.error("Error while updating PREV table for "
+						+ rel.getFullQualifiedDbId(), e);
+			}
+		}
+	}
 }
