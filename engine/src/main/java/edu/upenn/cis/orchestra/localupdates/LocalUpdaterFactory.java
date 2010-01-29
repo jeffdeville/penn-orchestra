@@ -30,9 +30,16 @@ import edu.upenn.cis.orchestra.localupdates.sql.LocalUpdaterJdbc;
  * 
  */
 public class LocalUpdaterFactory {
+
 	/**
 	 * Returns a new {@code ILocalUpdater} based on the value of the {@code
-	 * localupdates.localUpdaterClass } property.
+	 * localupdates.localUpdaterClass } property and which is capable of
+	 * connecting to {@code server} as {@code user} with the password {@code
+	 * password}.
+	 * 
+	 * @param user
+	 * @param password
+	 * @param server
 	 * 
 	 * @return a new {@code ILocalUpdater}
 	 * @throws NoLocalUpdaterClassException if the value of the {@code
@@ -40,12 +47,13 @@ public class LocalUpdaterFactory {
 	 *             ILocalUpdater}
 	 * @throws NoExtractorClassException
 	 */
-	public static ILocalUpdater newInstance()
-			throws NoLocalUpdaterClassException, NoExtractorClassException {
+	public static ILocalUpdater newInstance(String user, String password,
+			String server) throws NoLocalUpdaterClassException,
+			NoExtractorClassException {
 		String className = Config.getProperty("localupdates.localUpdaterClass");
 		ILocalUpdater updater = null;
 		if (className == null) {
-			updater = new LocalUpdaterJdbc();
+			updater = new LocalUpdaterJdbc(user, password, server);
 		} else {
 			try {
 				@SuppressWarnings("unchecked")

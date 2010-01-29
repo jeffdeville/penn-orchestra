@@ -2319,4 +2319,31 @@ public class SqlDb implements IDb {
 		insert.addValueSpec(valuesTemplate);
 		return insert.toString();
 	}
+
+	/**
+	 * Makes {@code relation + targetSuffix} a copy of {@code relation +
+	 * sourceSuffix}.
+	 * 
+	 * 
+	 * @param relation
+	 * @param sourceSuffix
+	 * @param targetSuffix
+	 * @throws SQLException
+	 */
+	public void mirrorTable(Relation relation, String sourceSuffix,
+			String targetSuffix) throws SQLException {
+
+		final String sourceTable = relation.getFullQualifiedDbId()
+
+		+ sourceSuffix;
+		final String targetTable = relation.getFullQualifiedDbId()
+				+ targetSuffix;
+		dropExistingData(targetTable);
+		ISqlInsert insert = _sqlFactory.newSqlInsert(targetTable);
+		insert.addValueSpec(_sqlFactory.newSelect(_sqlFactory
+				.newSelectItem("*"), _sqlFactory.newFromItem(sourceTable)));
+		_log.debug(insert);
+		Statement insertStatement = _con.createStatement();
+		insertStatement.executeUpdate(insert.toString());
+	}
 }

@@ -16,7 +16,6 @@
 package edu.upenn.cis.orchestra.localupdates.sql;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
-import static edu.upenn.cis.orchestra.TestUtil.DEV_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 
@@ -49,7 +48,7 @@ import edu.upenn.cis.orchestra.localupdates.ILocalUpdater;
  * @author John Frommeyer
  * 
  */
-@Test(groups = { FAST_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP, DEV_TESTNG_GROUP })
+@Test(groups = { FAST_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP })
 public class LocalUpdaterJdbcTest {
 
 	private String testSchema = "EXTRACTSCHEMA";
@@ -89,11 +88,11 @@ public class LocalUpdaterJdbcTest {
 	@Parameters(value = { "jdbc-driver", "db-url", "db-user", "db-password" })
 	public final void initDBUnit(String jdbcDriver, String dbURL,
 			String dbUser, String dbPassword) throws Exception {
-		//Properties connectionProperties = new Properties();
-		//connectionProperties.setProperty("user", dbUser);
-		//connectionProperties.setProperty("password", dbPassword);
+		// Properties connectionProperties = new Properties();
+		// connectionProperties.setProperty("user", dbUser);
+		// connectionProperties.setProperty("password", dbPassword);
 		System.setProperty("jdbc.drivers", jdbcDriver);
-		
+
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
 		URL initalStateURL = getClass().getResource("initialState.xml");
 		File initalStateFile = new File(initalStateURL.getPath());
@@ -141,7 +140,8 @@ public class LocalUpdaterJdbcTest {
 	 * @throws Exception
 	 */
 	public final void updateExtractionAndApplicationTest() throws Exception {
-		ILocalUpdater updater = new LocalUpdaterJdbc();
+		ILocalUpdater updater = new LocalUpdaterJdbc(Config.getUser(), Config
+				.getPassword(), Config.getSQLServer());
 		updater.extractAndApplyLocalUpdates(localPeer);
 		File expected = new File(getClass().getResource("finalState.xml")
 				.toURI());

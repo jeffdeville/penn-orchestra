@@ -97,6 +97,7 @@ public class Relation extends AbstractRelation {
 		if (schema != null)
 			_name = schema.getNameForID(relationID);
 		
+		//_nullableFields = new ArrayList<Boolean>(schema.getRelationSchema(relationID).getNumCols());
 		_nullableFields = new ArrayList<Boolean>();
 		for (int i = 0; i < _nullableFields.size(); i++)
 			_nullableFields.set(i, new Boolean(false));

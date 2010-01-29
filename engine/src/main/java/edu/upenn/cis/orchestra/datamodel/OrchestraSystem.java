@@ -114,7 +114,7 @@ public class OrchestraSystem {
 	/** The local peer for this system. All publishing and reconciling will be done with respect to this peer. */
 	private Peer _localPeer;
 	/** This will handle any updates to the local peer. */
-	private final ILocalUpdater _localUpdater;
+	private ILocalUpdater _localUpdater;
 	
 	/** Local objects: mapping and reconciliation engines */
 	protected BasicEngine _mappingEngine;
@@ -150,11 +150,6 @@ public class OrchestraSystem {
 		_recDbs = new Hashtable<String, Db>();
 		_schemas = new HashMap<Peer, Schema>();
 		_tcs = new Hashtable<String, Map<String, TrustConditions>>();
-		try {
-			_localUpdater = LocalUpdaterFactory.newInstance();
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		} 
 	}
 
 	public OrchestraSystem(ISchemaIDBinding sch) {
@@ -905,7 +900,7 @@ public class OrchestraSystem {
 						BasicEngine engine = BasicEngine.deserialize(catalog,
 								builtInSchemas, el);
 						catalog.setMappingEngine(engine);
-						
+						catalog._localUpdater = LocalUpdaterFactory.newInstance(engine.getMappingDb().getUsername(), engine.getMappingDb().getPassword(), engine.getMappingDb().getServer());
 					} else if (el.getNodeName().equals("trustConditions")) {
 						if (!el.hasAttribute("peer")
 								|| !el.hasAttribute("schema")) {
@@ -1452,6 +1447,8 @@ public class OrchestraSystem {
 		BasicEngine engine = getMappingEngine();
 		engine.mapUpdates(lastrec, recno, _localPeer, false);
 		getRecDb(localPeerId).setRecDone();
+		List<Relation> relations = getLocalPeerRelations();
+		_localUpdater.postReconcileHook(getMappingDb(), relations);
 	}
 
 	/**
@@ -1461,6 +1458,8 @@ public class OrchestraSystem {
 	 */
 	public void reconcile() throws DbException {
 		getRecDb(_localPeer.getId()).reconcile();
+		List<Relation> relations = getLocalPeerRelations();
+		_localUpdater.postReconcileHook(getMappingDb(), relations);
 	}
 	
 	/**
@@ -1470,6 +1469,7 @@ public class OrchestraSystem {
 	 * @throws Exception
 	 */
 	public int fetch() throws Exception {
+//		_localUpdater.extractAndApplyLocalUpdates(_localPeer);
 		int count = getMappingDb().fetchDbTransactions(_localPeer, getRecDb(_localPeer.getId()));
 		getRecDb(_localPeer.getId()).publish();
 		return count;
@@ -1553,6 +1553,11 @@ public class OrchestraSystem {
 	 * 
 	 */
 	public void prepareSystemForLocalUpdater() {
+		List<Relation> relations = getLocalPeerRelations();
+		_localUpdater.prepare(getMappingDb(), relations);
+	}
+	
+	private List<Relation> getLocalPeerRelations() {
 		List<Relation> relations = newArrayList();
 		for (Schema schema : _localPeer.getSchemas()) {
 			for (Relation relation : schema.getRelations()) {
@@ -1561,7 +1566,6 @@ public class OrchestraSystem {
 				}
 			}
 		}
-		_localUpdater.prepare(getMappingDb(), relations);
+		return relations;
 	}
-
 }

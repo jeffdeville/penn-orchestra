@@ -34,6 +34,7 @@ import edu.upenn.cis.orchestra.datamodel.Update;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.apply.IApplier;
 import edu.upenn.cis.orchestra.localupdates.apply.exceptions.UpdatesNotAppliedException;
+import edu.upenn.cis.orchestra.sql.ISqlExp;
 import edu.upenn.cis.orchestra.sql.ISqlExpression;
 import edu.upenn.cis.orchestra.sql.ISqlFactory;
 import edu.upenn.cis.orchestra.sql.ISqlInsert;
@@ -120,12 +121,15 @@ public class ApplierSql implements IApplier<Connection> {
 				.newSelectItem().setExpression(
 						sqlFactory.newExpression(Code.COUNT))));
 		int ncol = relation.getNumCols();
-		ISqlExpression whereClause = sqlFactory.newExpression(Code.AND);
+		ISqlExp whereClause = null;
+
 		for (int i = 0; i < ncol; i++) {
-			whereClause.addOperand(sqlFactory.newExpression(Code.EQ, sqlFactory
+			ISqlExp newCondition = sqlFactory.newExpression(Code.EQ, sqlFactory
 					.newConstant(relation.getColName(i), Type.COLUMNNAME),
 					sqlFactory.newConstant("?",
-							Type.PREPARED_STATEMENT_PARAMETER)));
+							Type.PREPARED_STATEMENT_PARAMETER));
+			whereClause = (whereClause == null) ? newCondition : sqlFactory
+					.newExpression(Code.AND, whereClause, newCondition);
 			valuesTemplate.addOperand(sqlFactory.newConstant("?",
 					Type.PREPARED_STATEMENT_PARAMETER));
 

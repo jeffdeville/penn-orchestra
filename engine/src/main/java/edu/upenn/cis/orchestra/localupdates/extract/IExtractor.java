@@ -15,7 +15,11 @@
  */
 package edu.upenn.cis.orchestra.localupdates.extract;
 
+import java.util.List;
+
 import edu.upenn.cis.orchestra.datamodel.Peer;
+import edu.upenn.cis.orchestra.datamodel.Relation;
+import edu.upenn.cis.orchestra.dbms.IDb;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.extract.exceptions.DBConnectionError;
 import edu.upenn.cis.orchestra.localupdates.extract.exceptions.RDBMSExtractError;
@@ -48,5 +52,22 @@ public interface IExtractor<T> {
 	public ILocalUpdates extractTransactions(Peer peer, T connection)
 			throws SchemaIncoherentWithDBError, DBConnectionError,
 			RDBMSExtractError;
+	
+	/**
+	 * Called once during Migration so that any required setup can be done.
+	 * 
+	 * @param db the database where the setup needs to be done.
+	 * @param relations the relations for which setup needs to be done.
+	 * 
+	 */
+	public void prepare(IDb db, List<? extends Relation> relations);
+	
+	/**
+	 * This method will be called after update exchange or reconciliation.
+	 * 
+	 * @param db
+	 * @param relations
+	 */
+	public void postReconcileHook(IDb db, List<? extends Relation> relations);
 
 }
