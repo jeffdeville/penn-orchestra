@@ -50,4 +50,12 @@ public interface ILocalUpdater {
 	 * 
 	 */
 	public void prepare(IDb db, List<? extends Relation> relations);
+	
+	/**
+	 * This method will be called after update exchange or reconciliation.
+	 * 
+	 * @param db
+	 * @param relations
+	 */
+	public void postReconcileHook(IDb db, List<? extends Relation> relations);
 }

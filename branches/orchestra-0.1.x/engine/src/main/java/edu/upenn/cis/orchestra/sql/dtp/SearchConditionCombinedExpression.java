@@ -108,7 +108,7 @@ class SearchConditionCombinedExpression extends
 			break;
 		default:
 			throw new IllegalStateException("Too many operands: "
-					+ getOperandCount() + 1);
+					+ (getOperandCount() + 1));
 		}
 		incrementOperandCount();
 		return this;

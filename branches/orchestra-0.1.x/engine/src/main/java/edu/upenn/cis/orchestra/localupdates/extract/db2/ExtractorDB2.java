@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import edu.upenn.cis.orchestra.OrchestraUtil;
 import edu.upenn.cis.orchestra.datamodel.Peer;
@@ -29,6 +30,7 @@ import edu.upenn.cis.orchestra.datamodel.Tuple;
 import edu.upenn.cis.orchestra.datamodel.Update;
 import edu.upenn.cis.orchestra.datamodel.AbstractRelation.NameNotFound;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
+import edu.upenn.cis.orchestra.dbms.IDb;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.LocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.extract.IExtractor;
@@ -76,13 +78,11 @@ public class ExtractorDB2 implements IExtractor<Connection> {
 
 		String ccdName = "CCDTEST." + relation.getDbRelName() + CCD_SUFFIX;
 
-		ISqlSelect select = sqlFactory.newSelect(
-				sqlFactory.newSelectItem("*"),
+		ISqlSelect select = sqlFactory.newSelect(sqlFactory.newSelectItem("*"),
 				sqlFactory.newFromItem(ccdName)).addOrderBy(
-				OrchestraUtil.newArrayList(sqlFactory
-						.newOrderByItem(sqlFactory.newConstant(
-								COMMITSEQ_COL, Type.COLUMNNAME)), sqlFactory
-						.newOrderByItem(sqlFactory.newConstant(
+				OrchestraUtil.newArrayList(sqlFactory.newOrderByItem(sqlFactory
+						.newConstant(COMMITSEQ_COL, Type.COLUMNNAME)),
+						sqlFactory.newOrderByItem(sqlFactory.newConstant(
 								INTENTSEQ_COL, Type.COLUMNNAME))));
 
 		Statement statement = null;
@@ -163,5 +163,20 @@ public class ExtractorDB2 implements IExtractor<Connection> {
 
 		return builder.buildLocalUpdates();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see edu.upenn.cis.orchestra.localupdates.extract.IExtractor#prepare(edu.upenn.cis.orchestra.dbms.IDb,
+	 *      java.util.List)
+	 */
+	@Override
+	public void prepare(IDb db, List<? extends Relation> relations) {}
+
+	/**  {@inheritDoc}
+	 * @see edu.upenn.cis.orchestra.localupdates.extract.IExtractor#postReconcileHook(edu.upenn.cis.orchestra.dbms.IDb, java.util.List)
+	 */
+	@Override
+	public void postReconcileHook(IDb db, List<? extends Relation> relations) {}
 
 }

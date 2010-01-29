@@ -77,7 +77,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<suiteXmlFiles>
-        				<!-- <suiteXmlFile>src/test/resources/testng.xml,src/test/resources/orchestra-test-testng.xml</suiteXmlFile> -->
         				<suiteXmlFile>target/test-classes/testng.xml</suiteXmlFile>
       				</suiteXmlFiles>
       				<excludedGroups>fullgui-tests</excludedGroups>
@@ -101,9 +100,6 @@
 				</configuration>
 			</plugin>
 		</plugins></build>
-		<properties>
-		<testng.requires.database></testng.requires.database>
-	</properties>
 		</profile>
 	</profiles>
 
@@ -335,6 +331,5 @@
 	</dependencies>
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
-		<testng.requires.database>requires-database</testng.requires.database>
 	</properties>
 </project>
