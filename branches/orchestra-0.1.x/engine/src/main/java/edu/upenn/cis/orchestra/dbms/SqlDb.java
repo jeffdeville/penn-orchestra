@@ -2084,8 +2084,7 @@ public class SqlDb implements IDb {
 
 		RelationContext rc = new RelationContext(r, s, p, false);
 
-		totalCount += convert(r, rc, AtomType.INS, store);
-		dropExistingData(r);
+		totalCount += convert(r, rc, AtomType.NONE, store);
 		return totalCount;
 	}
 
