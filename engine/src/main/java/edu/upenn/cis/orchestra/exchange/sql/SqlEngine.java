@@ -672,8 +672,10 @@ public class SqlEngine extends BasicEngine {
 		_system.prepareSystemForLocalUpdater();
 
 		try {
-			moveExistingData();
-			//_system.publishAndMap();
+			int updates = moveExistingData();
+			if (updates != 0) {
+				_system.publishAndMap();
+			}
 		} catch (Exception se) {
 			System.err.println("Error importing existing data");
 			se.printStackTrace();
@@ -746,12 +748,12 @@ public class SqlEngine extends BasicEngine {
 					final SchemaConverterStatementsGen statementsGen = 
 						new SchemaConverterStatementsGen (getMappingDb().getDataSource(), Config.getJDBCDriver(), sc);
 
+					statements.addAll(statementsGen.createNecessaryTables(!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), 
+							getMappingDb().getSqlTranslator().getLoggingMsg().length() == 0, getMappingDb()));
+
 //					List<SqlStatement> tableConversionStatements = statementsGen.createTableConversionStatements(statements, 
 //					!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), getMappingDb().getSqlTranslator().getLoggingMsg()));
-					/*if (!p.isLocalPeer()){
-						statements.addAll(statementsGen.createNecessaryTables(!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), 
-								getMappingDb().getSqlTranslator().getLoggingMsg().length() == 0, getMappingDb()));
-					}*/
+
 					map.putAll(statementsGen.createTableConversionStatements(statements, 
 							!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), 
 							getMappingDb().getSqlTranslator().getLoggingMsg(), getMappingDb(), _system.isBidirectional()));
@@ -789,20 +791,22 @@ public class SqlEngine extends BasicEngine {
 	 * @throws SQLException
 	 * @throws ClassNotFoundException
 	 */
-	public void moveExistingData () 
+	public int moveExistingData () 
 	throws IOException, SQLException, ClassNotFoundException, DbException, IteratorException, DuplicateRelationIdException
 	{
+		int updates = 0;
 		for (final Peer p : _system.getPeers())
 			for (final Schema sc : p.getSchemas()) {
 				for (final Relation r : sc.getRelations()) {
 
 					// Move data from the original x relation to the x_L_INS relation
 					if (!r.isInternalRelation()) {
-						getMappingDb().convertTuplesToIndependentTransactions(p, sc, r, _system.getRecDb(p.getPeerId().getID()));
-//						getMappingDb().moveExistingData(r, "", Relation.LOCAL + "_INS");
+						updates += getMappingDb().convertTuplesToIndependentTransactions(p, sc, r, _system.getRecDb(p.getPeerId().getID()));
+						getMappingDb().moveExistingData(r, "", Relation.LOCAL + "_INS");
 					}
 				}
 			}
+		return updates;
 	}
 
 	public void createInternalProvenanceRelations () 
