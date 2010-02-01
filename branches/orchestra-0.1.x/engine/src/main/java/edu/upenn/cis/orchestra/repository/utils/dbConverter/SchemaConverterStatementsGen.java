@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.sql.DataSource;
 
@@ -36,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
-
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datalog.atom.Atom.AtomType;
@@ -66,7 +64,7 @@ public class SchemaConverterStatementsGen {
 	private String _jdbcDriver;
 	private Schema _sc;
 	private final ISqlFactory _sqlFactory = SqlFactories.getSqlFactory();
-
+	private final List<String> _existingTableNames;
 
 	////	TODO: CLEAN!!!!!!!!
 	//	public enum AtomType 
@@ -93,7 +91,8 @@ public class SchemaConverterStatementsGen {
 	{
 		_ds = ds;
 		_sc = sc;
-		_jdbcDriver = jdbcDriver;	
+		_jdbcDriver = jdbcDriver;
+		_existingTableNames = getExistingTableNames();
 	}
 
 	/**
@@ -107,26 +106,25 @@ public class SchemaConverterStatementsGen {
 			throws MetaDataAccessException {
 
 		List<String> statements = new ArrayList<String>();
+		if (_existingTableNames.isEmpty()) {
+			for (Relation rel : _sc.getRelations()) {
+				String suffix = "";
+				statements.addAll(db.createSQLTableCode(rel.getDbRelName(),
+						suffix, rel, false, false, false, false, withLogging));
+			}
 
-		for (Relation rel : _sc.getRelations()) {
-			String suffix = "";
-			statements.addAll(db.createSQLTableCode(rel.getDbRelName(), 
-					suffix, rel, false, false, false, false, withLogging));
+			/*
+			 * // Create any key constraints for (Relation rel :
+			 * _sc.getRelations()) { // First of all, recreate primary keys.
+			 * Necessary for foreign keys // creation createPrimaryKey(rel,
+			 * statements); // Create unique indexes createUniqueIndexes(rel,
+			 * statements);
+			 * 
+			 * }
+			 */
+
+			// TODO: foreign keys???
 		}
-
-		/*
-		// Create any key constraints
-		for (Relation rel : _sc.getRelations()) {
-			// First of all, recreate primary keys. Necessary for foreign keys
-			// creation
-			createPrimaryKey(rel, statements);
-			// Create unique indexes
-			createUniqueIndexes(rel, statements);
-
-		}*/
-
-		// TODO: foreign keys???
-
 		return statements;
 
 	}
@@ -177,35 +175,6 @@ public class SchemaConverterStatementsGen {
 			boolean withNoLogging, String database, boolean stratified, String NO_LOGGING, SqlDb db)
 	{
 
-		_log.debug("Loading all the existing tables in memory");
-		List<String> existingTables = new ArrayList<String> ();
-		Map<String,Set<String>> schemas = new HashMap<String, Set<String>> ();
-		for (Relation rel : _sc.getRelations())
-		{
-			if (!schemas.containsKey(rel.getDbCatalog()))
-				schemas.put(rel.getDbCatalog(), new HashSet<String> ());
-			Set<String> schemNames = schemas.get(rel.getDbCatalog());
-			schemNames.add (rel.getDbSchema());
-		}
-		for (Map.Entry<String, Set<String>> entry : schemas.entrySet())
-		{		
-			for (String sc : entry.getValue())
-			{
-				MetaExistTables loader = new MetaExistTables (entry.getKey(),
-						sc,
-						existingTables);
-				try{
-					JdbcUtils.extractDatabaseMetaData(_ds, loader);
-
-				} catch (MetaDataAccessException ex)
-				{
-					//TODO: Actually deal with exceptions here!
-					assert (false) : "not implemented yet";			
-				}			
-
-			}
-		}
-		_log.debug("Existing tables loaded. " + existingTables.size() + " found");
 
 		// Modified by zives 12/20:  don't create tables for _NONE.  Instead
 		// update the base table
@@ -225,7 +194,7 @@ public class SchemaConverterStatementsGen {
 					relName = relName.replaceAll("_", "\\\\_");
 
 					if (type != AtomType.NONE) {
-						if (existingTables.contains(rel.getFullQualifiedDbId() + "_" + type.toString()))
+						if (_existingTableNames.contains(rel.getFullQualifiedDbId() + "_" + type.toString()))
 							statements.add ("DROP TABLE " + rel.getFullQualifiedDbId() + "_" + type.toString());
 					}
 
@@ -431,35 +400,6 @@ public class SchemaConverterStatementsGen {
 			boolean withNoLogging, String database, boolean stratified, String NO_LOGGING, SqlDb db, boolean containsBidirectionalMappings)
 	{
 
-		_log.debug("Loading all the existing tables in memory");
-		List<String> existingTables = new ArrayList<String> ();
-		Map<String,Set<String>> schemas = new HashMap<String, Set<String>> ();
-		for (Relation rel : _sc.getRelations())
-		{
-			if (!schemas.containsKey(rel.getDbCatalog()))
-				schemas.put(rel.getDbCatalog(), new HashSet<String> ());
-			Set<String> schemNames = schemas.get(rel.getDbCatalog());
-			schemNames.add (rel.getDbSchema());
-		}
-		for (Map.Entry<String, Set<String>> entry : schemas.entrySet())
-		{		
-			for (String sc : entry.getValue())
-			{
-				MetaExistTables loader = new MetaExistTables (entry.getKey(),
-						sc,
-						existingTables);
-				try{
-					JdbcUtils.extractDatabaseMetaData(_ds, loader);
-
-				} catch (MetaDataAccessException ex)
-				{
-					//TODO: Actually deal with exceptions here!
-					assert (false) : "not implemented yet";			
-				}			
-
-			}
-		}
-		_log.debug("Existing tables loaded. " + existingTables.size() + " found");
 
 		// Modified by zives 12/20:  don't create tables for _NONE.  Instead
 		// update the base table
@@ -484,7 +424,7 @@ public class SchemaConverterStatementsGen {
 					relName = relName.replaceAll("_", "\\\\_");
 
 					if (type != AtomType.NONE) {
-						if (existingTables.contains(rel.getFullQualifiedDbId() + "_" + type.toString()))
+						if (_existingTableNames.contains(rel.getFullQualifiedDbId() + "_" + type.toString()))
 							statements.add ("DROP TABLE " + rel.getFullQualifiedDbId() + "_" + type.toString());
 					}
 					// gregkar
@@ -588,6 +528,42 @@ public class SchemaConverterStatementsGen {
 				}
 			}
 		}
+	}
+
+	/**
+	 * 
+	 * Returns a list of the db names of any tables which already exist in the
+	 * {@code Schema}.
+	 * 
+	 * @return a list of table names which exist in the {@code Schema}
+	 */
+	private List<String> getExistingTableNames() {
+		_log.debug("Loading all the existing tables in memory");
+		List<String> existingTables = new ArrayList<String>();
+		Map<String, Set<String>> schemas = new HashMap<String, Set<String>>();
+		for (Relation rel : _sc.getRelations()) {
+			if (!schemas.containsKey(rel.getDbCatalog()))
+				schemas.put(rel.getDbCatalog(), new HashSet<String>());
+			Set<String> schemNames = schemas.get(rel.getDbCatalog());
+			schemNames.add(rel.getDbSchema());
+		}
+		for (Map.Entry<String, Set<String>> entry : schemas.entrySet()) {
+			for (String sc : entry.getValue()) {
+				MetaExistTables loader = new MetaExistTables(entry.getKey(),
+						sc, existingTables);
+				try {
+					JdbcUtils.extractDatabaseMetaData(_ds, loader);
+
+				} catch (MetaDataAccessException ex) {
+					// TODO: Actually deal with exceptions here!
+					assert (false) : "not implemented yet";
+				}
+
+			}
+		}
+		_log.debug("Existing tables loaded. " + existingTables.size()
+				+ " found");
+		return existingTables;
 	}
 
 
