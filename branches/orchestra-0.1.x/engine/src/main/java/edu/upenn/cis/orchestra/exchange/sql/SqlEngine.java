@@ -673,7 +673,7 @@ public class SqlEngine extends BasicEngine {
 
 		try {
 			int updates = moveExistingData();
-			if (updates != 0) {
+			if (updates > 0) {
 				_system.publishAndMap();
 			}
 		} catch (Exception se) {
@@ -801,8 +801,8 @@ public class SqlEngine extends BasicEngine {
 
 					// Move data from the original x relation to the x_L_INS relation
 					if (!r.isInternalRelation()) {
-						updates += getMappingDb().convertTuplesToIndependentTransactions(p, sc, r, _system.getRecDb(p.getPeerId().getID()));
-						getMappingDb().moveExistingData(r, "", Relation.LOCAL + "_INS");
+						//updates += getMappingDb().convertTuplesToIndependentTransactions(p, sc, r, _system.getRecDb(p.getPeerId().getID()));
+						updates += getMappingDb().moveExistingData(r, "", Relation.LOCAL + "_INS");
 					}
 				}
 			}
