@@ -1390,7 +1390,7 @@ public class SqlDb implements IDb {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public void moveExistingData(Relation r, String sourceSuffix,
+	public int moveExistingData(Relation r, String sourceSuffix,
 			String targetSuffix) throws ClassNotFoundException, SQLException {
 		if (_con == null)
 			connect();
@@ -1423,12 +1423,14 @@ public class SqlDb implements IDb {
 		}
 		insStatement.append("\n FROM " + r.getFullQualifiedDbId()
 				+ sourceSuffix);
-
-		if (Config.getApply())
+		int updateCount = 0;
+		if (Config.getApply()) {
 			st.execute(insStatement.toString());
-		else
-			Debug.println(insStatement.toString());
-
+			updateCount = st.getUpdateCount();
+		} else {
+ 			Debug.println(insStatement.toString());
+		}
+		
 		if (Config.getApply())
 			st
 			.execute("DELETE FROM " + r.getFullQualifiedDbId()
@@ -1436,6 +1438,7 @@ public class SqlDb implements IDb {
 		else
 			Debug.println("DELETE FROM " + r.getFullQualifiedDbId()
 					+ sourceSuffix);
+		return updateCount;
 	}
 
 	public static String skolemExpr(AtomSkolem sk,
