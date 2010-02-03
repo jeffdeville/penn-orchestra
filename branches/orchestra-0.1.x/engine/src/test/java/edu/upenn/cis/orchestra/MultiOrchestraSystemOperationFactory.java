@@ -293,7 +293,7 @@ public final class MultiOrchestraSystemOperationFactory extends
 		@Override
 		public void execute() throws Exception {
 			ITestFrameWrapper<OrchestraSystem> oldFrameWrapper = peerToTestFrameWrapper
-					.get(peerName);
+					.remove(peerName);
 
 			ITestFrameWrapper<OrchestraSystem> newSystemFrame = new OrchestraSystemTestFrame(
 					orchestraSchema, oldFrameWrapper.getTestFrame());
@@ -339,8 +339,8 @@ public final class MultiOrchestraSystemOperationFactory extends
 					.get(peerName);
 			OrchestraSystem localSystem = testFrameWrapper
 					.getOrchestraController();
-
 			localSystem.getMappingDb().finalize();
+			localSystem.getMappingDb().disconnect();
 
 			MetaDataChecker checker = new MetaDataChecker.Builder()
 					.checkTypes().build();
