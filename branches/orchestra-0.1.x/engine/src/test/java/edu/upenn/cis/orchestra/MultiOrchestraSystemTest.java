@@ -25,6 +25,7 @@ import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStopServerClient;
 
 /**
  * @see edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest
@@ -78,7 +79,7 @@ public final class MultiOrchestraSystemTest extends
 
 		}
 		assertTrue(peerToOrchestraSystemFrame.values().size() > 0);
-
+		
 		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"),
 				orchestraSchema.getName());
 		operationFactory = new MultiOrchestraSystemOperationFactory(
@@ -98,7 +99,8 @@ public final class MultiOrchestraSystemTest extends
 				.values()) {
 			OrchestraSystem orchestraSystem = frame.getOrchestraController();
 			if (orchestraSystem != null) {
-				orchestraSystem.stopStoreServer();
+				//orchestraSystem.stopStoreServer();
+				orchestraSystem.getMappingDb().finalize();
 				orchestraSystem.getMappingDb().disconnect();
 				Assert.assertFalse(
 						orchestraSystem.getMappingDb().isConnected(),
@@ -106,6 +108,10 @@ public final class MultiOrchestraSystemTest extends
 				logger.debug("Shutting down Orchestra system.");
 			}
 		}
+		BerkeleyDBStoreStopServerClient stop = new BerkeleyDBStoreStopServerClient("localhost", 9999);
+		stop.reconnect();
+		stop.stopUpdateStore();
+		stop.disconnect();
 		if (bdbDataSetFactory != null) {
 			bdbDataSetFactory.close();
 		}
