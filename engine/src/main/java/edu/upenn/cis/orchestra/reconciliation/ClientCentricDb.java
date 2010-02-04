@@ -75,7 +75,7 @@ public class ClientCentricDb extends Db {
 	// the next one.
 	private HashMap<Integer,ArrayList<Update>>  deltas;
 	
-	OrchestraSystem _system;
+	private OrchestraSystem _system;
 
 	protected static class ConflictOptionPair {
 		int conflict;

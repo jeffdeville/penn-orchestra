@@ -2,7 +2,4 @@
 <dataset>
 	<PPOD1.OTU OTU_ID="1" LABEL="Primates" OBJ_VERSION="3"
 		PPOD_VERSION="4" />
-	<PPOD1.OTU_L OTU_ID="1" LABEL="Primates" OBJ_VERSION="3"
-		PPOD_VERSION="4" />
-	<PPOD1.OTU_R />
 </dataset>
