@@ -58,15 +58,15 @@ import edu.upenn.cis.orchestra.reconciliation.USDump;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore;
 
 public class BerkeleyDBStoreClient extends UpdateStore {
-	InetSocketAddress host;
-	Socket socket;
-	ObjectOutputStream oos;
-	ObjectInputStream ois;
-	Map<AbstractPeerID,Schema> schemas;
-	TrustConditions tc;
-	Benchmark b;
+	private InetSocketAddress host;
+	private Socket socket;
+	private ObjectOutputStream oos;
+	private ObjectInputStream ois;
+	private Map<AbstractPeerID,Schema> schemas;
+	private TrustConditions tc;
+	private Benchmark b;
 	
-	ISchemaIDBinding _mapStore;
+	private ISchemaIDBinding _mapStore;
 	
 	
 

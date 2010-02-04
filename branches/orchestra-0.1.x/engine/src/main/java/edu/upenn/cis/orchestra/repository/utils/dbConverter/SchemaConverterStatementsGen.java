@@ -106,8 +106,8 @@ public class SchemaConverterStatementsGen {
 			throws MetaDataAccessException {
 
 		List<String> statements = new ArrayList<String>();
-		if (_existingTableNames.isEmpty()) {
-			for (Relation rel : _sc.getRelations()) {
+		for (Relation rel : _sc.getRelations()) {
+			if (!_existingTableNames.contains(rel.getFullQualifiedDbId())) {
 				String suffix = "";
 				statements.addAll(db.createSQLTableCode(rel.getDbRelName(),
 						suffix, rel, false, false, false, false, withLogging));
