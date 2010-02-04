@@ -1469,7 +1469,7 @@ public class OrchestraSystem {
 	 * @throws Exception
 	 */
 	public int fetch() throws Exception {
-//		_localUpdater.extractAndApplyLocalUpdates(_localPeer);
+		_localUpdater.extractAndApplyLocalUpdates(_localPeer);
 		int count = getMappingDb().fetchDbTransactions(_localPeer, getRecDb(_localPeer.getId()));
 		getRecDb(_localPeer.getId()).publish();
 		return count;

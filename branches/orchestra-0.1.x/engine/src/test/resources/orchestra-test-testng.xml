@@ -58,8 +58,6 @@
 		<groups>
 			<run>
 				<exclude name="broken" />
-				<exclude name="development" />
-				<exclude name="requires-database" />
 			</run>
 		</groups>
 		<classes>

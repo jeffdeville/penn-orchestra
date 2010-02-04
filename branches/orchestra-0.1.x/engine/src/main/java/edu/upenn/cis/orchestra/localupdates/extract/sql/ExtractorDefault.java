@@ -189,10 +189,8 @@ public class ExtractorDefault implements IExtractor<Connection> {
 		}
 		logger.debug("Database server: {}", sqlDb.getServer());
 		logger.debug("Prepare code: {}", code);
-		if (code != null) {
-			for (String create : code) {
-				sqlDb.evaluate(create);
-			}
+		for (String create : code) {
+			sqlDb.evaluate(create);
 		}
 	}
 

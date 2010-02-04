@@ -74,7 +74,7 @@ public class TestUtil {
 
 	/** A testng group name for testng tests still in development. */
 	public static final String DEV_TESTNG_GROUP = "development";
-	
+
 	/** A testng group name for tests requiring access to a database */
 	public static final String REQUIRES_DATABASE_TESTNG_GROUP = "requires-database";
 
@@ -171,11 +171,14 @@ public class TestUtil {
 		StringBuffer sqlBuffer = new StringBuffer();
 		String line;
 		while ((line = sqlFile.readLine()) != null) {
-			sqlBuffer.append(line.trim());
-			if (sqlBuffer.toString().endsWith(";")) {
-				sqlStatements.add(sqlBuffer.toString().substring(0,
-						sqlBuffer.toString().length() - 1));
-				sqlBuffer = new StringBuffer();
+			line = line.trim();
+			if (!line.startsWith("--")) {
+				sqlBuffer.append(line);
+				if (sqlBuffer.toString().endsWith(";")) {
+					sqlStatements.add(sqlBuffer.toString().substring(0,
+							sqlBuffer.toString().length() - 1));
+					sqlBuffer = new StringBuffer();
+				}
 			}
 		}
 
@@ -306,7 +309,8 @@ public class TestUtil {
 	 * java.class.path}.
 	 * 
 	 * @param port the port the server should listen on
-	 * @param serverDirectoryName the directory where the Berkeley database files should be kept
+	 * @param serverDirectoryName the directory where the Berkeley database
+	 *            files should be kept
 	 * @param workingDirectoryName the working directory of the process.
 	 * 
 	 * @return a {@code BerkeleyDBStoreServer} {@code Process}
@@ -317,15 +321,12 @@ public class TestUtil {
 			String serverDirectoryName, String workingDirectoryName)
 			throws IOException {
 		String cp = System.getProperty("java.class.path");
-		String[] cmdarray = new String[] {
-				"java",
-				"-cp",
-				cp,
-				BerkeleyDBStoreServer.class.getCanonicalName(),
-				"-port", Integer.toString(port), serverDirectoryName };
+		String[] cmdarray = new String[] { "java", "-cp", cp,
+				BerkeleyDBStoreServer.class.getCanonicalName(), "-port",
+				Integer.toString(port), serverDirectoryName };
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.command(cmdarray);
-		//builder.redirectErrorStream(true);
+		// builder.redirectErrorStream(true);
 		builder.directory(new File(workingDirectoryName));
 		final Process process = builder.start();
 		try {
@@ -333,21 +334,18 @@ public class TestUtil {
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
-		/*new Thread() {
-			@Override
-			public void run() {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-				String line = null;
-				try {
-					while ((line = reader.readLine()) != null) {
-						logger.debug(line);
-					}
-				} catch (IOException e) {
-					logger.error("Error reading output from update store process.", e);
-				}
-			}
-			
-		}.start();*/
+		/*
+		 * new Thread() {
+		 * 
+		 * @Override public void run() { BufferedReader reader = new
+		 * BufferedReader(new InputStreamReader(process.getInputStream()));
+		 * String line = null; try { while ((line = reader.readLine()) != null)
+		 * { logger.debug(line); } } catch (IOException e) {
+		 * logger.error("Error reading output from update store process.", e); }
+		 * }
+		 * 
+		 * }.start();
+		 */
 		return process;
 	}
 }

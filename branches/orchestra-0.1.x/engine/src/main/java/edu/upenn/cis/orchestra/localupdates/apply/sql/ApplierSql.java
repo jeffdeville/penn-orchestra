@@ -189,6 +189,7 @@ public class ApplierSql implements IApplier<Connection> {
 		PreparedStatement selectStatement = connection
 				.prepareStatement(selectTemplate.toString());
 		int ncol = tuple.getNumCols();
+		int nrcol = relation.getNumCols();
 		for (int i = 0; i < ncol; i++) {
 			Object object = tuple.get(i);
 			int type = relation.getColType(i).getSqlTypeCode();
