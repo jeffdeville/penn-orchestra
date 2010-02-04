@@ -9,4 +9,4 @@ Zack suggested using a VMWare player to create a demo. We would need to do:
   # Distribute the VM image to people for a no-config way to play with Orchestra.
 ==Questions==
   * Can you actually save the VM image using the Player?
-    You might only be able to save the image with a non-free version. VM Studio might be able to do it.
+    * You might only be able to save the image with a non-free version. VM Studio might be able to do it.
