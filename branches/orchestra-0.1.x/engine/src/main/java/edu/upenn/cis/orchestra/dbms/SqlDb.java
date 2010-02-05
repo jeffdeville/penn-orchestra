@@ -2306,7 +2306,7 @@ public class SqlDb implements IDb {
 	}
 	
 	private String relationToInsert(Relation r) {
-		ISqlInsert insert = _sqlFactory.newSqlInsert(r.getFullQualifiedDbId());
+		ISqlInsert insert = _sqlFactory.newInsert(r.getFullQualifiedDbId());
 		ISqlExpression valuesTemplate = _sqlFactory
 				.newExpression(Code.COMMA);
 		int ncol = r.getNumCols();
@@ -2341,7 +2341,7 @@ public class SqlDb implements IDb {
 		final String targetTable = relation.getFullQualifiedDbId()
 				+ targetSuffix;
 		dropExistingData(targetTable);
-		ISqlInsert insert = _sqlFactory.newSqlInsert(targetTable);
+		ISqlInsert insert = _sqlFactory.newInsert(targetTable);
 		insert.addValueSpec(_sqlFactory.newSelect(_sqlFactory
 				.newSelectItem("*"), _sqlFactory.newFromItem(sourceTable)));
 		_log.debug(insert);

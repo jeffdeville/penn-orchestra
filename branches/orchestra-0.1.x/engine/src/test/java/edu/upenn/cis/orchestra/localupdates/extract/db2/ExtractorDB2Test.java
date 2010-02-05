@@ -227,7 +227,7 @@ public class ExtractorDB2Test {
 		} finally {
 			statement.close();
 		}
-		ISqlInsert insertSql = sqlFactory.newSqlInsert(sourceTableFQN);
+		ISqlInsert insertSql = sqlFactory.newInsert(sourceTableFQN);
 		ISqlExpression intoClause = sqlFactory.newExpression(Code.COMMA);
 		intoClause.addOperand(sqlFactory.newConstant("?",
 				Type.PREPARED_STATEMENT_PARAMETER));

@@ -310,7 +310,7 @@ public interface ISqlFactory {
 	 * 
 	 * @return a new <code>ISqlInsert</code> object
 	 */
-	ISqlInsert newSqlInsert(String tableName);
+	ISqlInsert newInsert(String tableName);
 
 	/**
 	 * Move the rows from the table {@code source} to the table {@code dest}.
