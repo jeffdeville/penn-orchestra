@@ -128,7 +128,7 @@ public class RuleSqlGen implements IRuleCodeGen {
 		if (m_rule.getBody().size() == 0) {
 			// INSERT INTO statement using VALUES
 			Relation rel = head.getRelation();
-			ins = _sqlFactory.newSqlInsert(rel.toAtomString(head.getType()));
+			ins = _sqlFactory.newInsert(rel.toAtomString(head.getType()));
 			List<AtomArgument> values = head.getValues();
 			if(values.size() > 1){
 				ISqlExpression comma = _sqlFactory.newExpression(ISqlExpression.Code.COMMA);
@@ -149,7 +149,7 @@ public class RuleSqlGen implements IRuleCodeGen {
 			}
 		} else {
 			// INSERT INTO statement with a subquery
-			ins = _sqlFactory.newSqlInsert(head.toString3());
+			ins = _sqlFactory.newInsert(head.toString3());
 			if (Config.getSetSemantics()) {
 				// Enforce set semantics
 				Atom last = m_rule.getBody().get(m_rule.getBody().size()-1);

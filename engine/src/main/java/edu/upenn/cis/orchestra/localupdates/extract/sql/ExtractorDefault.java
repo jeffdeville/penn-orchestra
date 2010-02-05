@@ -16,12 +16,15 @@
 package edu.upenn.cis.orchestra.localupdates.extract.sql;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +65,7 @@ public class ExtractorDefault implements IExtractor<Connection> {
 
 	private final ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Map<Relation, List<String>> relationToLabeledNullColumns = newHashMap();
 
 	/*
 	 * (non-Javadoc)
@@ -74,7 +78,6 @@ public class ExtractorDefault implements IExtractor<Connection> {
 	public ILocalUpdates extractTransactions(Peer peer, Connection connection)
 			throws SchemaIncoherentWithDBError, DBConnectionError,
 			RDBMSExtractError {
-		// Not yet implemented.
 		LocalUpdates.Builder builder = new LocalUpdates.Builder(peer);
 		for (Schema s : peer.getSchemas()) {
 			for (Relation relation : s.getRelations()) {
@@ -102,8 +105,10 @@ public class ExtractorDefault implements IExtractor<Connection> {
 		try {
 			statement = connection.createStatement();
 			ResultSet updateSet = statement.executeQuery(diff.toString());
+			List<String> labeledNullColumns = getLabeledNullColumns(relation,
+					updateSet);
 			while (updateSet.next()) {
-				extractUpdate(s, relation, updateSet, op, builder);
+				extractUpdate(s, relation, updateSet, op, builder, labeledNullColumns);
 			}
 		} finally {
 			if (statement != null) {
@@ -113,7 +118,8 @@ public class ExtractorDefault implements IExtractor<Connection> {
 	}
 
 	private void extractUpdate(Schema schema, Relation relation,
-			ResultSet updateSet, Operation op, LocalUpdates.Builder builder)
+			ResultSet updateSet, Operation op, LocalUpdates.Builder builder,
+			List<String> labeledNullColumns)
 			throws SQLException, RDBMSExtractError {
 
 		Tuple tuple = new Tuple(relation);
@@ -211,5 +217,24 @@ public class ExtractorDefault implements IExtractor<Connection> {
 						+ rel.getFullQualifiedDbId(), e);
 			}
 		}
+	}
+
+	private List<String> getLabeledNullColumns(Relation relation,
+			ResultSet resultSet) throws SQLException {
+		List<String> labeledNullColumns = relationToLabeledNullColumns
+				.get(relation);
+		if (labeledNullColumns == null) {
+			labeledNullColumns = newArrayList();
+			ResultSetMetaData metaData = resultSet.getMetaData();
+			int columnCount = metaData.getColumnCount();
+			for (int i = 0; i < columnCount; i++) {
+				String columnName = metaData.getColumnName(i + 1);
+				if (RelationField.isLabeledNull(columnName)) {
+					labeledNullColumns.add(columnName);
+				}
+			}
+			relationToLabeledNullColumns.put(relation, labeledNullColumns);
+		}
+		return labeledNullColumns;
 	}
 }
