@@ -64,7 +64,7 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlInsert newSqlInsert(final String tableName) {
+	public ISqlInsert newInsert(final String tableName) {
 		return new DtpSqlInsert(tableName);
 	}
 

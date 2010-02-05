@@ -177,7 +177,7 @@ public class ApplierSql implements IApplier<Connection> {
 		selectTemplate.addFromClause(Collections.singletonList(sqlFactory
 				.newFromItem(fqName + delTable)));
 
-		ISqlInsert insInsert = sqlFactory.newSqlInsert(fqName + insTable
+		ISqlInsert insInsert = sqlFactory.newInsert(fqName + insTable
 				+ Relation.INSERT);
 		insInsert.addValueSpec(valuesTemplate);
 
@@ -201,7 +201,7 @@ public class ApplierSql implements IApplier<Connection> {
 		foundInDelTableResult.next();
 		int count = foundInDelTableResult.getInt(1);
 		if (count > 0) {
-			ISqlInsert delInsert = sqlFactory.newSqlInsert(fqName + delTable
+			ISqlInsert delInsert = sqlFactory.newInsert(fqName + delTable
 					+ Relation.DELETE);
 			delInsert.addValueSpec(valuesTemplate);
 			logger.debug("DEL insert: {}", delInsert);
