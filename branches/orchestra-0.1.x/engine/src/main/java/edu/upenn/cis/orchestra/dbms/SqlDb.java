@@ -236,7 +236,7 @@ public class SqlDb implements IDb {
 			}
 			prepIns += ")";
 
-			System.out.println(prepIns);
+			Debug.println(prepIns);
 
 			PreparedStatement ins = null, del = null;
 			try {
@@ -272,7 +272,7 @@ public class SqlDb implements IDb {
 				}
 				prepDel += ")";
 
-				System.out.println(prepDel);
+				Debug.println(prepDel);
 				del = _con.prepareStatement(prepDel);
 
 				// Translate the updates, one at a time, filling in _LN
@@ -296,7 +296,7 @@ public class SqlDb implements IDb {
 				int count = 0;
 				for (int i = 0; i < count1.length; i++)
 					count += count1[i];
-				System.out.println("Applied " + count + " deletions to "
+				Debug.println("Applied " + count + " deletions to "
 						+ r.getName());
 
 				count1 = ins.executeBatch();
@@ -304,7 +304,7 @@ public class SqlDb implements IDb {
 				count = 0;
 				for (int i = 0; i < count1.length; i++)
 					count += count1[i];
-				System.out.println("Applied " + count + " insertions to "
+				Debug.println("Applied " + count + " insertions to "
 						+ r.getName());
 
 				return 0;
@@ -617,7 +617,7 @@ public class SqlDb implements IDb {
 		Debug.println("PREPARE CALLS: " + numPrepareCalls);
 		Debug.println("SLOWEST QUERY: " + slowestQuery);
 		Debug.println("SLOWEST QUERY TIME: " + slowestQueryTime + " msec");
-		System.out.println("TOTAL TUPLE COUNT: " + totalTupleCnt);
+		Debug.println("TOTAL TUPLE COUNT: " + totalTupleCnt);
 		Debug.println("LOGGING TIME: " + time4CommitLogging + " msec");
 		totalQueryCnt = 0;
 		slowestQueryTime = 0;
@@ -625,8 +625,8 @@ public class SqlDb implements IDb {
 		slowestQuery = 0;
 		transactionCnt = 0;
 		totalTupleCnt = 0;
-		System.out.println("TRANSACTION CNT BEFORE RESET WAS: " + transactionCnt);
-		System.out.println("QUERY CNT BEFORE RESET WAS: " + queryCnt);
+		Debug.println("TRANSACTION CNT BEFORE RESET WAS: " + transactionCnt);
+		Debug.println("QUERY CNT BEFORE RESET WAS: " + queryCnt);
 		transactionCnt = 0;
 		queryCnt = 0;
 		time4CommitLogging = 0;
@@ -727,7 +727,7 @@ public class SqlDb implements IDb {
 		if (Config.getRunStatistics()) {
 			try {
 				Calendar before = Calendar.getInstance();
-				System.out.println("Refresh statistics between datalog programs");
+				Debug.println("Refresh statistics between datalog programs");
 				runStatsOnTables(tables, false);
 				if(!Config.getAutocommit()){ 
 					_con.commit();
@@ -745,7 +745,7 @@ public class SqlDb implements IDb {
 		if (Config.getRunStatistics()) {
 			try {
 				Calendar before = Calendar.getInstance();
-				System.out.println("Refresh statistics between datalog programs");
+				Debug.println("Refresh statistics between datalog programs");
 				runStatsOnAllTables(_system);
 				if(!Config.getAutocommit()){ 
 					_con.commit();
@@ -765,9 +765,9 @@ public class SqlDb implements IDb {
 			if ((queryCnt > Config.getQueryCutoff())
 					|| (transactionCnt > Config.getTransactionCutoff())) {
 				if((queryCnt > Config.getQueryCutoff()))
-					System.out.println("QUERY CUTOFF (" + Config.getQueryCutoff() + ") REACHED");
+					Debug.println("QUERY CUTOFF (" + Config.getQueryCutoff() + ") REACHED");
 				else
-					System.out.println("TRANSACTION CUTOFF (" + Config.getTransactionCutoff() + ") REACHED");
+					Debug.println("TRANSACTION CUTOFF (" + Config.getTransactionCutoff() + ") REACHED");
 				Calendar before = Calendar.getInstance();
 				runStatsOnAllTables(_system);
 				_con.commit();
@@ -972,24 +972,24 @@ public class SqlDb implements IDb {
 		try {
 			String curDir = System.getProperty("user.dir");
 
-			System.out.println(curDir);
+			Debug.println(curDir);
 			Process proc;
 
 			if (Config.isDB2()) {
 				// Process proc = Runtime.getRuntime().exec("db2cmd /c /w /i db2
 				// -lcommands"+str+" -zimportout-" + str +" -wtf " + str);
-				System.out.println("db2cmd /c /w /i db2 -tf " + str);
+				Debug.println("db2cmd /c /w /i db2 -tf " + str);
 				proc = Runtime.getRuntime().exec(
 						"db2cmd /c /w /i db2 -tf " + str, null, dir);
 			} else { // if (Config.isOracle()){
 				if (createOrLoad) {
-					// System.out.println("sqlldr " + Config.USER + "/" +
+					// Debug.println("sqlldr " + Config.USER + "/" +
 					// Config.PASSWORD + "@" + Config.DBNAME + " CONTROL=" +
 					// str);
 					// proc = Runtime.getRuntime().exec("sqlldr " + Config.USER
 					// + "/" + Config.PASSWORD + "@" + Config.DBNAME + "
 					// CONTROL=" + str, null, dir);
-					System.out.println(Config.getCygwinHome() + "/bin/bash "
+					Debug.println(Config.getCygwinHome() + "/bin/bash "
 							+ str);
 					proc = Runtime.getRuntime().exec(
 							Config.getCygwinHome() + "/bin/bash " + str, null,
@@ -997,7 +997,7 @@ public class SqlDb implements IDb {
 
 				} else { // sqlldr $DBUSR/$DBPWD@$DBINST CONTROL=catalog.ctl
 					// LOG=log/catalog.log
-					System.out.println("sqlplus " + _username + "/" + _password
+					Debug.println("sqlplus " + _username + "/" + _password
 							+ "@" + _server + " @" + str);
 					proc = Runtime.getRuntime().exec(
 							"sqlplus " + _username + "/" + _password + "@"
@@ -1005,7 +1005,7 @@ public class SqlDb implements IDb {
 				}
 			}
 
-			// System.out.println("db2cmd /c /w /i db2 -lcommands"+str+"
+			// Debug.println("db2cmd /c /w /i db2 -lcommands"+str+"
 			// -zimportout-" + str +" -wtf " + str);
 
 			/*
@@ -1018,10 +1018,10 @@ public class SqlDb implements IDb {
 			 * stdout = proc.getInputStream(); // InputStreamReader isr = new
 			 * InputStreamReader(stderr); InputStreamReader isr = new
 			 * InputStreamReader(stdout); BufferedReader br = new
-			 * BufferedReader(isr); String line = null; // System.out.println("<ERROR>");
+			 * BufferedReader(isr); String line = null; // Debug.println("<ERROR>");
 			 * while ( (line = br.readLine()) != null) Debug.println(line); //
-			 * System.out.println("</ERROR>"); int exitVal = proc.waitFor(); //
-			 * System.out.println("Process exitValue: " + exitVal);
+			 * Debug.println("</ERROR>"); int exitVal = proc.waitFor(); //
+			 * Debug.println("Process exitValue: " + exitVal);
 			 */
 
 			int result;
@@ -1045,13 +1045,13 @@ public class SqlDb implements IDb {
 			errThread.join();
 
 			if (result != 0) {
-				System.out.println("Process returned non-zero value:" + result);
-				System.out.println("Process output:\n" + out.toString());
-				System.out.println("Process error:\n" + err.toString());
+				Debug.println("Process returned non-zero value:" + result);
+				Debug.println("Process output:\n" + out.toString());
+				Debug.println("Process error:\n" + err.toString());
 			} else {
-				System.out.println("Process executed successfully");
-				System.out.println("Process output:\n" + out.toString());
-				System.out.println("Process error:\n" + err.toString());
+				Debug.println("Process executed successfully");
+				Debug.println("Process output:\n" + out.toString());
+				Debug.println("Process error:\n" + err.toString());
 			}
 
 			return true;
@@ -1155,7 +1155,7 @@ public class SqlDb implements IDb {
 				}
 				Calendar after = Calendar.getInstance();
 				long time = (after.getTimeInMillis() - before.getTimeInMillis());
-				System.out.println("EXP: IMPORT DATA TIME: " + time + " msec");
+				Debug.println("EXP: IMPORT DATA TIME: " + time + " msec");
 
 				for (String s : baseTables) {
 					if (s.endsWith("_L") || (false && s.endsWith("_R"))) {
@@ -1166,13 +1166,13 @@ public class SqlDb implements IDb {
 						while (rs.next())
 							count++;
 						rs.close();
-						System.out.println(count + " tuples imported into " + s
+						Debug.println(count + " tuples imported into " + s
 								+ "_DEL");
 						rs = evaluateQuery("select * from " + s + "_INS");
 						count = 0;
 						while (rs.next())
 							count++;
-						System.out.println(count + " tuples imported into " + s
+						Debug.println(count + " tuples imported into " + s
 								+ "_INS");
 						rs.close();
 					}
@@ -1200,8 +1200,8 @@ public class SqlDb implements IDb {
 				 * 
 				 * evaluateQuery(fdb.checkImportCommand(table, AtomType.INS));
 				 * 
-				 * if(num != 0){ System.out.println("IMPORT SUCCESSFUL"); //
-				 * return true; }else{ System.out.println("IMPORT FAILED!"); //
+				 * if(num != 0){ Debug.println("IMPORT SUCCESSFUL"); //
+				 * return true; }else{ Debug.println("IMPORT FAILED!"); //
 				 * return false; } }
 				 */
 
@@ -1266,7 +1266,6 @@ public class SqlDb implements IDb {
 				//				statS.executeUpdate();
 			}
 			Debug.println(statement);
-			System.out.println(statement);
 			//			statS.close();
 		}
 	}
@@ -1277,7 +1276,7 @@ public class SqlDb implements IDb {
 
 		int imported = 0;
 
-		System.out.println("Importing relation " + baseTable.getName());
+		Debug.println("Importing relation " + baseTable.getName());
 
 		if (_con == null)
 			connect();
@@ -1354,7 +1353,7 @@ public class SqlDb implements IDb {
 				s, p, false), AtomType.INS, pubDb);
 		pubDb.publish();
 		_system.translate();
-		System.out.println("Converted " + count + " tuples from import of "
+		Debug.println("Converted " + count + " tuples from import of "
 				+ imported + " into " + logicalTable.getName() + " ("
 				+ logicalTable.getRelationID() + ")");
 
@@ -1504,14 +1503,14 @@ public class SqlDb implements IDb {
 
 	public void activateRuleBasedOptimizer() {
 		if (Config.isOracle()) {
-			System.out.println("ALTER SESSION SET sql_trace = TRUE");
+			Debug.println("ALTER SESSION SET sql_trace = TRUE");
 			boolean foo = evaluate("ALTER SESSION SET sql_trace = TRUE");
-			System.out.println("alter session set optimizer_mode='rule'");
+			Debug.println("alter session set optimizer_mode='rule'");
 			foo = evaluate("alter session set optimizer_mode='rule'");
 			if (foo)
-				System.out.println("Optimizer ok");
+				Debug.println("Optimizer ok");
 			else
-				System.out.println("Optimizer KO");
+				Debug.println("Optimizer KO");
 		}
 	}
 
@@ -1660,7 +1659,7 @@ public class SqlDb implements IDb {
 		List<Rule> rules = eliminateDuplicateRules(inRules);
 		//		List<Rule> rules = minimizeRules(inRules);
 		Debug.println("Rules to evaluate");
-		//		System.out.println("NET EVAL - NUM UNION QUERIES: " + numUnionedQueries);
+		//		Debug.println("NET EVAL - NUM UNION QUERIES: " + numUnionedQueries);
 		for(Rule rule : rules){
 			Debug.println(rule.toString());
 		}
@@ -1674,8 +1673,8 @@ public class SqlDb implements IDb {
 				String str = "";
 				for(; j < rules.size() && j < k + numUnionedQueries; j++){
 					Rule rule = rules.get(j);
-					System.out.println("Rule has " + rule.getBody().size() + " body atoms");
-//					System.out.println("evalRuleSet: " + rule.toString());
+					Debug.println("Rule has " + rule.getBody().size() + " body atoms");
+//					Debug.println("evalRuleSet: " + rule.toString());
 
 //					RuleSqlGen gen = new RuleSqlGen(rule, _builtins, false, true);
 					RuleSqlGen gen = new RuleSqlGen(rule, _builtins, false, !provenanceQuery);
@@ -1774,29 +1773,29 @@ public class SqlDb implements IDb {
 				}
 
 //				Debug.println("evalRuleSet: " + grouped);
-				//				System.out.println("Comparing running times");
+				//				Debug.println("Comparing running times");
 				//				Calendar bef1 = Calendar.getInstance();
 				//				ResultSet rs = evaluateQuery(grouped);
 				//				Calendar aft1 = Calendar.getInstance();
 				//				long time1 = aft1.getTimeInMillis() - bef1.getTimeInMillis();
-				//				System.out.println("TIME WITH AGGREGATE: " + time1);
+				//				Debug.println("TIME WITH AGGREGATE: " + time1);
 				Calendar bef2 = Calendar.getInstance();
 				try{
-					System.out.println("Query size (bytes): " + str.length());
-//					System.out.println("evalRuleSet - SQL query:" + str);
+					Debug.println("Query size (bytes): " + str.length());
+//					Debug.println("evalRuleSet - SQL query:" + str);
 					ResultSet rs2 = evaluateQuery(str);
 
 					Calendar aft2 = Calendar.getInstance();
 					long time2 = aft2.getTimeInMillis() - bef2.getTimeInMillis();
-					System.out.println("TIME WITHOUT AGGREGATE: " + time2 + " msec");
+					Debug.println("TIME WITHOUT AGGREGATE: " + time2 + " msec");
 					ret.add(new Result(rs2, rules.get(0).getHead().getRelation()));
 				}catch(SQLException e){
-					System.out.println("Query threw Exception: " + str);
+					Debug.println("Query threw Exception: " + str);
 					throw e;
 				}
 			}
 			//			ResultSet rs = evaluateQuery(str);
-			//			System.out.println("evalRuleSet: " + str);
+			//			Debug.println("evalRuleSet: " + str);
 			return ret;
 		}
 		return null;
@@ -1923,12 +1922,12 @@ public class SqlDb implements IDb {
 						//						|| qualifiedRelName.endsWith("_NEW") || qualifiedRelName.endsWith("_D")
 				)
 		) {
-			//			System.out.println("* Adding non-temp table " + qualifiedRelName + suffix);
+			//			Debug.println("* Adding non-temp table " + qualifiedRelName + suffix);
 			statements.addAll(getSqlTranslator().createTable(
 					qualifiedRelName + suffix, cols, !withLogging));
 
 		} else {
-			System.out.println("* Adding temp table " + qualifiedRelName + suffix);
+			Debug.println("* Adding temp table " + qualifiedRelName + suffix);
 			statements.addAll(getSqlTranslator().createTempTable(
 					qualifiedRelName + suffix, cols));
 		}

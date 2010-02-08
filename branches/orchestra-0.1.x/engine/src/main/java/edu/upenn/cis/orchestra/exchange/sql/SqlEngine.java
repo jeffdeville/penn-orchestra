@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.support.MetaDataAccessException;
 
 import edu.upenn.cis.orchestra.Config;
@@ -63,6 +65,7 @@ public class SqlEngine extends BasicEngine {
 	public static List<Long> delTimes = new ArrayList<Long>();
 	public static List<Long> insTimes = new ArrayList<Long>();
 	public static List<Long> progTimes = new ArrayList<Long>();
+	private static final Logger logger = LoggerFactory.getLogger(SqlEngine.class);
 
 	public SqlEngine(SqlDb d, 
 //			IDb updateDb, 
@@ -360,7 +363,7 @@ public class SqlEngine extends BasicEngine {
 				}
 			}
 		}
-		System.out.println("# OF BASE AND MAPPING TABLES: " + i);
+		logger.debug("# OF BASE AND MAPPING TABLES: " + i);
 		return numTuples;
 	}
 
@@ -445,8 +448,8 @@ public class SqlEngine extends BasicEngine {
 
 //			after = Calendar.getInstance();
 //			time = after.getTimeInMillis() - before.getTimeInMillis();
-			System.out.println("EXP: NON-INCREMENTAL PREPARATION TIME: " + time + " msec");
-//			System.out.println("EXP: REAL NON-INCREMENTAL PREPARATION TIME EST: " + time/2 + " msec");
+			logger.debug("EXP: NON-INCREMENTAL PREPARATION TIME: " + time + " msec");
+//			logger.debug("EXP: REAL NON-INCREMENTAL PREPARATION TIME EST: " + time/2 + " msec");
 //			return time/2;
 			return time;
 		}else{
@@ -528,7 +531,7 @@ public class SqlEngine extends BasicEngine {
 ////		}
 //		// Do the non-incremental maintenance, simply by recomputing the
 //		// provenance relations
-		System.out.println("EXP: --------------------------------------");
+		logger.debug("EXP: --------------------------------------");
 
 		try {	
 			Calendar before;
@@ -536,9 +539,9 @@ public class SqlEngine extends BasicEngine {
 			long time;
 			long retTime;
 
-			System.out.println("=====================================================");
-			System.out.println("PROVENANCE QUERY");
-			System.out.println("=====================================================");
+			logger.debug("=====================================================");
+			logger.debug("PROVENANCE QUERY");
+			logger.debug("=====================================================");
 
 			de.commitAndReset();
 
@@ -550,9 +553,9 @@ public class SqlEngine extends BasicEngine {
 			after = Calendar.getInstance();
 			time = after.getTimeInMillis() - before.getTimeInMillis();
 
-			System.out.println("PROVENANCE QUERY ALG TIME (INCL COMMIT): " + time + " msec");
-			System.out.println("TIME SPENT FOR COMMIT AND LOGGING DEACTIVATION: " + de.logTime() + " msec");
-			System.out.println("EXP: NET PROVENANCE QUERY TIME: " + (time - de.logTime()) + " msec");
+			logger.debug("PROVENANCE QUERY ALG TIME (INCL COMMIT): " + time + " msec");
+			logger.debug("TIME SPENT FOR COMMIT AND LOGGING DEACTIVATION: " + de.logTime() + " msec");
+			logger.debug("EXP: NET PROVENANCE QUERY TIME: " + (time - de.logTime()) + " msec");
 
 			SqlEngine.progTimes.add(new Long(time - de.logTime()));
 			retTime = time - de.logTime();
@@ -583,7 +586,7 @@ public class SqlEngine extends BasicEngine {
 //		}
 		// Do the non-incremental maintenance, simply by recomputing the
 		// provenance relations
-		System.out.println("EXP: --------------------------------------");
+		logger.debug("EXP: --------------------------------------");
 		if (Config.getNonIncremental()) {
 			// TODO: right now we don't apply the deletions and insertions to the base.
 
@@ -593,14 +596,14 @@ public class SqlEngine extends BasicEngine {
 //			de.evaluateProgram(p);
 
 			long prepTime = prepareNonIncremental();
-//			System.out.println("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER PREPARE NON-INCREMENTAL: " + countAllTables());
+//			logger.debug("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER PREPARE NON-INCREMENTAL: " + countAllTables());
 
 			long execTime = _insertionRules.execute(de);
 
 			SqlEngine.insTimes.set(SqlEngine.insTimes.size()-1, new Long(prepTime + execTime));
 
-			System.out.println("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER NON-INCREMENTAL: " + countAllTables());
-			System.out.println("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER NON-INCREMENTAL: " + countBaseTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER NON-INCREMENTAL: " + countAllTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER NON-INCREMENTAL: " + countBaseTables());
 
 			de.resetCounters();
 		} else if (insFirst) {
@@ -608,30 +611,30 @@ public class SqlEngine extends BasicEngine {
 //			Do incremental insertion
 			_insertionRules.execute(de);
 
-			System.out.println("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER INSERTIONS: " + countAllTables());
-			System.out.println("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER INSERTIONS: " + countBaseTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER INSERTIONS: " + countAllTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER INSERTIONS: " + countBaseTables());
 			de.resetCounters();
 
 			// Do incremental deletion
 			
 			_deletionRules.execute(de);
 
-			System.out.println("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER DELETIONS: " + countAllTables());
-			System.out.println("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER DELETIONS: " + countBaseTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER DELETIONS: " + countAllTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER DELETIONS: " + countBaseTables());
 			de.resetCounters();
 		} else {
 			// Do incremental deletion
 			_deletionRules.execute(de);
 
-			System.out.println("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER DELETIONS: " + countAllTables());
-			System.out.println("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER DELETIONS: " + countBaseTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER DELETIONS: " + countAllTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER DELETIONS: " + countBaseTables());
 			de.resetCounters();
 
 //			Do incremental insertion
 			_insertionRules.execute(de);
 
-			System.out.println("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER INSERTIONS: " + countAllTables());
-			System.out.println("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER INSERTIONS: " + countBaseTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE AND MAPPING RELATIONS AFTER INSERTIONS: " + countAllTables());
+			logger.debug("TOTAL NUM OF TUPLES IN BASE RELATIONS AFTER INSERTIONS: " + countBaseTables());
 			de.resetCounters();
 		}
 
@@ -685,7 +688,7 @@ public class SqlEngine extends BasicEngine {
 
 		Calendar after = Calendar.getInstance();
 		long time = (after.getTimeInMillis() - before.getTimeInMillis());
-		System.out.println("EXP: TOTAL MIGRATE TIME: " + time + " msec");
+		logger.debug("EXP: TOTAL MIGRATE TIME: " + time + " msec");
 
 		finalize();
 
@@ -715,7 +718,7 @@ public class SqlEngine extends BasicEngine {
 				}
 			}
 
-		System.out.println("+++ Initialization +++");
+		logger.debug("+++ Initialization +++");
 		for (final String s: statements) {
 
 			try {
@@ -731,7 +734,7 @@ public class SqlEngine extends BasicEngine {
 
 		Calendar after = Calendar.getInstance();
 		long time = (after.getTimeInMillis() - before.getTimeInMillis());
-		System.out.println("EXP: INIT TIME: " + time + " msec");
+		logger.debug("EXP: INIT TIME: " + time + " msec");
 
 	}
 
@@ -763,7 +766,7 @@ public class SqlEngine extends BasicEngine {
 				}
 			}
 
-		System.out.println("+++ Migration +++");
+		logger.debug("+++ Migration +++");
 		for (final String s: statements) {
 
 			try {
@@ -779,7 +782,7 @@ public class SqlEngine extends BasicEngine {
 
 		Calendar after = Calendar.getInstance();
 		long time = (after.getTimeInMillis() - before.getTimeInMillis());
-		System.out.println("EXP: MIGRATE ORIG RELATIONS TIME: " + time + " msec");
+		logger.debug("EXP: MIGRATE ORIG RELATIONS TIME: " + time + " msec");
 
 	}
 
@@ -825,7 +828,7 @@ public class SqlEngine extends BasicEngine {
 
 		Calendar after = Calendar.getInstance();
 		long time = (after.getTimeInMillis() - before.getTimeInMillis());
-		System.out.println("EXP: MIGRATE PROVENANCE RELATIONS TIME: " + time + " msec");
+		logger.debug("EXP: MIGRATE PROVENANCE RELATIONS TIME: " + time + " msec");
 
 	}
 
