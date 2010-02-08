@@ -222,10 +222,18 @@ public class BdbDataSetFactory {
 			boolean repeater = info.isRepeater();
 			Exception ex = null;
 			try {
-				do {
+				if (keyReader.hasFinished()) {
+					row.addAttribute(info.getEntryTag(), "");
+				} else if (repeater) {
+					while (!keyReader.hasFinished()) {
+						Object keyPiece = info.invokeMethod(keyReader);
+						row.addAttribute(info.getEntryTag(), keyPiece
+								.toString());
+					}
+				} else {
 					Object keyPiece = info.invokeMethod(keyReader);
 					row.addAttribute(info.getEntryTag(), keyPiece.toString());
-				} while (repeater && !keyReader.hasFinished());
+				}
 			} catch (Exception e) {
 				ex = e;
 			}

@@ -18,6 +18,8 @@ package edu.upenn.cis.orchestra.deltaRules;
 import java.util.Calendar;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -33,6 +35,9 @@ import edu.upenn.cis.orchestra.exchange.sql.SqlEngine;
  * 
  */
 class InsertionDeltaRules extends DeltaRules {
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(InsertionDeltaRules.class);
 
 	/**
 	 * Creates executable insertion rules from {@code code}.
@@ -67,11 +72,7 @@ class InsertionDeltaRules extends DeltaRules {
 			long retTime;
 
 			// if(!"yes".equals(System.getProperty("skipins"))){
-			System.out
-					.println("=====================================================");
-			System.out.println("INSERTIONS");
-			System.out
-					.println("=====================================================");
+			logger.debug("INSERTIONS START");
 
 			de.commitAndReset();
 
@@ -84,7 +85,7 @@ class InsertionDeltaRules extends DeltaRules {
 			de.evaluatePrograms(insProg.get(0));
 			after = Calendar.getInstance();
 			time = after.getTimeInMillis() - before.getTimeInMillis();
-			System.out.println("INSERTION PREP TIME: " + time + " msec");
+			logger.debug("INSERTION PREP TIME: {} msec", Long.valueOf(time));
 
 			de.commitAndReset();
 
@@ -92,15 +93,17 @@ class InsertionDeltaRules extends DeltaRules {
 			de.evaluatePrograms(insProg.get(1));
 			after = Calendar.getInstance();
 			time = after.getTimeInMillis() - before.getTimeInMillis();
-			System.out.println("INCREMENTAL INSERTION ALG TIME (INCL COMMIT): "
-					+ time + " msec");
-			System.out
-					.println("EXP: TIME SPENT FOR COMMIT AND LOGGING DEACTIVATION: "
-							+ de.logTime() + " msec");
-			System.out.println("EXP: TIME SPENT FOR EMPTY CHECKING: "
-					+ de.emptyTime() + " msec");
-			System.out.println("EXP: NET INSERTION TIME: "
-					+ (time - de.logTime()) + " msec");
+			logger.debug(
+					"INCREMENTAL INSERTION ALG TIME (INCL COMMIT): {} msec",
+					Long.valueOf(time));
+			logger
+					.debug(
+							"EXP: TIME SPENT FOR COMMIT AND LOGGING DEACTIVATION: {} msec",
+							Long.valueOf(de.logTime()));
+			logger.debug("EXP: TIME SPENT FOR EMPTY CHECKING: {} msec", Long
+					.valueOf(de.emptyTime()));
+			logger.debug("EXP: NET INSERTION TIME: {} msec", Long.valueOf(time
+					- de.logTime()));
 
 			SqlEngine.insTimes.add(new Long(time - de.logTime()));
 			retTime = time - de.logTime();
@@ -111,7 +114,7 @@ class InsertionDeltaRules extends DeltaRules {
 			de.evaluatePrograms(insProg.get(2));
 			after = Calendar.getInstance();
 			time = after.getTimeInMillis() - before.getTimeInMillis();
-			System.out.println("POST INSERTION TIME: " + time + " msec");
+			logger.debug("POST INSERTION TIME: {} msec", Long.valueOf(time));
 
 			de.commitAndReset();
 

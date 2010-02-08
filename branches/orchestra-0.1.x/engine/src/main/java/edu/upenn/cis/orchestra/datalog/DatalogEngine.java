@@ -114,7 +114,7 @@ public class DatalogEngine {
 //
 //		after = Calendar.getInstance();
 //		time = after.getTimeInMillis() - before.getTimeInMillis();
-//		System.out.println("INSERTION PREP TIME: " + time + " msec");		
+//		Debug.println("INSERTION PREP TIME: " + time + " msec");		
 
 		do {
 			if(prog.isRecursive())
@@ -147,14 +147,14 @@ public class DatalogEngine {
 
 				if(p.measureExecTime()){
 					long time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("(SUB)PROGRAM EXECUTION TIME: " + time + " msec");
+					Debug.println("(SUB)PROGRAM EXECUTION TIME: " + time + " msec");
 				}
 				
 //				_sql.runstats();
 			}
 			ret += localRet;
 			if(prog.isRecursive())
-				System.out.println("Recursive sequence - LAST ITERATION (" + iterCnt + ") RETURNED COUNT: " + localRet);
+				Debug.println("Recursive sequence - LAST ITERATION (" + iterCnt + ") RETURNED COUNT: " + localRet);
 		} while (localRet != 0 && prog.isRecursive());
 		if(prog.count4fixpoint())
 			return ret;
@@ -221,7 +221,7 @@ public class DatalogEngine {
 
 				if(_sql instanceof SqlDb)
 					((SqlDb)_sql).gatherStats();
-				System.out.println("LAST ITERATION (" + iterCnt + ") COUNT: " + num + "\n");
+				Debug.println("LAST ITERATION (" + iterCnt + ") COUNT: " + num + "\n");
 				Debug.println("");
 			}
 			while(num > 0);
