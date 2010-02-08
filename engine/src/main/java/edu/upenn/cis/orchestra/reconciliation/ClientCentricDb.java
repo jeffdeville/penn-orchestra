@@ -1043,8 +1043,10 @@ public class ClientCentricDb extends Db {
 			throw new IllegalStateException("Attempt to reconcile without first calling setDoneInitializing");
 		}
 
-		if (updateStore.getCurrentRecno() != state.getCurrentRecno()) {
-			throw new DbException("Update store and state store are not consistent");
+		int usCurrentRecno = updateStore.getCurrentRecno();
+		int ssCurrentRecno = state.getCurrentRecno();
+		if (usCurrentRecno != ssCurrentRecno) {
+			throw new DbException("Update store and state store are not consistent. Update store current recno: " + usCurrentRecno + ", state store current recno: " + ssCurrentRecno + "." );
 		}
 		updateStore.recordReconcile(false);
 		

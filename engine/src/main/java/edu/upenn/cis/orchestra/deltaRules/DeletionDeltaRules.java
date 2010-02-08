@@ -18,6 +18,8 @@ package edu.upenn.cis.orchestra.deltaRules;
 import java.util.Calendar;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -36,13 +38,16 @@ import edu.upenn.cis.orchestra.exchange.sql.SqlEngine;
 class DeletionDeltaRules extends DeltaRules {
 
 	private boolean bidirectional;
-	
+	private static final Logger logger = LoggerFactory
+			.getLogger(DeletionDeltaRules.class);
+
 	/**
 	 * Create executable deletion rules from {@code code}.
 	 * 
 	 * @param code
 	 */
-	protected DeletionDeltaRules(List<DatalogSequence> code, boolean containsBidirectionalMappings) {
+	protected DeletionDeltaRules(List<DatalogSequence> code,
+			boolean containsBidirectionalMappings) {
 		super(code);
 		bidirectional = containsBidirectionalMappings;
 	}
@@ -65,11 +70,7 @@ class DeletionDeltaRules extends DeltaRules {
 			long time;
 			long retTime;
 
-			System.out
-					.println("\n=====================================================");
-			System.out.println("DELETIONS");
-			System.out
-					.println("=====================================================");
+			logger.debug("DELETIONS START");
 
 			de.commitAndReset();
 
@@ -96,22 +97,22 @@ class DeletionDeltaRules extends DeltaRules {
 					de.evaluatePrograms(updPolPrep);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("UPDATE POLICY PREP TIME: " + time
-							+ " msec");
+					logger.debug("UPDATE POLICY PREP TIME: {} msec", Long
+							.valueOf(time));
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(updPolicy);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("EXP: UPDATE POLICY COMP TIME: " + time
-							+ " msec");
+					logger.debug("EXP: UPDATE POLICY COMP TIME: {} msec", Long
+							.valueOf(time));
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(updPolPost);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("UPDATE POLICY POST TIME: " + time
-							+ " msec");
+					logger.debug("UPDATE POLICY POST TIME: {} msec", Long
+							.valueOf(time));
 
 					de.commitAndReset();
 				} else {
@@ -134,94 +135,96 @@ class DeletionDeltaRules extends DeltaRules {
 					de.evaluatePrograms(prep);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("PART 1 TIME: " + time + " msec");
+					logger.debug("PART 1 TIME: {} msec", Long.valueOf(time));
 					totalHackTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(upd);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("EXP: UPDATE POLICY COMP TIME: " + time
-							+ " msec");
+					logger.debug("EXP: UPDATE POLICY COMP TIME: {} msec", Long
+							.valueOf(time));
 					totalTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(post1);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("PART 3 TIME: " + time + " msec");
+					logger.debug("PART 3 TIME: {} msec", Long.valueOf(time));
 					totalHackTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(seDetectPrep);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("PART 4 TIME: " + time + " msec");
+					logger.debug("PART 4 TIME: {} msec", Long.valueOf(time));
 					totalHackTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(seDetectMaint);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("EXP: SE DETECT MAINTENANCE TIME: "
-							+ time + " msec");
+					logger.debug("EXP: SE DETECT MAINTENANCE TIME: {} msec",
+							Long.valueOf(time));
 					totalTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(seDetectPost);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("PART 6 TIME: " + time + " msec");
+					logger.debug("PART 6 TIME: {} msec", Long.valueOf(time));
 					totalHackTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(subtract1);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out
-							.println("EXP: SUBTRACT1 TIME: " + time + " msec");
+					logger.debug("EXP: SUBTRACT1 TIME: {} msec", Long
+							.valueOf(time));
 					totalTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(lineagePrep);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("PART 8 TIME: " + time + " msec");
+					logger.debug("PART 8 TIME: {} msec", Long.valueOf(time));
 					totalHackTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(lineage);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("EXP: LINEAGE TIME: " + time + " msec");
+					logger.debug("EXP: LINEAGE TIME: {} msec", Long
+							.valueOf(time));
 					totalTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(lineagePost);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("PART 10 TIME: " + time + " msec");
+					logger.debug("PART 10 TIME: {} msec", Long.valueOf(time));
 					totalHackTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(subtract2);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out
-							.println("EXP: SUBTRACT2 TIME: " + time + " msec");
+					logger.debug("EXP: SUBTRACT2 TIME: {} msec", Long
+							.valueOf(time));
 					totalTime += time;
 
 					before = Calendar.getInstance();
 					de.evaluatePrograms(post2);
 					after = Calendar.getInstance();
 					time = after.getTimeInMillis() - before.getTimeInMillis();
-					System.out.println("PART 12 TIME: " + time + " msec");
+					logger.debug("PART 12 TIME: {} msec", Long.valueOf(time));
 					totalHackTime += time;
 
-					System.out.println("EXP: TOTAL UPD POL + SE DETECT TIME: "
-							+ totalTime + " msec");
-					System.out.println("EXP: TOTAL HACK TIME: " + totalHackTime
-							+ " msec");
+					logger.debug(
+							"EXP: TOTAL UPD POL + SE DETECT TIME: {} msec",
+							Long.valueOf(totalTime));
+					logger.debug("EXP: TOTAL HACK TIME: {} msec", Long
+							.valueOf(totalHackTime));
 				}
 				delPrep = delProg.get(delProg.size() - 3);
 				delMaint = delProg.get(delProg.size() - 2);
@@ -232,29 +235,31 @@ class DeletionDeltaRules extends DeltaRules {
 			de.evaluatePrograms(delPrep);
 			after = Calendar.getInstance();
 			time = after.getTimeInMillis() - before.getTimeInMillis();
-			System.out.println("DELETION PREP TIME: " + time + " msec");
+			logger.debug("DELETION PREP TIME: {} msec", Long.valueOf(time));
 
 			de.commitAndReset();
 
-			boolean recomputeQueries = !Config.getPrepare() && Config.getStratified();
+			boolean recomputeQueries = !Config.getPrepare()
+					&& Config.getStratified();
 
 			before = Calendar.getInstance();
 			de.evaluatePrograms(delMaint, recomputeQueries);
 			after = Calendar.getInstance();
 			time = after.getTimeInMillis() - before.getTimeInMillis();
-			System.out.println("INCREMENTAL DELETION ALG TIME  (INCL COMMIT): "
-					+ time + " msec");
-			System.out
-					.println("EXP: TIME SPENT FOR COMMIT AND LOGGING DEACTIVATION: "
-							+ de.logTime() + " msec");
-			System.out.println("EXP: TIME SPENT FOR EMPTY CHECKING: "
+			logger.debug(
+					"INCREMENTAL DELETION ALG TIME  (INCL COMMIT): {} msec",
+					Long.valueOf(time));
+			logger
+					.debug(
+							"EXP: TIME SPENT FOR COMMIT AND LOGGING DEACTIVATION: {} msec",
+							Long.valueOf(de.logTime()));
+			logger.debug("EXP: TIME SPENT FOR EMPTY CHECKING: "
 					+ de.emptyTime() + " msec");
-			System.out.println("EXP: NET DELETION TIME: "
-					+ (time - de.logTime()) + " msec");
+			logger.debug("EXP: NET DELETION TIME: {} msec", Long.valueOf(time
+					- de.logTime()));
 
 			SqlEngine.delTimes.add(new Long(time - de.logTime()));
 			retTime = time - de.logTime();
-
 
 			de.commitAndReset();
 
@@ -262,10 +267,9 @@ class DeletionDeltaRules extends DeltaRules {
 			de.evaluatePrograms(delPost);
 			after = Calendar.getInstance();
 			time = after.getTimeInMillis() - before.getTimeInMillis();
-			System.out.println("POST DELETION TIME: " + time + " msec");
+			logger.debug("POST DELETION TIME: {} msec", Long.valueOf(time));
 
 			de.commitAndReset();
-			
 
 			return retTime;
 

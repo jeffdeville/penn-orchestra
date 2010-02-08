@@ -17,8 +17,8 @@ package edu.upenn.cis.orchestra;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.TestUtil.DEV_TESTNG_GROUP;
-import static edu.upenn.cis.orchestra.TestUtil.SLOW_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
+import static edu.upenn.cis.orchestra.TestUtil.SLOW_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.getChildElements;
 
 import java.io.File;
@@ -196,6 +196,7 @@ public abstract class AbstractMultiSystemOrchestraTest {
 		Config.setJDBCDriver(jdbcDriver);
 		Config.setWorkDir(orchestraWorkdir);
 		Config.setTestSchemaName(orchestraSchemaName);
+		Config.setDebug(false);
 		orchestraSchema = new OrchestraSchema(new File(new URI(Config
 				.getSchemaFile())));
 		logger.debug("Using Orchestra schema file:\n{}", orchestraSchema);

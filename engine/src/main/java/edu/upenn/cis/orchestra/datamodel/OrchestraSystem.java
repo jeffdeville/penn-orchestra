@@ -46,6 +46,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -115,6 +117,7 @@ public class OrchestraSystem {
 	private Peer _localPeer;
 	/** This will handle any updates to the local peer. */
 	private ILocalUpdater _localUpdater;
+	private static Logger _logger = LoggerFactory.getLogger(OrchestraSystem.class);
 	
 	/** Local objects: mapping and reconciliation engines */
 	protected BasicEngine _mappingEngine;
@@ -1441,6 +1444,7 @@ public class OrchestraSystem {
 	 * @throws Exception
 	 */
 	public void translate() throws Exception {
+		_logger.debug("Starting update exchange.");
 		String localPeerId = _localPeer.getId();
 		int lastrec = getRecDb(localPeerId).getCurrentRecno();
 		int recno = getRecDb(localPeerId).getRecNo();
@@ -1449,6 +1453,7 @@ public class OrchestraSystem {
 		getRecDb(localPeerId).setRecDone();
 		List<Relation> relations = getLocalPeerRelations();
 		_localUpdater.postReconcileHook(getMappingDb(), relations);
+		_logger.debug("Update exchange finished.");
 	}
 
 	/**
@@ -1469,9 +1474,11 @@ public class OrchestraSystem {
 	 * @throws Exception
 	 */
 	public int fetch() throws Exception {
+		_logger.debug("Starting publish.");
 		_localUpdater.extractAndApplyLocalUpdates(_localPeer);
 		int count = getMappingDb().fetchDbTransactions(_localPeer, getRecDb(_localPeer.getId()));
 		getRecDb(_localPeer.getId()).publish();
+		_logger.debug("Publish finished.");
 		return count;
 	}
 	
