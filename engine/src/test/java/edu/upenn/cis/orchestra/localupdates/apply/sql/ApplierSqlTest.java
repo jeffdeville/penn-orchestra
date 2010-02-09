@@ -61,7 +61,7 @@ import edu.upenn.cis.orchestra.localupdates.apply.IApplier;
  * @author John Frommeyer
  * 
  */
-@Test(groups = {REQUIRES_DATABASE_TESTNG_GROUP, FAST_TESTNG_GROUP})
+@Test(groups = { REQUIRES_DATABASE_TESTNG_GROUP, FAST_TESTNG_GROUP })
 public class ApplierSqlTest {
 	private Peer localPeer;
 	private Schema schema;
@@ -97,8 +97,8 @@ public class ApplierSqlTest {
 		List<RelationField> fields = newArrayList();
 		fields.add(new RelationField("RID", "The R ID", new IntType(false,
 				false)));
-		fields.add(new RelationField("RSTR", "The R STR", new StringType(false,
-				false, true, 10)));
+		fields.add(new RelationField("RSTR", "The labeled nullable R STR",
+				new StringType(false, true, true, 10)));
 		String relationName = "applyRelation" + suffix;
 		Relation newRelation = new Relation(null, "applySchema", relationName,
 				relationName, "The description", true, true, fields);
@@ -119,7 +119,7 @@ public class ApplierSqlTest {
 	@Parameters(value = { "jdbc-driver", "db-url", "db-user", "db-password" })
 	public final void initConnection(String jdbcDriver, String dbURL,
 			String dbUser, String dbPassword) throws SQLException {
-		
+
 		Properties connectionProperties = new Properties();
 		connectionProperties.setProperty("user", dbUser);
 		connectionProperties.setProperty("password", dbPassword);
@@ -129,7 +129,7 @@ public class ApplierSqlTest {
 		connection.setAutoCommit(false);
 
 	}
-	
+
 	/**
 	 * Sets up dbunit with parameters passed in by testng.
 	 * 
@@ -137,7 +137,7 @@ public class ApplierSqlTest {
 	 * @param dbURL
 	 * @param dbUser
 	 * @param dbPassword
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@BeforeClass
 	@Parameters(value = { "jdbc-driver", "db-url", "db-user", "db-password" })
@@ -146,10 +146,10 @@ public class ApplierSqlTest {
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
 		URL initalStateURL = getClass().getResource("initialState.xml");
 		File initalStateFile = new File(initalStateURL.getPath());
-		DbUnitUtil.executeDbUnitOperation(DatabaseOperation.CLEAN_INSERT, initalStateFile, tester);
+		DbUnitUtil.executeDbUnitOperation(DatabaseOperation.CLEAN_INSERT,
+				initalStateFile, tester);
 	}
 
-	
 	/**
 	 * Creates a {@code LocalUpdates} for the test.
 	 * 
@@ -165,7 +165,7 @@ public class ApplierSqlTest {
 		inserted.set("RID", Integer.valueOf(1));
 		inserted.set("RSTR", "Mitchell");
 		builder.addUpdate(schema, relation, new Update(null, inserted));
-		
+
 		inserted = new Tuple(relation);
 		inserted.set("RID", Integer.valueOf(3));
 		inserted.set("RSTR", "Mark");
@@ -175,7 +175,7 @@ public class ApplierSqlTest {
 		deleted.set("RID", Integer.valueOf(2));
 		deleted.set("RSTR", "Webb");
 		builder.addUpdate(schema, relation, new Update(deleted, null));
-		
+
 		deleted = new Tuple(relation);
 		deleted.set("RID", Integer.valueOf(4));
 		deleted.set("RSTR", "Jeremy");
@@ -187,22 +187,27 @@ public class ApplierSqlTest {
 
 	/**
 	 * The actual test. Verifies that the updates were applied as expected.
-	 * @throws Exception 
-	 * @throws DatabaseUnitException 
-	 * @throws IOException 
-	 * @throws DataSetException 
+	 * 
+	 * @throws Exception
+	 * @throws DatabaseUnitException
+	 * @throws IOException
+	 * @throws DataSetException
 	 * 
 	 */
-	public void testApplyUpdatesSql() throws DataSetException, IOException, DatabaseUnitException, Exception {
+	public void testApplyUpdatesSql() throws DataSetException, IOException,
+			DatabaseUnitException, Exception {
 		IApplier<Connection> apply = new ApplierSql();
 
 		apply.applyUpdates(localUpdates, connection);
-		//In real life the connection is committed and closed by the applier's ILocalUpdater parent. But we have to do it here.
+		// In real life the connection is committed and closed by the applier's
+		// ILocalUpdater parent. But we have to do it here.
 		connection.commit();
 		connection.close();
 		assertTrue(connection.isClosed());
-		File expectedDataSetFile = new File(getClass().getResource("finalState.xml").getPath());
-		DbUnitUtil.checkDatabase(expectedDataSetFile, new IncludeTableFilter(new String[] {"APPLYSCHEMA.*"}), tester, null);
-		
+		File expectedDataSetFile = new File(getClass().getResource(
+				"finalState.xml").getPath());
+		DbUnitUtil.checkDatabase(expectedDataSetFile, new IncludeTableFilter(
+				new String[] { "APPLYSCHEMA.*" }), tester, null);
+
 	}
 }
