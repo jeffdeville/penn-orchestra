@@ -21,7 +21,9 @@ import java.util.List;
 
 import org.eclipse.datatools.modelbase.sql.query.QueryInsertStatement;
 import org.eclipse.datatools.modelbase.sql.query.QuerySelectStatement;
+import org.eclipse.datatools.modelbase.sql.query.ValueExpressionColumn;
 
+import edu.upenn.cis.orchestra.sql.ISqlConstant;
 import edu.upenn.cis.orchestra.sql.ISqlExp;
 import edu.upenn.cis.orchestra.sql.ISqlExpression;
 import edu.upenn.cis.orchestra.sql.ISqlInsert;
@@ -109,4 +111,23 @@ class DtpSqlInsert extends AbstractSQLQueryObject<QueryInsertStatement>
 		return _insertStatement;
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public ISqlInsert addTargetColumns(List<? extends ISqlConstant> columnNames) {
+		for (ISqlConstant columnName : columnNames) {
+			if (columnName.getType() != ISqlConstant.Type.COLUMNNAME) {
+				throw new IllegalArgumentException(
+						"columnNames contains element of illegal ISqlConstant.Type: "
+								+ columnName.getType()
+								+ ". columnNames can only contain elements with getType() == ISqlConstant.Type.COLUMNNAME.");
+
+			}
+			@SuppressWarnings("unchecked")
+			ISQLQueryObject<ValueExpressionColumn> columnExpression = (ISQLQueryObject<ValueExpressionColumn>) columnName;
+			getSQLQueryParserFactory().createColumnList(
+					_insertStatement.getTargetColumnList(),
+					columnExpression.getSQLQueryObject());
+		}
+		return this;
+	}
 }

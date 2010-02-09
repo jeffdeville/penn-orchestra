@@ -15,6 +15,8 @@
  */
 package edu.upenn.cis.orchestra.sql;
 
+import java.util.List;
+
 /**
  * An SQL {@code INSERT} statement.
  * 
@@ -41,5 +43,15 @@ public interface ISqlInsert extends ISqlStatement {
 	 * @return this {@code ISqlInsert}.
 	 */
 	ISqlInsert addValueSpec(ISqlExp e);
+
+	/**
+	 * Specify the target columns for this insert.
+	 * 
+	 * @param columnNames a list of column names into which the values should be
+	 *            inserted. Each constant must have type {@code
+	 *            ISqlConstant.Type.COLUMNNAME}.
+	 * @return this {@code ISqlInsert}
+	 */
+	ISqlInsert addTargetColumns(List<? extends ISqlConstant> columnNames);
 
 }
