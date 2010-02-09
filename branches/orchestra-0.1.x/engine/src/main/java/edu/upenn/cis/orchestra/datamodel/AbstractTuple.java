@@ -441,4 +441,28 @@ public abstract class AbstractTuple<S extends AbstractRelation> implements Seria
 			throw new XMLParseException("OptimizerType error deserializing tuple", e);
 		}
 	}
+	
+	/**
+	 * Returns {@code true} if the field at position {@code index} can hold
+	 * labeled nulls.
+	 * 
+	 * @param index
+	 * @return {@code true} if the field at position {@code index} can hold
+	 *         labeled nulls
+	 */
+	public boolean isLabeledNullable(int index) {
+		return schema.getField(index).getType().isLabeledNullable();
+	}
+
+	/**
+	 * Returns {@code true} if the field with label {@code label} can hold
+	 * labeled nulls.
+	 * 
+	 * @param label
+	 * @return {@code true} if the field with label {@code label} can hold
+	 *         labeled nulls
+	 */
+	public boolean isLabeledNullable(String label) {
+		return schema.getField(label).getType().isLabeledNullable();
+	}
 }
