@@ -8,7 +8,7 @@ This is glossary of terms we use in Orchestra.
 
 *Epoch Number* global counter, similiar to a subversion revision number
 
-*Labelled Null* different form SQL null and Java null
+*Labelled Null* different form SQL null - we can join on labelled nulls
 
 *Reconcile Number* another name for _Epoch Number_
 
