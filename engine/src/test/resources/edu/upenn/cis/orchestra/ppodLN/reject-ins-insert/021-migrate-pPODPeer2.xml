@@ -39,9 +39,12 @@
   <PPOD2.PM0_INV/>
   <PPOD2.PM0_NEW/>
   <decisions/>
-  <epochContents/>
-  <lastRecno/>
-  <recnoEpochs/>
+  <epochContents epoch="0" txnPeerID_0=""/>
+  <epochContents epoch="1" txnPeerID_0=""/>
+  <lastRecno peerID="@pPODPeer1" recno="0"/>
+  <lastRecno peerID="@pPODPeer2" recno="0"/>
+  <recnoEpochs peerID="@pPODPeer1" recno="0" epoch="0"/>
+  <recnoEpochs peerID="@pPODPeer2" recno="0" epoch="1"/>
   <reconAcceptedTxns/>
   <reconRejectedTxns/>
   <txns/>
