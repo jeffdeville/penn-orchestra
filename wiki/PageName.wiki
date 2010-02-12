@@ -4,9 +4,9 @@
 
 Add your content here.
 
-*Epoch Number* global counter
+*Epoch Number* global counter, similiar to a subversion revision number
 
-*Reconcile Number* local counter
+*Reconcile Number* another name for _Epoch Number_
 
 = Details =
 
