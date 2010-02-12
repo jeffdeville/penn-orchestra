@@ -1124,13 +1124,13 @@ public class ClientCentricDb extends Db {
 			throw new IllegalStateException("Attempt to publish without first calling setDoneInitializing");
 		}
 
-		if (! unpublishedTransactions.isEmpty()) {
-			updateStore.publish(unpublishedTransactions);
-			unpublishedTransactions.clear();
 
-			publishedTids.addAll(unpublishedTids);
-			unpublishedTids.clear();
-		}
+		updateStore.publish(unpublishedTransactions);
+		unpublishedTransactions.clear();
+		
+		publishedTids.addAll(unpublishedTids);
+		unpublishedTids.clear();
+
 
 	}
 

@@ -675,10 +675,9 @@ public class SqlEngine extends BasicEngine {
 		_system.prepareSystemForLocalUpdater();
 
 		try {
-			int updates = moveExistingData();
-			if (updates > 0) {
-				_system.publishAndMap();
-			}
+			moveExistingData();
+			_system.publishAndMap();
+
 		} catch (Exception se) {
 			System.err.println("Error importing existing data");
 			se.printStackTrace();
