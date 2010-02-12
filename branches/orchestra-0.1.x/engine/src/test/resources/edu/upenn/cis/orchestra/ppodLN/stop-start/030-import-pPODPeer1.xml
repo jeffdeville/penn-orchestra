@@ -38,11 +38,16 @@
   <PPOD2.PM0_INS/>
   <PPOD2.PM0_INV/>
   <PPOD2.PM0_NEW/>
-  <decisions peerID="@pPODPeer1" txnPeerID="0@pPODPeer1" accepted="true" recno="0"/>
-  <epochContents epoch="0" txnPeerID_0="0@pPODPeer1"/>
-  <lastRecno peerID="@pPODPeer1" recno="0"/>
+  <decisions peerID="@pPODPeer1" txnPeerID="0@pPODPeer1" accepted="true" recno="1"/>
+  <epochContents epoch="0" txnPeerID_0=""/>
+  <epochContents epoch="1" txnPeerID_0=""/>
+  <epochContents epoch="2" txnPeerID_0="0@pPODPeer1"/>
+  <lastRecno peerID="@pPODPeer1" recno="1"/>
+  <lastRecno peerID="@pPODPeer2" recno="0"/>
   <recnoEpochs peerID="@pPODPeer1" recno="0" epoch="0"/>
-  <reconAcceptedTxns peerID="@pPODPeer1" recno="0" txnPeerID="0@pPODPeer1"/>
+  <recnoEpochs peerID="@pPODPeer1" recno="1" epoch="2"/>
+  <recnoEpochs peerID="@pPODPeer2" recno="0" epoch="1"/>
+  <reconAcceptedTxns peerID="@pPODPeer1" recno="1" txnPeerID="0@pPODPeer1"/>
   <reconRejectedTxns/>
   <txns txnPeerID="0@pPODPeer1" update_0="+OTU(1,Primates,3,4) [0@pPODPeer1]"/>
 </dataset>
