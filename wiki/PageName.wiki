@@ -1,20 +1,17 @@
-#summary One-sentence summary of this page.
+#summary a glossary of Orchestra terms.
 
-= Introduction =
+= Glossary =
 
-Add your content here.
+This is glossary of terms we use in Orchestra.
+
+= Details =
 
 *Epoch Number* global counter, similiar to a subversion revision number
+
+*Labelled Null* different form SQL null and Java null
 
 *Reconcile Number* another name for _Epoch Number_
 
 *State Store* 
 
 *Update Store*
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
