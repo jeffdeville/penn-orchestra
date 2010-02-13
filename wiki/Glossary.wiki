@@ -1,4 +1,4 @@
-#summary a glossary of Orchestra terms.
+#summary A glossary of Orchestra terms.
 
 = Glossary =
 
