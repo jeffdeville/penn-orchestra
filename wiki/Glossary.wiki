@@ -10,8 +10,14 @@ This is glossary of terms we use in Orchestra.
 
 *_Labelled Null_* different form SQL null - we can join on labelled nulls. _1_ indicates there is no labeled null. All other values than _1_.
 
+*_Publish_*
+
+*_Reconcile_*
+
 *_Reconcile Number_* another name for _Epoch Number_
 
 *_State Store_* 
+
+*_Update Exchange_*
 
 *_Update Store_*
