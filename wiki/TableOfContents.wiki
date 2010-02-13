@@ -1,3 +1,4 @@
 #summary documentation outline for docreader
   * [GettingStarted Getting Started]
+  * [Glossary Glossary]
  
