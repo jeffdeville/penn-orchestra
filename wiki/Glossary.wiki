@@ -1,0 +1,17 @@
+#summary a glossary of Orchestra terms.
+
+= Glossary =
+
+This is glossary of terms we use in Orchestra.
+
+= Details =
+
+*_Epoch Number_* global counter, similiar to a subversion revision number
+
+*_Labelled Null_* different form SQL null - we can join on labelled nulls. _1_ indicates there is no labeled null. All other values than _1_.
+
+*_Reconcile Number_* another name for _Epoch Number_
+
+*_State Store_* 
+
+*_Update Store_*
