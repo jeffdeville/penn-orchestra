@@ -1903,7 +1903,7 @@ public class SqlDb implements IDb {
 				if (!Config.useCompactNulls() || rel.isNullable(inx))
 					if(nam != ProvenanceRelation.MRULECOLNAME){
 						labNullCols.add(_sqlFactory.newColumnDef(nam
-								+ RelationField.LABELED_NULL_EXT, "INTEGER", null));
+								+ RelationField.LABELED_NULL_EXT, "INTEGER", Integer.toString(SqlEngine.LABELED_NULL_NONVALUE)));
 					}
 			}
 			inx++;

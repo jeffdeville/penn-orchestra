@@ -21,7 +21,7 @@
 	<parameter name="orchestra-schema-name" value="ppodLN" />
 	<!-- <parameter name="run-mode" value="generate" /> -->
 	<test name="local-ins-insert">
-		<parameter name="test-data-dir" value="local-ins-insert" />
+		<parameter name="test-data-dir" value="local-insert" />
 		<groups>
 			<run>
 				<exclude name="broken" />
@@ -32,10 +32,11 @@
 		</classes>
 	</test>
 	<test name="reject-ins-insert">
-		<parameter name="test-data-dir" value="reject-ins-insert" />
+		<parameter name="test-data-dir" value="local-reject" />
 		<groups>
 			<run>
 				<exclude name="broken" />
+				<exclude name="development" />
 			</run>
 		</groups>
 		<classes>
