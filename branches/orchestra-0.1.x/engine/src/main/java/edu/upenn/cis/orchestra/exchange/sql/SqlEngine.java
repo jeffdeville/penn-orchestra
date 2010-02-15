@@ -65,6 +65,12 @@ public class SqlEngine extends BasicEngine {
 	public static List<Long> delTimes = new ArrayList<Long>();
 	public static List<Long> insTimes = new ArrayList<Long>();
 	public static List<Long> progTimes = new ArrayList<Long>();
+	
+	/**
+	 * The value used for a labeled null column to indicate that it does not
+	 * hold a valid labeled null value.
+	 */
+	public static final int LABELED_NULL_NONVALUE = 1;
 	private static final Logger logger = LoggerFactory.getLogger(SqlEngine.class);
 
 	public SqlEngine(SqlDb d, 
@@ -701,21 +707,18 @@ public class SqlEngine extends BasicEngine {
 			_mappingDb.connect();
 
 		Calendar before = Calendar.getInstance();
-		for (final Peer p : _system.getPeers())
+		for (final Peer p : _system.getPeers()) {
 			for (final Schema sc : p.getSchemas()) {
-				try {
-					final SchemaConverterStatementsGen statementsGen = 
-						new SchemaConverterStatementsGen (getMappingDb().getDataSource(), Config.getJDBCDriver(), sc);
-
-					statements.addAll(statementsGen.createNecessaryTables( 
-							!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), 
-							getMappingDb().getSqlTranslator().getLoggingMsg().length() == 0, getMappingDb()));
-//					Config.getLoggingMsg().length() == 0));
-				} catch (MetaDataAccessException e) {
-					e.printStackTrace();
-					throw new XMLParseException("Unable to access SQL");
-				}
+				final SchemaConverterStatementsGen statementsGen = 
+					new SchemaConverterStatementsGen (getMappingDb().getDataSource(), Config.getJDBCDriver(), sc);
+				
+				statements.addAll(statementsGen.createNecessaryTables( 
+						!Config.getAutocommit(), Config.getJDBCDriver(), Config.getStratified(), 
+						getMappingDb().getSqlTranslator().getLoggingMsg().length() == 0, getMappingDb()));
+//				Config.getLoggingMsg().length() == 0));
+				
 			}
+		}
 
 		logger.debug("+++ Initialization +++");
 		for (final String s: statements) {
