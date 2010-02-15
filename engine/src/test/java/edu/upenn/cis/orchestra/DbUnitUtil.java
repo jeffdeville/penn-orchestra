@@ -38,6 +38,7 @@ import org.dbunit.dataset.ITableMetaData;
 import org.dbunit.dataset.SortedDataSet;
 import org.dbunit.dataset.datatype.DataType;
 import org.dbunit.dataset.datatype.IDataTypeFactory;
+import org.dbunit.dataset.filter.IColumnFilter;
 import org.dbunit.dataset.filter.ITableFilter;
 import org.dbunit.dataset.filter.IncludeTableFilter;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
@@ -48,7 +49,6 @@ import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 
 import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
-
 
 /**
  * Utility methods for using DbUnit.
@@ -250,6 +250,13 @@ public class DbUnitUtil {
 			config.setProperty(
 					"http://www.dbunit.org/properties/datatypeFactory",
 					typeFactory);
+			config.setProperty(
+					"http://www.dbunit.org/properties/primaryKeyFilter",
+					new IColumnFilter() {
+						@Override
+						public boolean accept(String tableName, Column column) {
+							return true;
+						}});
 		}
 
 		return c;
@@ -277,7 +284,7 @@ public class DbUnitUtil {
 			throws Exception {
 		IDataSet currentState = null;
 		if (dump) {
-			//recover test-data-dir to keep things organized.
+			// recover test-data-dir to keep things organized.
 			File dataDir = new File(dataSetFile.getParentFile().getName());
 			if (!dataDir.exists()) {
 				dataDir.mkdir();
@@ -340,7 +347,7 @@ public class DbUnitUtil {
 	 * (Dump or Check) and Meta Check.
 	 * 
 	 * @param datasetFile
-	 * @param checker 
+	 * @param checker
 	 * @param orchestraSchema
 	 * @param dumpDatasets
 	 * @param dbTester

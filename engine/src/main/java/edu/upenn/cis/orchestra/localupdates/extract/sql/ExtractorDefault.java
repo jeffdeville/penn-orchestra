@@ -36,6 +36,7 @@ import edu.upenn.cis.orchestra.datamodel.AbstractRelation.NameNotFound;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
 import edu.upenn.cis.orchestra.dbms.IDb;
 import edu.upenn.cis.orchestra.dbms.SqlDb;
+import edu.upenn.cis.orchestra.exchange.sql.SqlEngine;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.LocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.LocalUpdates.Builder;
@@ -112,23 +113,25 @@ public class ExtractorDefault implements IExtractor<Connection> {
 	}
 
 	private void extractUpdate(Schema schema, Relation relation,
-			ResultSet updateSet, Operation op, LocalUpdates.Builder builder) throws SQLException,
-			RDBMSExtractError {
+			ResultSet updateSet, Operation op, LocalUpdates.Builder builder)
+			throws SQLException, RDBMSExtractError {
 
 		Tuple tuple = new Tuple(relation);
 		for (RelationField field : relation.getFields()) {
 			String fieldName = field.getName();
 			try {
-				Object value = updateSet.getObject(fieldName);
-				if (value == null && field.getType().isLabeledNullable()) {
+				// 
+				if (field.getType().isLabeledNullable()) {
 					int lnValue = updateSet.getInt(fieldName
 							+ RelationField.LABELED_NULL_EXT);
-					if (updateSet.wasNull()) {
-						tuple.set(fieldName, null);
+					if (lnValue == SqlEngine.LABELED_NULL_NONVALUE) {
+						Object value = updateSet.getObject(fieldName);
+						tuple.set(fieldName, value);
 					} else {
 						tuple.setLabeledNull(fieldName, lnValue);
 					}
 				} else {
+					Object value = updateSet.getObject(fieldName);
 					tuple.set(fieldName, value);
 				}
 			} catch (NameNotFound e) {
