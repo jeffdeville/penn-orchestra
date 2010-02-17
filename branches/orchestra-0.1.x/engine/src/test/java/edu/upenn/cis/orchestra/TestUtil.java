@@ -114,7 +114,7 @@ public class TestUtil {
 						"Will attempt to drop tables from the following schemas: {}. Will also attempt to drop schemas",
 						schemasToDrop);
 		ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
-		if (tablesToDrop.size() > 0) {
+		if (tablesToDrop.size() != 0) {
 			logger.debug("Attempting to drop tables: {}", tablesToDrop);
 			int failedDrops = 0;
 			for (String tableName : tablesToDrop) {
@@ -124,8 +124,11 @@ public class TestUtil {
 					logger.debug("Dropped table: {}", tableName);
 				} catch (SQLException e) {
 					failedDrops++;
-					logger.debug("Failed to drop table: {}. SQLState: {}.",
-							tableName, e.getSQLState());
+					logger
+							.debug(
+									"Failed to drop table: {}. SQLState: {}. Error Code: {}",
+									new Object[] { tableName, e.getSQLState(),
+											Integer.valueOf(e.getErrorCode()) });
 				}
 			}
 			logger.debug("Dropped {} out of {} tables.", Integer
@@ -165,8 +168,23 @@ public class TestUtil {
 	public static void createBaseTables(Connection jdbcConnection,
 			File testDataDirectory, String sqlFileName) throws IOException,
 			SQLException {
-		BufferedReader sqlFile = new BufferedReader(new FileReader(new File(
-				testDataDirectory, sqlFileName)));
+		File sqlFile = new File(testDataDirectory, sqlFileName);
+		executeSqlScript(jdbcConnection, sqlFile);
+
+	}
+
+	/**
+	 * Assumes that {@code sqlScript} contains simple semicolon terminated SQL
+	 * statements. These statements are executed using {@code jdbcConnection}.
+	 * 
+	 * @param jdbcConnection
+	 * @param sqlScript
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	public static void executeSqlScript(Connection jdbcConnection,
+			File sqlScript) throws IOException, SQLException {
+		BufferedReader sqlFile = new BufferedReader(new FileReader(sqlScript));
 		List<String> sqlStatements = OrchestraUtil.newArrayList();
 		StringBuffer sqlBuffer = new StringBuffer();
 		String line;
