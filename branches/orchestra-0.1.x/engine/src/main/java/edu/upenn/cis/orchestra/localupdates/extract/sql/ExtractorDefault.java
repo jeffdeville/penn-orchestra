@@ -61,6 +61,9 @@ public class ExtractorDefault implements IExtractor<Connection> {
 		INSERTION, DELETION, UPDATE;
 	}
 
+	/** The suffix of the snapshot table. */
+	public static final String TABLE_SUFFIX = "_PREV";
+
 	private final ISqlFactory sqlFactory = SqlFactories.getSqlFactory();
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -151,7 +154,7 @@ public class ExtractorDefault implements IExtractor<Connection> {
 			break;
 		default:
 			throw new IllegalArgumentException(
-					"Updates are not yet supported. SQL replication should be set to convert updates into delete/insert pairs.");
+					"Updates are not yet supported. Updates should be converted into delete/insert pairs.");
 		}
 
 		builder.addUpdate(schema, relation, update);
@@ -159,7 +162,7 @@ public class ExtractorDefault implements IExtractor<Connection> {
 
 	private ISqlSelect operationToSql(Relation relation, Operation op) {
 		final String prevName = relation.getDbSchema() + "."
-				+ relation.getDbRelName() + "_PREV";
+				+ relation.getDbRelName() + TABLE_SUFFIX;
 		final String baseName = relation.getFullQualifiedDbId();
 		String firstName, secondName;
 		switch (op) {
@@ -197,8 +200,8 @@ public class ExtractorDefault implements IExtractor<Connection> {
 		SqlDb sqlDb = (SqlDb) db;
 		List<String> code = newArrayList();
 		for (Relation rel : relations) {
-			code.addAll(sqlDb.createSQLTableCode("_PREV", rel, false, false,
-					false, false));
+			code.addAll(sqlDb.createSQLTableCode(TABLE_SUFFIX, rel, false,
+					false, false, false));
 		}
 		logger.debug("Database server: {}", sqlDb.getServer());
 		logger.debug("Prepare code: {}", code);
@@ -218,7 +221,7 @@ public class ExtractorDefault implements IExtractor<Connection> {
 		SqlDb sqlDb = (SqlDb) db;
 		for (Relation rel : relations) {
 			try {
-				sqlDb.mirrorTable(rel, "", "_PREV");
+				sqlDb.mirrorTable(rel, "", TABLE_SUFFIX);
 			} catch (SQLException e) {
 				logger.error("Error while updating PREV table for "
 						+ rel.getFullQualifiedDbId(), e);

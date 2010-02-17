@@ -26,6 +26,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -39,6 +40,8 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import edu.upenn.cis.orchestra.DbUnitUtil;
+import edu.upenn.cis.orchestra.TestUtil;
+import edu.upenn.cis.orchestra.datalog.atom.Atom.AtomType;
 import edu.upenn.cis.orchestra.datamodel.IntType;
 import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.Relation;
@@ -71,6 +74,9 @@ public class ApplierSqlTest {
 	private Connection connection;
 	private ILocalUpdates localUpdates;
 	private JdbcDatabaseTester tester;
+	private final String dbschema = "applyschema";
+	private final String dbtable = "applyrelation";
+	private final String dbtablefqn = dbschema + "." + dbtable;
 
 	/**
 	 * @throws DuplicateRelationIdException
@@ -83,11 +89,11 @@ public class ApplierSqlTest {
 		schema = new Schema("ApplyUpdateTestSchema");
 		relation = createRelation("");
 		schema.addRelation(relation);
-		relationLocal = createRelation("_L");
+		relationLocal = createRelation(Relation.LOCAL);
 		schema.addRelation(relationLocal);
-		relationReject = createRelation("_R");
+		relationReject = createRelation(Relation.REJECT);
 		schema.addRelation(relationReject);
-		localPeer = new Peer("ExtractUpdateTestPeer", "",
+		localPeer = new Peer("ApplyUpdateTestPeer", "",
 				"Apply Update Test Peer");
 		localPeer.addSchema(schema);
 
@@ -99,8 +105,8 @@ public class ApplierSqlTest {
 				false)));
 		fields.add(new RelationField("RSTR", "The labeled nullable R STR",
 				new StringType(false, true, true, 10)));
-		String relationName = "applyRelation" + suffix;
-		Relation newRelation = new Relation(null, "applySchema", relationName,
+		String relationName = dbtable + suffix;
+		Relation newRelation = new Relation(null, dbschema, relationName,
 				relationName, "The description", true, true, fields);
 		newRelation.markFinished();
 		return newRelation;
@@ -144,6 +150,16 @@ public class ApplierSqlTest {
 	public final void initDBUnit(String jdbcDriver, String dbURL,
 			String dbUser, String dbPassword) throws Exception {
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
+		TestUtil.clearDb(tester.getConnection().getConnection(), newArrayList(
+				dbtablefqn, dbtablefqn + Relation.LOCAL,
+				dbtablefqn + Relation.REJECT, dbtablefqn
+						+ Relation.LOCAL + "_" + AtomType.INS, dbtablefqn
+						+ Relation.LOCAL + "_" + AtomType.DEL, dbtablefqn
+						+ Relation.REJECT + "_" + AtomType.INS, dbtablefqn
+						+ Relation.REJECT + "_" + AtomType.DEL), Collections
+				.singletonList(dbschema));
+		File sqlScript = new File(getClass().getResource("applyschema.sql").getPath());
+		TestUtil.executeSqlScript(tester.getConnection().getConnection(), sqlScript);
 		URL initalStateURL = getClass().getResource("initialState.xml");
 		File initalStateFile = new File(initalStateURL.getPath());
 		DbUnitUtil.executeDbUnitOperation(DatabaseOperation.CLEAN_INSERT,
@@ -207,7 +223,7 @@ public class ApplierSqlTest {
 		File expectedDataSetFile = new File(getClass().getResource(
 				"finalState.xml").getPath());
 		DbUnitUtil.checkDatabase(expectedDataSetFile, new IncludeTableFilter(
-				new String[] { "APPLYSCHEMA.*" }), tester, null);
+				new String[] { dbschema + ".*" }), tester, null);
 
 	}
 }

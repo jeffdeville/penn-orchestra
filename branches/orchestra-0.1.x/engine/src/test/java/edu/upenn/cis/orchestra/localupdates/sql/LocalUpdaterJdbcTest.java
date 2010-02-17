@@ -22,6 +22,7 @@ import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 import org.dbunit.JdbcDatabaseTester;
@@ -33,6 +34,8 @@ import org.testng.annotations.Test;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.DbUnitUtil;
+import edu.upenn.cis.orchestra.TestUtil;
+import edu.upenn.cis.orchestra.datalog.atom.Atom.AtomType;
 import edu.upenn.cis.orchestra.datamodel.IntType;
 import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.Relation;
@@ -42,6 +45,7 @@ import edu.upenn.cis.orchestra.datamodel.StringType;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateRelationIdException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateSchemaIdException;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdater;
+import edu.upenn.cis.orchestra.localupdates.extract.sql.ExtractorDefault;
 
 /**
  * 
@@ -53,6 +57,7 @@ public class LocalUpdaterJdbcTest {
 
 	private String testSchema = "EXTRACTSCHEMA";
 	private String baseTable = "BASE";
+	private String baseTableFqn = testSchema + "." + baseTable;
 	private JdbcDatabaseTester tester;
 	private Peer localPeer;
 
@@ -94,6 +99,18 @@ public class LocalUpdaterJdbcTest {
 		System.setProperty("jdbc.drivers", jdbcDriver);
 
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
+		TestUtil.clearDb(tester.getConnection().getConnection(), newArrayList(
+				baseTableFqn, baseTableFqn + ExtractorDefault.TABLE_SUFFIX,
+				baseTableFqn + Relation.LOCAL, baseTableFqn + Relation.REJECT,
+				baseTableFqn + Relation.LOCAL + "_" + AtomType.INS,
+				baseTableFqn + Relation.LOCAL + "_" + AtomType.DEL,
+				baseTableFqn + Relation.REJECT + "_" + AtomType.INS,
+				baseTableFqn + Relation.REJECT + "_" + AtomType.DEL),
+				Collections.singletonList(testSchema));
+		File sqlScript = new File(getClass().getResource("extractschema.sql")
+				.getPath());
+		TestUtil.executeSqlScript(tester.getConnection().getConnection(),
+				sqlScript);
 		URL initalStateURL = getClass().getResource("initialState.xml");
 		File initalStateFile = new File(initalStateURL.getPath());
 		DbUnitUtil.executeDbUnitOperation(DatabaseOperation.CLEAN_INSERT,
