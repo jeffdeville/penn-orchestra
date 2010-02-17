@@ -37,6 +37,7 @@ import edu.upenn.cis.orchestra.DbUnitUtil;
 import edu.upenn.cis.orchestra.OrchestraSchema;
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
+import edu.upenn.cis.orchestra.localupdates.extract.sql.ExtractorDefault;
 
 /**
  * 
@@ -71,12 +72,13 @@ public class PrepareDbForLocalUpdaterJdbcTest {
 				dbUser, dbPassword, "pPODPeer2"));
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
 		Config.setJDBCDriver(jdbcDriver);
-		//Class.forName(jdbcDriver);
+		// Class.forName(jdbcDriver);
 		IDatabaseConnection connection = DbUnitUtil
 				.getConfiguredDbUnitConnection(tester);
 		List<String> empty = Collections.emptyList();
 		TestUtil.clearDb(connection.getConnection(), Collections
-				.singletonList("PPOD2.OTU_PREV"), empty);
+				.singletonList("PPOD2.OTU" + ExtractorDefault.TABLE_SUFFIX),
+				empty);
 		expected = new FlatDtdDataSet(getClass().getResourceAsStream(
 				"expectedPrevTableMetaData.dtd"));
 		connection.close();
@@ -95,7 +97,9 @@ public class PrepareDbForLocalUpdaterJdbcTest {
 		try {
 			system.prepareSystemForLocalUpdater();
 			testConnection = DbUnitUtil.getConfiguredDbUnitConnection(tester);
-			IDataSet actual = testConnection.createDataSet(new String[] { "PPOD2.OTU_PREV" });
+			IDataSet actual = testConnection
+					.createDataSet(new String[] { "PPOD2.OTU"
+							+ ExtractorDefault.TABLE_SUFFIX });
 			Assertion.assertEquals(expected, actual);
 		} finally {
 			system.clearStoreServer();
