@@ -6,7 +6,7 @@
 
 *_Labeled Null_* different form SQL null - we can join on labeled nulls. They can be used when inferring new values though mappings. _1_ indicates there is no labeled null. All other values than _1_ are Skolem values. 
 
-*_Publish_*
+*_Publish_* when a peer publishes it notifies the update store of local changes to its instance since the peer's last publish.
 
 *_Reconcile_*
 
@@ -16,4 +16,4 @@
 
 *_Update Exchange_*
 
-*_Update Store_*
+*_Update Store_* primarily, the repository for each peer's local updates. It is also used to  store each peer's decisions about which non-local transactions it has accepted or rejected.
