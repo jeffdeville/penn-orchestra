@@ -1,5 +1,5 @@
 #summary documentation outline for docreader
   * [GettingStarted Getting Started]
   * [Glossary Glossary]
-  * [UpdateStore | What is the Update Store?]
+  * [UpdateStore What is the Update Store?]
  
