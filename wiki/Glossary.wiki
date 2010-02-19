@@ -8,7 +8,7 @@
 
 *_Publish_* when a peer publishes it notifies the _Update Store_ of local changes to its instance since the peer's last publish. Publish is currently always followed by Update Exchange.
 
-*_Reconcile_* a version of Update Exchange that includes the use of trust conditions to decide what tuples get inserted and deleted. In some contexts, reconcile is used interchangeable with Update Exchange. 
+*_Reconcile_* a version of Update Exchange, not currently implemented, that includes the use of trust conditions to decide what tuples get inserted and deleted. In some contexts, reconcile is used interchangeable with Update Exchange. 
 
 *_Reconcile Number_* another name for _Epoch Number_
 
