@@ -501,11 +501,11 @@ public class OrchestraSystem {
 		if (db == null) {
 			if (_tcs.get(name) != null
 					&& _tcs.get(name).get(schemaName) != null) {
-				db = new ClientCentricDb(this, _mapStore, schema,
+				db = new ClientCentricDb(_mapStore, schema,
 						new StringPeerID(name), _tcs.get(name).get(schemaName),
 						_usf, _ssf);
 			} else {
-				db = new ClientCentricDb(this, _mapStore, schema,
+				db = new ClientCentricDb(_mapStore, schema,
 						new StringPeerID(name), _usf, _ssf);
 			}
 			_recDbs.put(name, db);
@@ -524,7 +524,7 @@ public class OrchestraSystem {
 		Db db = system._recDbs.get(name);
 		if (db == null) {
 
-			db = new ClientCentricDb(system, system._mapStore, null,
+			db = new ClientCentricDb(system._mapStore, null,
 					new StringPeerID(name), system._usf, system._ssf);
 
 			system._recDbs.put(name, db);
@@ -736,121 +736,6 @@ public class OrchestraSystem {
 	 * @throws Exception
 	 */
 	static public OrchestraSystem deserialize(Document document)
-			throws Exception {
-		try {
-			System.out.println("*******deserializing catalog********");
-			OrchestraSystem catalog = new OrchestraSystem();
-
-			Element root = document.getDocumentElement();
-			if (!root.getNodeName().equals("catalog")) {
-				throw new XMLParseException("Missing top-level catalog element");
-			}
-			String catName = root.getAttribute("name");
-			if (catName == null || catName.length() == 0) {
-				throw new XMLParseException("Catalog must have a name");
-			}
-			catalog.setName(catName);
-			boolean recMode = Boolean
-					.parseBoolean(root.getAttribute("recmode"));
-			catalog.setRecMode(recMode);
-
-			createStoreFactories(catalog, root);
-			NodeList list = root.getChildNodes();
-
-			for (int i = 0; i < list.getLength(); i++) {
-				Node node = list.item(i);
-				if (node instanceof Element) {
-					Element el = (Element) node;
-					String name = el.getNodeName();
-					if (name.equals("peer")) {
-						Peer peer = Peer.deserialize(el);
-						catalog.addPeer(peer);
-						if (getBooleanAttribute(el, "localPeer")) {
-							catalog.setLocalPeer(peer);
-						}
-					} else if (name.equals("mapping")) {
-						Mapping mapping = Mapping.deserialize(catalog, el);
-						Peer peer = mapping.getMappingHead().get(0).getPeer();
-						peer.addMapping(mapping);
-						if (!catalog._bidirectional && mapping.isBidirectional()){
-							catalog._bidirectional = true;
-						}
-					} else if (name.equals("engine")) {
-						InputStream inFile = Config.class
-								.getResourceAsStream("functions.schema");
-						if (inFile == null) {
-							throw new XMLParseException(
-									"Cannot find built-in functions");
-						}
-						Map<String, Schema> builtInSchemas = deserializeBuiltInFunctions(inFile);
-						BasicEngine engine = BasicEngine.deserialize(catalog,
-								builtInSchemas, el);
-						catalog.setMappingEngine(engine);
-						
-					} else if (el.getNodeName().equals("trustConditions")) {
-						if (!el.hasAttribute("peer")
-								|| !el.hasAttribute("schema")) {
-							throw new XMLParseException(
-									"Missing 'peer' or 'schema' attribute", el);
-						}
-						String peer = el.getAttribute("peer");
-						String schemaName = el.getAttribute("schema");
-						// Schema s = catalog.getSchemaByName(peer, schemaName);
-						// Check for missing peer or schema (will now get null
-						// pointer exception)
-						// TrustConditions tc = TrustConditions.deserialize(el,
-						// s, new StringPeerID(peer));
-						TrustConditions tc = TrustConditions.deserialize(el,
-								catalog.getPeers(), new StringPeerID(peer));
-						Map<String, TrustConditions> tcForPeer = catalog._tcs
-								.get(peer);
-						if (tcForPeer == null) {
-							tcForPeer = new HashMap<String, TrustConditions>();
-							catalog._tcs.put(peer, tcForPeer);
-						}
-						tcForPeer.put(schemaName, tc);
-					}
-				}
-			}
-			if (catalog._usf == null || catalog._ssf == null) {
-				throw new XMLParseException(
-						"Missing <store> element to describe state and update stores");
-			}
-			if (catalog._localPeer == null) {
-				throw new NoLocalPeerException();
-			}
-			return catalog;
-		} catch (ParserConfigurationException e) {
-			assert (false); // can't happen
-		} catch (DuplicatePeerIdException e) {
-			throw new XMLParseException("Duplicate peer name " + e.getPeerId());
-		} catch (DuplicateSchemaIdException e) {
-			throw new XMLParseException("Duplicate schema name "
-					+ e.getSchemaId());
-		} catch (DuplicateRelationIdException e) {
-			throw new XMLParseException("Duplicate relation name "
-					+ e.getRelId());
-		} catch (UnknownRefFieldException e) {
-			throw new XMLParseException("Unknown field in key: " + e);
-		} catch (DuplicateMappingIdException e) {
-			throw new XMLParseException("Duplicate mapping name "
-					+ e.getMappingId());
-		}
-		return null;
-	}
-	
-	/**
-	 * Returns an {@code OrchestraSystem} defined by the Orchestra schema file
-	 * represented by {@code document}.
-	 * 
-	 * @param document a {@code Document} representing an Orchestra schema file.
-	 * 
-	 * @return an {@code OrchestraSystem} defined by the Orchestra schema file
-	 *         represented by {@code document}.
-	 * 
-	 * @throws Exception
-	 */
-	static public OrchestraSystem deserialize2(Document document)
 			throws Exception {
 		try {
 			System.out.println("*******deserializing catalog********");
@@ -1490,7 +1375,16 @@ public class OrchestraSystem {
 	 */
 	public int publishAndMap() throws Exception {
 		int transactions = fetch();
-		translate();
+		if (getRecMode()) {
+			reconcile();
+		} else {
+			if (getMappingDb().isConnected()) {
+				getMappingDb().connect();
+			}
+			// Now run the Exchange
+			translate();
+
+		}
 		return transactions;
 	}
 
@@ -1522,7 +1416,7 @@ public class OrchestraSystem {
 	public static OrchestraSystem deserialize(InputStream in) throws Exception {
 		Document document = createDocument(in);
 		
-		return deserialize2(document);
+		return deserialize(document);
 	}
 
 	/**

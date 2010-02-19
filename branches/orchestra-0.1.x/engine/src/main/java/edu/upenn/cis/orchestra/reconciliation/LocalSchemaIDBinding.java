@@ -32,32 +32,6 @@ import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
  * @author John Frommeyer
  * 
  */
-/**
- * DOCUMENT ME
- * @author John Frommeyer
- *
- */
-/**
- * DOCUMENT ME
- * @author John Frommeyer
- *
- */
-/**
- * DOCUMENT ME
- * @author John Frommeyer
- *
- */
-/**
- * DOCUMENT ME
- * @author John Frommeyer
- *
- */
-/**
- * DOCUMENT ME
- * 
- * @author John Frommeyer
- * 
- */
 public class LocalSchemaIDBinding implements ISchemaIDBinding {
 
 	private final Map<Integer, Relation> idToRel = newHashMap();

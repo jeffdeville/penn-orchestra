@@ -52,7 +52,88 @@ import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
  * 
  */
 public final class MultiGUIOperationFactory extends
-		AbstractDsFileOperationFactory<FrameFixture> {
+		AbstractDsFileOperationFactory<OrchestraGUIController> {
+
+	/**
+	 * An Orchestra Start operation.
+	 * 
+	 */
+	private class StartOperation implements IOrchestraOperation {
+		/** The DbUnit dataset file we will be writing or testing against. */
+		private final File datasetFile;
+		private final String peerName;
+
+		/**
+		 * Creates a create operation.
+		 * 
+		 * @param datasetFile
+		 * @param peerName
+		 */
+		private StartOperation(
+				@SuppressWarnings("hiding") final File datasetFile,
+				@SuppressWarnings("hiding") final String peerName) {
+			this.datasetFile = datasetFile;
+			this.peerName = peerName;
+		}
+
+		/**
+		 * @see edu.upenn.cis.orchestra.IOrchestraOperation#execute()
+		 */
+		@Override
+		public void execute() throws Exception {
+			ITestFrameWrapper<OrchestraGUIController> testFrame = peerToTestFrameWrapper
+					.get(peerName);
+			OrchestraGUIController controller = testFrame
+					.getOrchestraController();
+			controller.start();
+			MetaDataChecker checker = new MetaDataChecker.Builder()
+					.checkTypes().build();
+			DbUnitUtil.dumpOrCheckAndMetaCheck(datasetFile, checker,
+					orchestraSchema, dumpDatasets, testFrame.getTestFrame()
+							.getDbTester(), bdbDataSetFactory);
+		}
+	}
+
+	/**
+	 * An Orchestra Stop operation.
+	 * 
+	 */
+	private class StopOperation implements IOrchestraOperation {
+		/** The DbUnit dataset file we will be writing or testing against. */
+		private final File datasetFile;
+		private final String peerName;
+
+		/**
+		 * Creates a create operation.
+		 * 
+		 * @param datasetFile
+		 * @param peerName
+		 */
+		private StopOperation(
+				@SuppressWarnings("hiding") final File datasetFile,
+				@SuppressWarnings("hiding") final String peerName) {
+			this.datasetFile = datasetFile;
+			this.peerName = peerName;
+		}
+
+		/**
+		 * @see edu.upenn.cis.orchestra.IOrchestraOperation#execute()
+		 */
+		@Override
+		public void execute() throws Exception {
+			ITestFrameWrapper<OrchestraGUIController> testFrame = peerToTestFrameWrapper
+					.get(peerName);
+			OrchestraGUIController controller = testFrame
+					.getOrchestraController();
+			controller.stop();
+			MetaDataChecker checker = new MetaDataChecker.Builder()
+					.checkTypes().build();
+			DbUnitUtil.dumpOrCheckAndMetaCheck(datasetFile, checker,
+					orchestraSchema, dumpDatasets, testFrame.getTestFrame()
+							.getDbTester(), bdbDataSetFactory);
+		}
+	}
+
 	/**
 	 * An Orchestra Create operation.
 	 * 
@@ -80,9 +161,10 @@ public final class MultiGUIOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			ITestFrameWrapper<FrameFixture> testFrame = peerToTestFrameWrapper
+			ITestFrameWrapper<OrchestraGUIController> testFrame = peerToTestFrameWrapper
 					.get(peerName);
-			FrameFixture window = testFrame.getOrchestraController();
+			FrameFixture window = testFrame.getOrchestraController()
+					.getFrameFixture();
 			window.component().toFront();
 			window.menuItemWithPath("Services", "Create DB from Schema")
 					.click();
@@ -122,9 +204,10 @@ public final class MultiGUIOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			ITestFrameWrapper<FrameFixture> testFrame = peerToTestFrameWrapper
+			ITestFrameWrapper<OrchestraGUIController> testFrame = peerToTestFrameWrapper
 					.get(peerName);
-			FrameFixture window = testFrame.getOrchestraController();
+			FrameFixture window = testFrame.getOrchestraController()
+					.getFrameFixture();
 			window.component().toFront();
 			window.menuItemWithPath("Services", "Migrate Existing DB").click();
 			// We found that when testing with remote database, we need to pause
@@ -167,10 +250,14 @@ public final class MultiGUIOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			ITestFrameWrapper<FrameFixture> testFrame = peerToTestFrameWrapper
+			ITestFrameWrapper<OrchestraGUIController> testFrame = peerToTestFrameWrapper
 					.get(peerName);
-			FrameFixture window = testFrame.getOrchestraController();
+			FrameFixture window = testFrame.getOrchestraController()
+					.getFrameFixture();
 			window.component().toFront();
+			JTabbedPaneFixture tabPane = window
+					.tabbedPane(PeersMgtPanel.PEERS_MGT_TABBED_PANE);
+			tabPane.selectTab("Peer " + peerName);
 			window.menuItemWithPath("File", "Import CDSS Data...").click();
 			JFileChooserFixture fileChooser = JFileChooserFinder
 					.findFileChooser().using(window.robot);
@@ -233,9 +320,10 @@ public final class MultiGUIOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			ITestFrameWrapper<FrameFixture> testFrame = peerToTestFrameWrapper
+			ITestFrameWrapper<OrchestraGUIController> testFrame = peerToTestFrameWrapper
 					.get(peerName);
-			FrameFixture window = testFrame.getOrchestraController();
+			FrameFixture window = testFrame.getOrchestraController()
+					.getFrameFixture();
 			window.component().toFront();
 			JTabbedPaneFixture tabPane = window
 					.tabbedPane(PeersMgtPanel.PEERS_MGT_TABBED_PANE);
@@ -283,9 +371,10 @@ public final class MultiGUIOperationFactory extends
 		 */
 		@Override
 		public void execute() throws Exception {
-			ITestFrameWrapper<FrameFixture> testFrame = peerToTestFrameWrapper
+			ITestFrameWrapper<OrchestraGUIController> testFrame = peerToTestFrameWrapper
 					.get(peerName);
-			FrameFixture window = testFrame.getOrchestraController();
+			FrameFixture window = testFrame.getOrchestraController()
+					.getFrameFixture();
 			window.component().toFront();
 			JTabbedPaneFixture tabPane = window
 					.tabbedPane(PeersMgtPanel.PEERS_MGT_TABBED_PANE);
@@ -306,6 +395,7 @@ public final class MultiGUIOperationFactory extends
 
 	/**
 	 * Creates an executor which will use the Orchestra GUI.
+	 * 
 	 * @param orchestraSchema
 	 * @param testDataDirectory
 	 * @param dumpDatasets
@@ -316,7 +406,7 @@ public final class MultiGUIOperationFactory extends
 			@SuppressWarnings("hiding") final OrchestraSchema orchestraSchema,
 			@SuppressWarnings("hiding") final File testDataDirectory,
 			@SuppressWarnings("hiding") final boolean dumpDatasets,
-			final Map<String, ITestFrameWrapper<FrameFixture>> peerNameToTestFrame,
+			final Map<String, ITestFrameWrapper<OrchestraGUIController>> peerNameToTestFrame,
 			@SuppressWarnings("hiding") final BdbDataSetFactory bdbDataSetFactory) {
 		super(orchestraSchema, testDataDirectory, dumpDatasets,
 				peerNameToTestFrame, bdbDataSetFactory);
@@ -351,6 +441,10 @@ public final class MultiGUIOperationFactory extends
 			return new PublishOperation(datasetFile, peerName);
 		} else if (operationName.equalsIgnoreCase("reconcile")) {
 			return new ReconcileOperation(datasetFile, peerName);
+		} else if (operationName.equalsIgnoreCase("start")) {
+			return new StartOperation(datasetFile, peerName);
+		} else if (operationName.equalsIgnoreCase("stop")) {
+			return new StopOperation(datasetFile, peerName);
 		} else {
 			throw new IllegalStateException("Unrecognized operation: ["
 					+ operationName

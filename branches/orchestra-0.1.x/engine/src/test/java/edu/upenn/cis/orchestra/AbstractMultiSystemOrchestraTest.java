@@ -101,7 +101,8 @@ import edu.upenn.cis.orchestra.util.DomUtils;
  * @author Sam Donnelly
  * @author John Frommeyer
  */
-@Test(groups = { SLOW_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP,  DEV_TESTNG_GROUP })
+@Test(groups = { SLOW_TESTNG_GROUP, REQUIRES_DATABASE_TESTNG_GROUP,
+		DEV_TESTNG_GROUP })
 public abstract class AbstractMultiSystemOrchestraTest {
 
 	/**
@@ -114,6 +115,9 @@ public abstract class AbstractMultiSystemOrchestraTest {
 
 	/** The Orchestra schema we'll be doing our tests on. */
 	protected OrchestraSchema orchestraSchema;
+
+	/** The list of peers which should be started immediately. */
+	protected List<String> peersToStart = newArrayList();
 
 	/** A list of database schema names from {@code orchestraSchemaName}. */
 	private List<String> dbSchemaNames;
@@ -145,7 +149,6 @@ public abstract class AbstractMultiSystemOrchestraTest {
 	/** Executes Orchestra operations during the test. */
 	protected IOperationExecutor executor;
 
-	
 	/** One test frame for each peer in the test. */
 	protected List<OrchestraTestFrame> testFrames = newArrayList();
 
@@ -180,8 +183,8 @@ public abstract class AbstractMultiSystemOrchestraTest {
 		orchestraWorkdir = OrchestraUtil.getWorkingDirectory(
 				orchestraSchemaName, getClass());
 		testDataDirectory = new File(orchestraWorkdir + "/" + testDataDir);
-		String peersFilePath = testDataDirectory.getAbsolutePath() + File.separator + this.orchestraSchemaName
-		+ ".peers.xml";
+		String peersFilePath = testDataDirectory.getAbsolutePath()
+				+ File.separator + this.orchestraSchemaName + ".peers.xml";
 
 		InputStream peersFileInputStream = new FileInputStream(peersFilePath);
 		Document peersDoc = DomUtils.createDocument(peersFileInputStream);
@@ -206,7 +209,17 @@ public abstract class AbstractMultiSystemOrchestraTest {
 
 		List<Element> peers = getChildElements(peersDoc.getDocumentElement());
 		for (Element peerElement : peers) {
-			testFrames.add(new OrchestraTestFrame(jdbcDriver, peerElement));
+			OrchestraTestFrame testFrame = new OrchestraTestFrame(jdbcDriver,
+					peerElement);
+			testFrames.add(testFrame);
+			if (peerElement.hasAttribute("start")
+					&& "false".equalsIgnoreCase(peerElement
+							.getAttribute("start"))) {
+				// By default, all peers should start, so do nothing in this
+				// case.
+			} else {
+				peersToStart.add(testFrame.getPeerName());
+			}
 		}
 
 		onlyGenerateDataSets = ("generate".equalsIgnoreCase(runMode)) ? true

@@ -71,7 +71,7 @@ public class RelationContextEqualAndHashTest {
 	 */
 	@BeforeMethod
 	public void deserialize() throws Exception {
-		system = OrchestraSystem.deserialize2(TestUtil.setLocalPeer(orchestraSystemDoc, "pPODPeer2"));
+		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(orchestraSystemDoc, "pPODPeer2"));
 		rc1 = RelationContext.deserialize(relationContextElement, system);
 		rc2 = RelationContext.deserialize(relationContextElement, system);
 
