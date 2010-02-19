@@ -19,7 +19,6 @@ import com.sleepycat.je.Environment;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datamodel.IntPeerID;
-import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.reconciliation.BerkeleyDBStore;
 import edu.upenn.cis.orchestra.reconciliation.ClientCentricDb;
@@ -46,7 +45,7 @@ public class CreateWorkloadSql {
 		public Db createDb(int id, Schema s, Environment env) throws Exception {
 			StateStore.Factory ssf = new BerkeleyDBStore.Factory(env, "statestore_state" + id, "statestore_updates" + id);
 			SchemaIDBinding scm = new SchemaIDBinding(env); 
-			return new ClientCentricDb(new OrchestraSystem(scm), scm, s, new IntPeerID(id), usf, ssf);
+			return new ClientCentricDb(scm, s, new IntPeerID(id), usf, ssf);
 		}
 
 		public void initDb(Schema s) throws Exception {

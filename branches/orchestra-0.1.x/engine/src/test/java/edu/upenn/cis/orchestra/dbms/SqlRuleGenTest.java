@@ -71,7 +71,7 @@ public class SqlRuleGenTest {
 		expectedInsertionCodeDoc = createDocument(in);
 		in.close();
 		in = Config.class.getResourceAsStream("ppodLN/ppodLN.schema");
-		system = OrchestraSystem.deserialize2(TestUtil.setLocalPeer(createDocument(in), "pPODPeer2"));
+		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(createDocument(in), "pPODPeer2"));
 		in.close();
 	}
 

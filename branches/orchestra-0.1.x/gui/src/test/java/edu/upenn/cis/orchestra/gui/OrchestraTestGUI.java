@@ -24,11 +24,9 @@ import org.fest.swing.annotation.GUITest;
 import org.fest.swing.core.BasicRobot;
 import org.fest.swing.core.Robot;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
-import org.fest.swing.fixture.FrameFixture;
 import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest;
-import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.IOrchestraOperationFactory;
 import edu.upenn.cis.orchestra.ITestFrameWrapper;
 import edu.upenn.cis.orchestra.MultiSystemOrchestraOperationExecutor;
@@ -48,7 +46,7 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 	/** Translates Berkeley update store into DbUnit dataset. */
 	private BdbDataSetFactory bdbDataSetFactory;
 
-	private final Map<String, ITestFrameWrapper<FrameFixture>> peerNameToTestFrame = newHashMap();
+	private final Map<String, ITestFrameWrapper<OrchestraGUIController>> peerNameToTestFrame = newHashMap();
 
 	/*
 	 * (non-Javadoc)
@@ -79,10 +77,14 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 		FailOnThreadViolationRepaintManager.install();
 		Robot robot = BasicRobot.robotWithNewAwtHierarchy();
 		for (OrchestraTestFrame testFrame : testFrames) {
-			ITestFrameWrapper<FrameFixture> guiTestFrame = new OrchestraGUITestFrame(
+			ITestFrameWrapper<OrchestraGUIController> guiTestFrame = new OrchestraGUITestFrame(
 					orchestraSchema, testFrame, robot);
 			peerNameToTestFrame.put(testFrame.getPeerName(), guiTestFrame);
+			if (peersToStart.contains(testFrame.getPeerName())) {
+				guiTestFrame.getOrchestraController().start();
+			}
 		}
+
 		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"),
 				orchestraSchema.getName());
 		IOrchestraOperationFactory factory = new MultiGUIOperationFactory(
@@ -98,23 +100,12 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 	 */
 	@Override
 	protected void shutdownImpl() throws Exception {
-		for (ITestFrameWrapper<FrameFixture> guiTestFrame : peerNameToTestFrame
+		for (ITestFrameWrapper<OrchestraGUIController> guiTestFrame : peerNameToTestFrame
 				.values()) {
-			FrameFixture window = guiTestFrame.getOrchestraController();
-			if (window != null) {
-				window.component().toFront();
-				// This setting allows us to exit the GUI without also exiting
-				// the
-				// JVM.
-				String previousGuiMode = Config.getProperty("gui.mode");
-				Config.setProperty("gui.mode", "Ajax");
-				window.menuItemWithPath("File", "Exit").click();
-				if (previousGuiMode == null) {
-					Config.removeProperty("gui.mode");
-				} else {
-					Config.setProperty("gui.mode", previousGuiMode);
-				}
-				window.cleanUp();
+			OrchestraGUIController controller = guiTestFrame
+					.getOrchestraController();
+			if (controller.isRunning()) {
+				controller.stop();
 			}
 		}
 		if (bdbDataSetFactory != null) {

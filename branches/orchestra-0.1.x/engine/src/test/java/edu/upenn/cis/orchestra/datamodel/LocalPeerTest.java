@@ -73,7 +73,7 @@ public class LocalPeerTest {
 	 */
 	public void localPeerTest() throws Exception {
 
-		system = OrchestraSystem.deserialize2(setLocalPeer(
+		system = OrchestraSystem.deserialize(setLocalPeer(
 				schemaTemplate, "pPODPeer2"));
 		assertTrue(system.isLocalPeer(system.getPeer("pPODPeer2")));
 		assertFalse(system.isLocalPeer(system.getPeer("pPODPeer1")));
@@ -87,7 +87,7 @@ public class LocalPeerTest {
 	@Test(expectedExceptions = { NoLocalPeerException.class }, groups = { BROKEN_TESTNG_GROUP })
 	public void noLocalPeerTest() throws Exception {
 
-		system = OrchestraSystem.deserialize2(schemaTemplate);
+		system = OrchestraSystem.deserialize(schemaTemplate);
 
 	}
 }

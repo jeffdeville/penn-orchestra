@@ -402,7 +402,7 @@ public class MainFrm extends JFrame
 
 				String dir = file.getCanonicalPath();
 
-				//System.out.println(dir);
+				System.out.println(dir);
 				
 				ArrayList<String> succ = new ArrayList<String>();
 				ArrayList<String> fail = new ArrayList<String>();
@@ -678,7 +678,7 @@ public class MainFrm extends JFrame
 		listener = new ActionListener() {
 			public void actionPerformed(@SuppressWarnings("unused")
 					ActionEvent e) {
-				importPeerData(true);
+				importPeerData(false);
 			}
 		};
 		mnuItmPeerImport.addActionListener(listener);

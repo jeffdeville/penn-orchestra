@@ -57,6 +57,6 @@ public class FlatFileRepositoryDAO extends RepositorySchemaDAOWithMemoryCache {
 	 * @throws Exception if cannot deserialize {@code document}.
 	 */
 	public FlatFileRepositoryDAO(Document document) throws Exception {
-		setSystem(OrchestraSystem.deserialize2(document));
+		setSystem(OrchestraSystem.deserialize(document));
 	}	
 }

@@ -68,7 +68,7 @@ public class PrepareDbForLocalUpdaterJdbcTest {
 		URL url = Config.class.getResource("ppodLN/ppodLN.schema");
 		OrchestraSchema orchestraSchema = new OrchestraSchema(new File(url
 				.toURI()));
-		system = OrchestraSystem.deserialize2(orchestraSchema.toDocument(dbURL,
+		system = OrchestraSystem.deserialize(orchestraSchema.toDocument(dbURL,
 				dbUser, dbPassword, "pPODPeer2"));
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
 		Config.setJDBCDriver(jdbcDriver);
