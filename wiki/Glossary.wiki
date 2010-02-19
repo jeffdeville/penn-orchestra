@@ -12,7 +12,7 @@ Note that only net changes are included. If for example a tuple is inserted then
 
 *_Reconcile_* a version of Update Exchange, not currently implemented, that includes the use of trust conditions to decide what tuples get inserted and deleted. In some contexts, reconcile is used interchangeable with Update Exchange. 
 
-*_Reconcile Number_* another name for _Epoch Number_
+*_Reconcile Number_* it's a local update exchange counter kept track of by each peer.
 
 *_State Store_* 
 
