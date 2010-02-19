@@ -10,13 +10,13 @@
 
 Note that only net changes are included. If for example a tuple is inserted then deleted, nothing would be sent to the update store. If a tuple was inserted, deleted, and inserted, only one insert would be sent to the update store.
 
-*_Reconcile_* a version of Update Exchange, not currently implemented, that includes the use of trust conditions to decide what tuples get inserted and deleted. In some contexts, reconcile is used interchangeable with Update Exchange. 
+*_Reconcile_* a version Update Exchange, not currently implemented, that includes the use of trust conditions to decide what tuples get inserted and deleted. In some contexts, reconcile is used interchangeable with Update Exchange. 
 
 *_Reconcile Number_* another name for _Epoch Number_
 
 *_State Store_* 
 
-*_Schema_* 
+*_Schema_* a definition, written in XML, of an Orchestra system. Sometimes called an "Orchestra schema" to differentiate from a database schema.
 
 *_Update Exchange_*
 
