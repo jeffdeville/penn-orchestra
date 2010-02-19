@@ -16,6 +16,8 @@ Note that only net changes are included. If for example a tuple is inserted then
 
 *_State Store_* 
 
+*_Schema_* 
+
 *_Update Exchange_*
 
 *_Update Store_* the hub of an Orchestra system. See [UpdateStore]
