@@ -16,7 +16,7 @@ A publish is currently always followed an update exchange.
 
 Takes all candidate updates and uses trust conditions.
 
-In some cases this is used interchangeably with Reconcile.
+In some cases Reconcile is used to mean Update Exchange, which will make sense because the goal is to have both happen together.
 
 *_Reconcile Number_* it's a local update exchange counter kept track of by each peer.
 
