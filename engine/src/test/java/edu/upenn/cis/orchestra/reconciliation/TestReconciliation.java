@@ -18,7 +18,6 @@ package edu.upenn.cis.orchestra.reconciliation;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
 import static edu.upenn.cis.orchestra.TestUtil.BROKEN_TESTNG_GROUP;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,15 +32,10 @@ import junit.framework.TestCase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.IntPeerID;
 import edu.upenn.cis.orchestra.datamodel.IntType;
-import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
-import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.PrimaryKey;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.Schema;
@@ -61,7 +55,6 @@ public abstract class TestReconciliation extends TestCase {
 	protected ArrayList<Db> dbs;
 	Schema s;
 	private ISchemaIDBinding scm;
-	OrchestraSystem sys;
 	Relation rs;
 	Tuple tN1, tN2, tN3, tN4, tN5, tM4, tM5, tNull;
 	Update insN1, insN2, insN3, modN1N3, modN1N2, modN1N4, modN2N5, insM4, insM5, modM4M5, modN1M5, delN1, delM5, insNull;
@@ -97,7 +90,7 @@ public abstract class TestReconciliation extends TestCase {
 
 		dbs = new ArrayList<Db>(numPeers);
 		for (int i = 0; i < numPeers; ++i) {
-			dbs.add(new ClientCentricDb(sys, scm, s, new StringPeerID("p"), tcs.get(i), factory, HashTableStore.FACTORY));
+			dbs.add(new ClientCentricDb(scm, s, new StringPeerID("p"), tcs.get(i), factory, HashTableStore.FACTORY));
 		}
 	}
 	
@@ -117,7 +110,7 @@ public abstract class TestReconciliation extends TestCase {
 
 		dbs = new ArrayList<Db>(numPeers);
 		for (int i = 0; i < numPeers; ++i) {
-			dbs.add(new ClientCentricDb(sys, scm, s, new StringPeerID("p"), tcs.get(i), factory, HashTableStore.FACTORY));
+			dbs.add(new ClientCentricDb(scm, s, new StringPeerID("p"), tcs.get(i), factory, HashTableStore.FACTORY));
 		}
 	}
 	
@@ -158,14 +151,7 @@ public abstract class TestReconciliation extends TestCase {
 			peerIDToSchema.put(peers.get(i), s);
 		}
 		scm = new LocalSchemaIDBinding(peerIDToSchema);
-		sys = new OrchestraSystem(scm);
-		for (int i = 0; i < 3; ++i) {
-			sys.addPeer(new Peer(String.valueOf(i), "", ""));
-		}
-		for (int i = 3; i < numPeers; ++i) {
-			sys.addPeer(new Peer("Peer #" + String.valueOf(i), "", ""));
-		}
-		
+				
 		tN1 = new Tuple(rs);
 		tN1.set("name", "Nick");
 		tN1.set("val", 1);
@@ -974,7 +960,7 @@ public abstract class TestReconciliation extends TestCase {
 		assertTrue("Wrong options", (conflicts.get(0).equals(Collections.singleton(tidN1)) && conflicts.get(1).equals(Collections.singleton(tidN2)))
 				|| (conflicts.get(1).equals(Collections.singleton(tidN1)) && conflicts.get(0).equals(Collections.singleton(tidN2))));
 		
-		ClientCentricDb newDb = new ClientCentricDb(sys, scm, s, new StringPeerID("p"), tcs.get(0), factory, HashTableStore.FACTORY);
+		ClientCentricDb newDb = new ClientCentricDb(scm, s, new StringPeerID("p"), tcs.get(0), factory, HashTableStore.FACTORY);
 		
 		assertEquals("Differing state after replaying previous reconciliation", dbs.get(0).getState(), newDb.getState());
 		
@@ -1000,11 +986,11 @@ public abstract class TestReconciliation extends TestCase {
 		assertTrue("Conflict resolution did not succeed", dbs.get(0).hasAcceptedTxn(tidN1));
 		assertTrue("Conflict resolution did not succeed", dbs.get(0).hasRejectedTxn(tidN2));
 
-		newDb = new ClientCentricDb(sys, scm, s, new StringPeerID("p"), tcs.get(0), factory, HashTableStore.FACTORY);
+		newDb = new ClientCentricDb(scm, s, new StringPeerID("p"), tcs.get(0), factory, HashTableStore.FACTORY);
 		assertEquals("Differing state after replaying previous reconciliation and conflict resolution", dbs.get(0).getState(), newDb.getState());
 		newDb.disconnect();
 		
-		newDb = new ClientCentricDb(sys, scm, s, new StringPeerID("q"), tcs.get(3), factory, HashTableStore.FACTORY);		
+		newDb = new ClientCentricDb(scm, s, new StringPeerID("q"), tcs.get(3), factory, HashTableStore.FACTORY);		
 		
 		List<Update> p3t2 = Collections.singletonList(insNull);
 		TxnPeerID tidNull = newDb.addTransaction(p3t2);
@@ -1042,7 +1028,7 @@ public abstract class TestReconciliation extends TestCase {
 		assertFalse("Peer 4 should not have rejected (N,1)->(N,3)", dbs.get(4).hasRejectedTxn(p2tid));
 		
 		
-		ClientCentricDb newDb = new ClientCentricDb(sys, scm, s, new StringPeerID("r"), tcs.get(4), factory, HashTableStore.FACTORY);
+		ClientCentricDb newDb = new ClientCentricDb(scm, s, new StringPeerID("r"), tcs.get(4), factory, HashTableStore.FACTORY);
 		
 		assertEquals("Differing state after replaying reconciliation", dbs.get(4).getState(), newDb.getState());
 		assertEquals("Wrong number of conflict options after replaying reconciliation", 2, dbs.get(4).getConflicts().get(db4r0).get(0).size());
@@ -1062,7 +1048,7 @@ public abstract class TestReconciliation extends TestCase {
 		assertTrue("Peer #4 should have accepted (N,1)->(N,3)", newDb.hasAcceptedTxn(p2tid));
 		assertTrue("Peer #4 should have rejected (N,1)->(N,2)", newDb.hasRejectedTxn(p1tid));
 		
-		ClientCentricDb newDb2 = new ClientCentricDb(sys, scm, s, new StringPeerID("t"), tcs.get(4), factory, HashTableStore.FACTORY);
+		ClientCentricDb newDb2 = new ClientCentricDb(scm, s, new StringPeerID("t"), tcs.get(4), factory, HashTableStore.FACTORY);
 		
 		assertEquals("Differing state after replaying reconciliations", newDb.getState(), newDb2.getState());
 	}

@@ -27,7 +27,6 @@ import java.util.Set;
 
 import edu.upenn.cis.orchestra.Debug;
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
-import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.Subtuple;
 import edu.upenn.cis.orchestra.datamodel.TrustConditions;
@@ -75,7 +74,7 @@ public class ClientCentricDb extends Db {
 	// the next one.
 	private HashMap<Integer,ArrayList<Update>>  deltas;
 	
-	private OrchestraSystem _system;
+	//private OrchestraSystem _system;
 
 	protected static class ConflictOptionPair {
 		int conflict;
@@ -138,14 +137,14 @@ public class ClientCentricDb extends Db {
 	 * @param peerID	The ID of the viewing peer
 	 * @throws SSException
 	 */
-	public ClientCentricDb(OrchestraSystem sys, ISchemaIDBinding sch, Schema s, AbstractPeerID pid, TrustConditions tc, UpdateStore.Factory usf, StateStore.Factory ssf)
+	public ClientCentricDb(ISchemaIDBinding sch, Schema s, AbstractPeerID pid, TrustConditions tc, UpdateStore.Factory usf, StateStore.Factory ssf)
 	throws DbException {
 		super(tc, s);
 
 		this.usf = usf;
 		this.ssf = ssf;
 		
-		_system = sys;
+		//_system = sys;
 		
 		Debug.println("Initializing " + pid.toString() + " with trust conditions " + tc.toString());
 
@@ -173,9 +172,9 @@ public class ClientCentricDb extends Db {
 		}		
 	}
 
-	public ClientCentricDb(OrchestraSystem sys, ISchemaIDBinding sch, Schema s, AbstractPeerID pid, UpdateStore.Factory usf, StateStore.Factory ssf)
+	public ClientCentricDb(ISchemaIDBinding sch, Schema s, AbstractPeerID pid, UpdateStore.Factory usf, StateStore.Factory ssf)
 	throws DbException {
-		this(sys, sch, s, pid, new TrustConditions(pid), usf, ssf);
+		this(sch, s, pid, new TrustConditions(pid), usf, ssf);
 	}
 
 	/**
@@ -1341,7 +1340,7 @@ public class ClientCentricDb extends Db {
 		return state.getTupleWithKey(recno, key);
 	}
 
-	Benchmark benchmark = null;
+	private Benchmark benchmark = null;
 
 	public void setBenchmark(Benchmark b) throws USException {
 		benchmark = b;

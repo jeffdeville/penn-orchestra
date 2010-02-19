@@ -61,7 +61,7 @@ public class SystemStartTest {
 	public void startupTest() throws Exception {
 		OrchestraSystem system = null;
 		try {
-			system = OrchestraSystem.deserialize2(TestUtil
+			system = OrchestraSystem.deserialize(TestUtil
 				.setLocalPeer(document, "pPODPeer2"));
 			assertEquals(system.getPeers().size(), 2);
 			

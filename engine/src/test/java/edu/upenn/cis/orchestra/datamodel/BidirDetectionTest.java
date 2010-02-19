@@ -99,7 +99,7 @@ public class BidirDetectionTest {
 	public void bidirTest() throws Exception {
 		mappingElement.setAttribute("bidirectional", "true");
 		bidirSystem = OrchestraSystem
-				.deserialize2(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
+				.deserialize(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
 		assertTrue(bidirSystem.isBidirectional());
 	}
 
@@ -112,7 +112,7 @@ public class BidirDetectionTest {
 	public void notBidirTest() throws Exception {
 		mappingElement.setAttribute("bidirectional", "false");
 		bidirSystem = OrchestraSystem
-				.deserialize2(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
+				.deserialize(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
 		assertFalse(bidirSystem.isBidirectional());
 	}
 
@@ -126,7 +126,7 @@ public class BidirDetectionTest {
 	public void defaultBidirTest() throws Exception {
 		assertNull(mappingElement.getAttributeNode("bidirectional"));
 		bidirSystem = OrchestraSystem
-				.deserialize2(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
+				.deserialize(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
 		assertFalse(bidirSystem.isBidirectional());
 	}
 	
