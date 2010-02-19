@@ -16,4 +16,4 @@
 
 *_Update Exchange_*
 
-*_Update Store_* central database. Primarily, the repository for each peer's local updates. It is also used to  store each peer's decisions about which non-local transactions it has accepted or rejected. A Berkley DB.
+*_Update Store_* the hub of an Orchestra system. See [UpdateStore]
