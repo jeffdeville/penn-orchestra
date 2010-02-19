@@ -16,6 +16,8 @@ A publish is currently always followed an update exchange.
 
 Takes all candidate updates and uses trust conditions.
 
+In some contexts this is used interchangeably with Reconcile.
+
 *_Reconcile Number_* it's a local update exchange counter kept track of by each peer.
 
 *_State Store_* 
