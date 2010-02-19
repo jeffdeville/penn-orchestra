@@ -2,7 +2,7 @@
 
 = Glossary =
 
-*_Epoch Number_* global counter, similiar to a subversion revision number
+*_Epoch Number_* global counter in the Update Store, similiar to a subversion revision number. Starts at 0.
 
 *_Labeled Null_* different form SQL null - we can join on labeled nulls. They can be used when inferring new values though mappings. _1_ indicates there is no labeled null. All other values than _1_ are Skolem values. 
 
