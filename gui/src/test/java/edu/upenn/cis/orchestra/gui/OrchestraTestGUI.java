@@ -48,6 +48,8 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 
 	private final Map<String, ITestFrameWrapper<OrchestraGUIController>> peerNameToTestFrame = newHashMap();
 
+	private Robot robot;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -75,7 +77,7 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 					"Store server did not clear.");
 		}
 		FailOnThreadViolationRepaintManager.install();
-		Robot robot = BasicRobot.robotWithNewAwtHierarchy();
+		robot = BasicRobot.robotWithNewAwtHierarchy();
 		for (OrchestraTestFrame testFrame : testFrames) {
 			ITestFrameWrapper<OrchestraGUIController> guiTestFrame = new OrchestraGUITestFrame(
 					orchestraSchema, testFrame, robot);
@@ -108,6 +110,7 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 				controller.stop();
 			}
 		}
+		robot.cleanUp();
 		if (bdbDataSetFactory != null) {
 			bdbDataSetFactory.close();
 		}

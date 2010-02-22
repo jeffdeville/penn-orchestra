@@ -412,23 +412,10 @@ public class SchemaMgtPanel extends JPanel
 			transactButtons.add (btnCommit, cst);
 		}
 		
-		JButton btnRollback = new JButton ("Reconcile");
-		if (_sys.isLocalPeer(_p)){
-			btnRollback.addActionListener(new ActionListener ()
-			{
-				public void actionPerformed(ActionEvent evt) {
-					_peerTransIntf.setRecomputeTransactions();
-					PeerCommands.reconcile(scPanel, _sys, _p, _peerTransIntf);
-				}
-			});
-		} else {
-			btnRollback.setEnabled(false);
-		}
 		cst = new GridBagConstraints ();
 		cst.gridx=0;
 		cst.gridy=currRow++;
 		cst.anchor = GridBagConstraints.CENTER;
-		transactButtons.add (btnRollback, cst);		
 		return transactButtons;
 	}
 	

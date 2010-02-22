@@ -15,9 +15,13 @@
 	<parameter name="local-peer" value="pPODPeer2" />
 	<parameter name="db-state" value="no-pre-existing" />
 	<!-- <parameter name="run-mode" value="generate" /> -->
-	<test name="local-ins-insert">
-		<parameter name="test-data-dir" value="local-ins-insert" />
-		<groups><run><exclude name="broken" /><exclude name="development" /><exclude name="requires-database" /></run></groups>
+	<test name="local-insert">
+		<parameter name="test-data-dir" value="local-insert" />
+		<groups>
+			<run>
+				<exclude name="broken" />
+			</run>
+		</groups>
 		<classes>
 			<class name="edu.upenn.cis.orchestra.gui.OrchestraTestGUI" />
 		</classes>
