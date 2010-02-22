@@ -20,21 +20,29 @@ Here's the way that we set up our development environment:
 
 = Running the TestNG tests =
 
-You should be able to run `engine/testng.xml` right out of the box with the TestNG plugin. However, some of the tests (see below) require access to a DB2 instance. The default Maven build runs without these tests. To have Maven run these tests the profile {{{requires-database-tests}}} must be active. The connection information is supplied to the tests via Maven resource filtering, so the following variables need to be set as described [http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html here]:
-   * {{{testng.db-url}}}
-   * {{{testng.db-user}}}
-   * {{{testng.db-password}}}
-
-These are the testng.xml files we have:
+All the automated tests are controlled by testng.xml files. We currently have four of these files:
 
 ====`engine/testng.xml`====
-These are the unit tests which do not rely on a db2 instance. It can be run by the TestNG plugin right out of the box. It is the only one of the four files which is run by the default Maven build.
+These are the unit tests which do not rely on a DB2 instance. It can be run by the Eclipse TestNG plugin right out of the box. It is the only one of the four test suites which is run by the default Maven build.
 
-====`engine/orchestra-test-testng.xml`====
-This runs the functional tests. It relies on a db2 instance and therefore on the Maven variables, so it cannot be run by the testng plugin without some db2 and Maven setup work. It is thus not run as part of the Maven build unless the profile requires-database-tests is active.
+The remaining testng.xml files contain the tests which rely on a DB2 instance. The default Maven build does not run these tests. To have Maven run these tests the profile _requires-database-tests_ must be active. The database connection information is supplied to the tests via Maven resource filtering, so certain variables, listed below, need to be set as described [http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html here].
 
 ====`engine/requires-database-testng.xml`====
-These are unit tests which rely on a db2 instance, so the same things apply here.
+These are unit tests which rely on a DB2 instance. The variables which need to be set are:
+   * `testng.db-url`
+   * `testng.db-user`
+   * `testng.db-password`
+
+====`engine/orchestra-test-testng.xml`====
+This runs the functional tests. The variables which need to be set are:
+   * `testng.db-url.pPODPeer1`
+   * `testng.db-url.pPODPeer2`
+   * `testng.db-user`
+   * `testng.db-password`
 
 ====`gui/gui-orchestra-test-testng.xml`====
-This ran the gui functional test which is now non-functional. We'd have to fix the problem of having two gui's open at the same time to get it running again. 
+This runs the functional test which uses the GUI. The variables which need to be set are:
+   * `testng.db-url.pPODPeer1`
+   * `testng.db-url.pPODPeer2`
+   * `testng.db-user`
+   * `testng.db-password`
