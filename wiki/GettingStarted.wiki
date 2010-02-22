@@ -22,27 +22,27 @@ Here's the way that we set up our development environment:
 
 All the automated tests are controlled by testng.xml files. We currently have four of these files:
 
-====`engine/testng.xml`====
-These are the unit tests which do not rely on a DB2 instance. It can be run by the Eclipse TestNG plugin right out of the box. It is the only one of the four test suites which is run by the default Maven build.
+ * ====`engine/testng.xml`====
+   These are the unit tests which do not rely on a DB2 instance. It can be run by the Eclipse TestNG plugin right out of the box. It is the only one of the four test suites which is run by the default Maven build.
 
 The remaining testng.xml files contain the tests which rely on a DB2 instance. The default Maven build does not run these tests. To have Maven run these tests the profile _requires-database-tests_ must be active. The database connection information is supplied to the tests via Maven resource filtering, so certain variables, listed below, need to be set as described [http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html here].
 
-====`engine/requires-database-testng.xml`====
-These are unit tests which rely on a DB2 instance. The variables which need to be set are:
-   * `testng.db-url`
-   * `testng.db-user`
-   * `testng.db-password`
+ * ====`engine/requires-database-testng.xml`====
+   This contains the unit tests which rely on a DB2 instance. The variables which need to be set are:
+     * `testng.db-url`
+     * `testng.db-user`
+     * `testng.db-password`
 
-====`engine/orchestra-test-testng.xml`====
-This runs the functional tests. The variables which need to be set are:
-   * `testng.db-url.pPODPeer1`
-   * `testng.db-url.pPODPeer2`
-   * `testng.db-user`
-   * `testng.db-password`
+ * ====`engine/orchestra-test-testng.xml`====
+   This runs the functional tests. The variables which need to be set are:
+     * `testng.db-url.pPODPeer1`
+     * `testng.db-url.pPODPeer2`
+     * `testng.db-user`
+     * `testng.db-password`
 
-====`gui/gui-orchestra-test-testng.xml`====
-This runs the functional test which uses the GUI. The variables which need to be set are:
-   * `testng.db-url.pPODPeer1`
-   * `testng.db-url.pPODPeer2`
-   * `testng.db-user`
-   * `testng.db-password`
+ * ====`gui/gui-orchestra-test-testng.xml`====
+   This runs the functional test which uses the GUI. The variables which need to be set are:
+     * `testng.db-url.pPODPeer1`
+     * `testng.db-url.pPODPeer2`
+     * `testng.db-user`
+     * `testng.db-password`
