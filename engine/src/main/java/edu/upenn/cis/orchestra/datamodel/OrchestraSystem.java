@@ -1134,7 +1134,7 @@ public class OrchestraSystem {
 		if (!getMappingDb().isConnected())
 			getMappingDb().connect();
 		DatalogSequence cur = new DatalogSequence(true, progs, false);
-		final DatalogEngine de = new DatalogEngine(this, getMappingDb());
+		final DatalogEngine de = new DatalogEngine(getMappingDb());
 
 		while (de.evaluatePrograms(cur) > 0)
 			;
