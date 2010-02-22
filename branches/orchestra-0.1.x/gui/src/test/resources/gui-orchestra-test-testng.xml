@@ -7,13 +7,8 @@
 		specify locally appropriate values for the
 		testng.db-{url,user,password} properties below.
 	-->
-	<parameter name="db-url" value="${testng.db-url}" />
-	<parameter name="db-user" value="${testng.db-user}" />
-	<parameter name="db-password" value="${testng.db-password}" />
-	<parameter name="jdbc-driver" value="com.ibm.db2.jcc.DB2Driver" />
 	<parameter name="orchestra-schema-name" value="ppodLN" />
 	<parameter name="local-peer" value="pPODPeer2" />
-	<parameter name="db-state" value="no-pre-existing" />
 	<!-- <parameter name="run-mode" value="generate" /> -->
 	<test name="local-insert">
 		<parameter name="test-data-dir" value="local-insert" />
