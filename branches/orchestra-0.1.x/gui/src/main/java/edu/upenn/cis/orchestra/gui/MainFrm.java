@@ -402,7 +402,7 @@ public class MainFrm extends JFrame
 
 				String dir = file.getCanonicalPath();
 
-				System.out.println(dir);
+				//System.out.println(dir);
 				
 				ArrayList<String> succ = new ArrayList<String>();
 				ArrayList<String> fail = new ArrayList<String>();
@@ -822,7 +822,7 @@ public class MainFrm extends JFrame
 
 		_cxMenuPeer.setLabel("Peer");
 
-		JMenuItem recon = new JMenuItem("Reconcile");
+		JMenuItem recon = new JMenuItem("Publish and Reconcile");
 		recon.setMnemonic(KeyEvent.VK_R);
 		//recon.setEnabled(false);
 		_cxMenuPeer.add(recon);
@@ -831,7 +831,7 @@ public class MainFrm extends JFrame
 
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PeerCommands.reconcile(frm, getSelectedCatalog(), getSelectedPeer(), getSelectedTIF());
+				PeerCommands.publishAndReconcile(frm, getSelectedCatalog(), getSelectedTIF());
 			}
 		};
 		recon.addActionListener(listener);
@@ -904,7 +904,7 @@ public class MainFrm extends JFrame
 		_menuPeer = new JMenu ("Peer");
 		_menuPeer.setMnemonic(KeyEvent.VK_P);
 		
-		JMenuItem recon = new JMenuItem("Reconcile");
+		JMenuItem recon = new JMenuItem("Publish and Reconcile");
 		recon.setMnemonic(KeyEvent.VK_R);
 		//recon.setEnabled(false);
 		_menuPeer.add(recon);
@@ -913,7 +913,7 @@ public class MainFrm extends JFrame
 
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PeerCommands.reconcile(frm, getSelectedCatalog(), getSelectedPeer(), getSelectedTIF());
+				PeerCommands.publishAndReconcile(frm, getSelectedCatalog(), getSelectedTIF());
 			}
 		};
 		recon.addActionListener(listener);

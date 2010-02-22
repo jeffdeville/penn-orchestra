@@ -331,11 +331,13 @@ public final class MultiGUIOperationFactory extends
 
 			window.button(withText("Publish and Reconcile").andShowing())
 					.click();
-			// Click OK
 
-			JOptionPaneFixture result = window.optionPane().requireMessage(
-					PeerCommands.PUBLISH_SUCCESS_MESSAGE);
+			// Click OK
+			JOptionPaneFixture result = window.optionPane(
+					Timeout.timeout(15, TimeUnit.SECONDS)).requireMessage(
+					PeerCommands.RECONCILE_SUCCESS_MESSAGE);
 			result.buttonWithText("OK").click();
+
 			DbUnitUtil.dumpOrCheck(datasetFile, orchestraSchema, dumpDatasets,
 					testFrame.getTestFrame().getDbTester(), bdbDataSetFactory);
 		}
@@ -380,7 +382,7 @@ public final class MultiGUIOperationFactory extends
 					.tabbedPane(PeersMgtPanel.PEERS_MGT_TABBED_PANE);
 			tabPane.selectTab("Peer " + peerName);
 
-			window.button(withText("Reconcile").andShowing()).click();
+			window.button(withText("Publish and Reconcile").andShowing()).click();
 
 			// Click OK
 			JOptionPaneFixture result = window.optionPane(

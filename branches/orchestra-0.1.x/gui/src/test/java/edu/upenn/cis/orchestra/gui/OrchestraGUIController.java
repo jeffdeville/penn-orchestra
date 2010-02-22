@@ -90,19 +90,18 @@ class OrchestraGUIController {
 		} else {
 			Config.setProperty("gui.mode", previousGuiMode);
 		}
-		if (window.robot.isActive()) {
-			window.cleanUp();
-		}
+
+		window.target.dispose();
 		window = null;
 
 	}
-	
+
 	void cleanUp() {
 		if (window != null && window.robot.isActive()) {
 			window.cleanUp();
 		}
 	}
-	
+
 	boolean isRunning() {
 		return window != null;
 	}
