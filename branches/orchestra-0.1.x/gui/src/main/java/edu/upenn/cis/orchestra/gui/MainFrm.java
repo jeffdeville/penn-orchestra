@@ -743,7 +743,7 @@ public class MainFrm extends JFrame
 	private void closeDown() {
 //		SkolemServer.quitServer();
 		try {
-			getSelectedMainPanel().stopStoreServer();
+			//getSelectedMainPanel().stopStoreServer();
 //			Add call to commit without activating "not logged initially" before exiting
 			for(JInternalFrame frame :_desktop.getAllFrames()){
 				if (frame instanceof MainIFrame) {
