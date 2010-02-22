@@ -25,10 +25,14 @@ Some of the tests require access to a DB2 instance. The default Maven build runs
    * {{{testng.db-user}}}
    * {{{testng.db-password}}}
 
-engine/orchestra-test-testng.xml
+===`engine/orchestra-test-testng.xml`===
 This runs the functional tests. It relies on a db2 instance and therefore on Maven variable , so it cannot be run by the testng plugin without some db2 and Maven setup work. It is thus not run as part of the Maven build unless the profile requires-database-tests is active.
-engine/requires-database-testng.xml
+
+===`engine/requires-database-testng.xml`===
 These are unit tests which rely on a db2 instance, so the same things apply here.
-engine/testng.xml
+
+===`engine/testng.xml`===
 These are the unit tests which do not rely on a db2 instance. It can be run by the TestNG plugin right out of the box. It is the only one of the four files which is run by the default Maven build.
-gui/gui-orchestra-test-testng.xml: This ran the gui functional test which is now non-functional. I'd have to fix the problem of having two gui's open at the same time to get it running again. 
+
+===`gui/gui-orchestra-test-testng.xml`=== 
+This ran the gui functional test which is now non-functional. I'd have to fix the problem of having two gui's open at the same time to get it running again. 
