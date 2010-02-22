@@ -12,7 +12,7 @@ Note that only net changes are included. If for example a tuple is inserted then
 
 A publish is currently always followed an update exchange. 
 
-*_Reconcile_* an optional step that will follow Update Exchange, not currently implemented, that includes the use of trust conditions to decide what tuples get inserted and deleted. In some contexts, reconcile is used interchangeable with Update Exchange. 
+*_Reconcile_* an optional step that will follow Update Exchange, not currently implemented, that includes the use of trust conditions to decide what tuples get inserted and deleted.  
 
 Takes all candidate updates and uses trust conditions.
 
