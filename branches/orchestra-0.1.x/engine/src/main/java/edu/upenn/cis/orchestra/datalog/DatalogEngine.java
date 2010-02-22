@@ -19,7 +19,6 @@ import java.util.Calendar;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.Debug;
-import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.dbms.IDb;
 import edu.upenn.cis.orchestra.dbms.SqlDb;
 import edu.upenn.cis.orchestra.mappings.Rule;
@@ -36,29 +35,17 @@ public class DatalogEngine {
 
 //	protected CreateProvenanceStorage _provenancePrep;
 	
-	protected OrchestraSystem _system;
 	public IDb _sql;
 	
 //	protected int queryCnt = 0;	
 //	protected int transactionCnt = 0;
 	
 	public DatalogEngine(
-//			CreateProvenanceStorage provenancePrep, 
-			OrchestraSystem system,
 			IDb database){
 		_sql = database;
 //		globalIterCnt = 0;
-		init(
-//				provenancePrep, 
-				system);
 	}
 	
-	public void init(
-//			CreateProvenanceStorage provenancePrep,
-			OrchestraSystem system){
-//		_provenancePrep = provenancePrep;
-		_system = system;
-	}
 	
 
 	public void commitAndReset() throws Exception{

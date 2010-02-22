@@ -527,8 +527,7 @@ public class SqlEngine extends BasicEngine {
 		if (!getMappingDb().isConnected())
 			getMappingDb().connect();
 		final DatalogEngine de = new DatalogEngine(
-//				_provenancePrep,
-				_system, getMappingDb());
+				getMappingDb());
 
 //		// Map all of the updates from the other peers into our Exchange
 //		// instance
@@ -580,8 +579,7 @@ public class SqlEngine extends BasicEngine {
 			boolean insFirst) throws Exception {
 
 		final DatalogEngine de = new DatalogEngine(
-//				_provenancePrep,
-				_system, _mappingDb);
+_mappingDb);
 		final Calendar before = Calendar.getInstance();
 
 		commit();
