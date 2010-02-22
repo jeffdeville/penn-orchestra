@@ -20,7 +20,7 @@
 	-->
 	<parameter name="orchestra-schema-name" value="ppodLN" />
 	<!-- <parameter name="run-mode" value="generate" /> -->
-	<test name="local-ins-insert">
+	<test name="local-insert">
 		<parameter name="test-data-dir" value="local-insert" />
 		<groups>
 			<run>
@@ -31,7 +31,7 @@
 			<class name="edu.upenn.cis.orchestra.MultiOrchestraSystemTest" />
 		</classes>
 	</test>
-	<test name="reject-ins-insert">
+	<test name="local-reject">
 		<parameter name="test-data-dir" value="local-reject" />
 		<groups>
 			<run>

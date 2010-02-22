@@ -203,6 +203,7 @@ public final class MultiOrchestraSystemOperationFactory extends
 					.get(peerName);
 			OrchestraSystem localSystem = testFrameWrapper
 					.getOrchestraController();
+			//For now, if you want to publish, you also have to do udpate exchange.
 			localSystem.publishAndMap();
 			DbUnitUtil.dumpOrCheck(datasetFile, orchestraSchema, dumpDatasets,
 					testFrameWrapper.getTestFrame().getDbTester(),
@@ -245,16 +246,9 @@ public final class MultiOrchestraSystemOperationFactory extends
 			OrchestraSystem localSystem = testFrameWrapper
 					.getOrchestraController();
 
-			if (localSystem.getRecMode()) {
-				localSystem.reconcile();
-			} else {
-				if (!localSystem.getMappingDb().isConnected()) {
-					localSystem.getMappingDb().connect();
-				}
-				// Now run the Exchange
-				localSystem.translate();
+			//For now, if you want to do update exchange, you also have to publish.
+			localSystem.publishAndMap();
 
-			}
 			// Document translationState =
 			// orchestraSystem.getMappingEngine().getState().serialize();
 			// DomUtils.write(translationState, new FileWriter("ts-" +

@@ -122,20 +122,6 @@ public class PeerDetailInfoPanel extends JPanel
 			}
 			pubRecPanel.add (btnPublish);
 	
-			final JButton btnReconcile = new JButton ("Reconcile");
-			if (_sys.isLocalPeer(p)){
-				btnReconcile.addActionListener(new ActionListener ()
-				{
-					public void actionPerformed(ActionEvent arg0) {
-						_context.setRefreshTransactions();
-						PeerCommands.reconcile(getParent(), _sys, _p, _transIntf);
-					}
-				});
-			} else {
-				btnReconcile.setEnabled(false);
-			}
-			pubRecPanel.add (btnReconcile);
-			
 			cst = new GridBagConstraints();
 			cst.gridx = 0;
 			cst.gridy = currRow++;
