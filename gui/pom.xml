@@ -16,30 +16,21 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<build>
-	<testResources>
-		    <testResource>
-		        	<directory>src/test/resources</directory>
-					<filtering>true</filtering>
-		    </testResource>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
 		</testResources>
 		<plugins>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clover-plugin</artifactId>
-				<configuration>
-					<licenseLocation>${clover.license.path}
-					</licenseLocation>
-					<jdk>1.5</jdk>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>instrument</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!--
+				<plugin> <groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clover-plugin</artifactId> <configuration>
+				<licenseLocation>${clover.license.path} </licenseLocation>
+				<jdk>1.5</jdk> </configuration> <executions> <execution>
+				<phase>pre-site</phase> <goals> <goal>instrument</goal> </goals>
+				</execution> </executions> </plugin>
+			-->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -56,9 +47,10 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<suiteXmlFiles>
-        				<suiteXmlFile>target/test-classes/gui-orchestra-test-testng.xml</suiteXmlFile>
-      				</suiteXmlFiles>
-      				<excludedGroups>fullgui-tests</excludedGroups>
+						<suiteXmlFile>target/test-classes/gui-orchestra-test-testng.xml
+						</suiteXmlFile>
+					</suiteXmlFiles>
+					<excludedGroups>fullgui-tests</excludedGroups>
 					<forkMode>once</forkMode>
 				</configuration>
 			</plugin>
@@ -90,6 +82,22 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<phase>validation</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>edu.upenn.cis.orchestra.gui.MainFrm</mainClass>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -100,7 +108,8 @@
 			</id>
 			<name>dbappserv.cis.upenn.edu-releases
 			</name>
-			<url>http://dbappserv.cis.upenn.edu:8080/artifactory/ext-releases-local</url>
+			<url>http://dbappserv.cis.upenn.edu:8080/artifactory/ext-releases-local
+			</url>
 		</repository>
 		<repository>
 			<id>dbGroup</id>
@@ -128,7 +137,7 @@
 			<groupId>org.eclipse</groupId>
 			<artifactId>draw2d</artifactId>
 			<version>3.4.1.v20080910-1351</version>
-			<scope>runtime</scope>
+			<!-- <scope>runtime</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse</groupId>
@@ -149,9 +158,9 @@
 			<groupId>edu.upenn.cis.orchestra</groupId>
 			<artifactId>engine</artifactId>
 			<version>0.1-SNAPSHOT</version>
-<!-- 			<properties> -->
-<!-- 				<eclipse.dependency>true</eclipse.dependency> -->
-<!-- 			</properties> -->
+			<!-- 			<properties> -->
+			<!-- 				<eclipse.dependency>true</eclipse.dependency> -->
+			<!-- 			</properties> -->
 		</dependency>
 		<!--  common test code -->
 		<dependency>
@@ -162,30 +171,30 @@
 			<type>test-jar</type>
 		</dependency>
 		<dependency>
-    		<groupId>org.easytesting</groupId>
-    		<artifactId>fest-swing</artifactId>
-    		<version>1.2a2</version>
-    		<scope>test</scope>
-    		<exclusions>
-    			<!-- We are already requiring testng. Avoiding version mismatch -->
-    			<exclusion>
-    				<groupId>org.testng</groupId>
-      				<artifactId>testng</artifactId>
-    			</exclusion>
-    		</exclusions>
-		</dependency>
-		<dependency>
-    		<groupId>org.easytesting</groupId>
-    		<artifactId>fest-swing-testng</artifactId>
-    		<version>1.2a2</version>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-swing</artifactId>
+			<version>1.2a2</version>
 			<scope>test</scope>
 			<exclusions>
-    			<!-- We are already requiring testng. Avoiding version mismatch -->
-    			<exclusion>
-    				<groupId>org.testng</groupId>
-      				<artifactId>testng</artifactId>
-    			</exclusion>
-    		</exclusions>
+				<!-- We are already requiring testng. Avoiding version mismatch -->
+				<exclusion>
+					<groupId>org.testng</groupId>
+					<artifactId>testng</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-swing-testng</artifactId>
+			<version>1.2a2</version>
+			<scope>test</scope>
+			<exclusions>
+				<!-- We are already requiring testng. Avoiding version mismatch -->
+				<exclusion>
+					<groupId>org.testng</groupId>
+					<artifactId>testng</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
