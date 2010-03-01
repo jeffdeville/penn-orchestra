@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.upenn.cis.orchestra</groupId>
 	<artifactId>gui</artifactId>
@@ -46,10 +48,6 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<suiteXmlFiles>
-						<suiteXmlFile>target/test-classes/gui-orchestra-test-testng.xml
-						</suiteXmlFile>
-					</suiteXmlFiles>
 					<excludedGroups>fullgui-tests</excludedGroups>
 					<forkMode>once</forkMode>
 				</configuration>
@@ -100,7 +98,29 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<profiles>
+		<profile>
+			<id>requires-database-tests</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<suiteXmlFiles>
+								<suiteXmlFile>target/test-classes/gui-orchestra-test-testng.xml
+								</suiteXmlFile>
+							</suiteXmlFiles>
+							<excludedGroups>fullgui-tests</excludedGroups>
+							<forkMode>once</forkMode>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>
