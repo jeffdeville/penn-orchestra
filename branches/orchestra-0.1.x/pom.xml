@@ -29,7 +29,7 @@
     <repository>
         <id>dbappserv.cis.upenn.edu-releases</id>
         <name>dbappserv.cis.upenn.edu-releases</name>
-        <url>http://dbappserv.cis.upenn.edu:8080/artifactory/ext-releases-local</url>
+        <url>https://dbappserv.cis.upenn.edu/artifactory/ext-releases-local</url>
     </repository>
     <repository>
       <id>dbGroup</id>
