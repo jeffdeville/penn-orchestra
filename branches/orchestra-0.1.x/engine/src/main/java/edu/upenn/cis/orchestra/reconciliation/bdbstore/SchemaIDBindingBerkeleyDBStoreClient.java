@@ -137,12 +137,15 @@ public class SchemaIDBindingBerkeleyDBStoreClient implements
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
 		} catch (Exception e) {
-			throw new USException("Could not connect to update store server", e);
+			throw new USException(
+					"Could not connect to update store server at "
+							+ host.getAddress() + ":" + host.getPort() + ".", e);
 		}
 
 		Object response = sendRequest(new Ping(), Ack.class);
 		if (response == null || !(response instanceof Ack)) {
-			throw new USException("Could not connect to update store server");
+			throw new USException("Could not contact update store server at "
+					+ host.getAddress() + ":" + host.getPort() + ".");
 		}
 
 	}

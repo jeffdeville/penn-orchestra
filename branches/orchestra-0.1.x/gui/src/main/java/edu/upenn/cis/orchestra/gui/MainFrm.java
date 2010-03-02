@@ -299,7 +299,7 @@ public class MainFrm extends JFrame
 			JOptionPane.showMessageDialog(this, e.getMessage(),
 					"Unable to Open CDSS", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
-			setVisible(true);
+			//setVisible(true);
 		}
 	}
 	
