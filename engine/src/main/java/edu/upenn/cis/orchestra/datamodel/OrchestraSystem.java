@@ -17,7 +17,6 @@ package edu.upenn.cis.orchestra.datamodel;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
-import static edu.upenn.cis.orchestra.util.DomUtils.getBooleanAttribute;
 import static edu.upenn.cis.orchestra.util.DomUtils.getChildElementByName;
 
 import java.io.BufferedReader;
@@ -1280,7 +1279,7 @@ public class OrchestraSystem {
 			schemaIDBindingClient.reconnect();
 		} catch (USException e) {
 			Debug
-					.println("Cannot connect to update store. Trying to start new server.");
+					.println("Cannot connect to update store. Checking to see if update store should live here.");
 			system._usf.startUpdateStoreServer();
 			schemaIDBindingClient.reconnect();
 		}
