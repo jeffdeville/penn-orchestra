@@ -132,27 +132,15 @@ public class BerkeleyDBStoreServer implements TransactionSource {
 		this(env,/*configFile,*/DEFAULT_PORT);
 	}
 
-	@SuppressWarnings("unchecked")
-	public BerkeleyDBStoreServer(Environment env, /*File configFile,*/ int port)
+	public BerkeleyDBStoreServer(Environment env, int port)
 	throws IOException, ClassNotFoundException, DatabaseException {
-//		this.configFile = configFile;
+
 		//Runtime.getRuntime().addShutdownHook(new ShutdownThread());
 		tg = new ThreadGroup("BerkeleyDBStoreServer on port " + port);
 		this.port = port;
 
-		// Read in non-database state
-		/*
-		if (configFile != null && configFile.exists()) {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(configFile));
-			schemas = (HashMap<PeerID,Schema>) ois.readObject();
-			ois.close();
-		} else {*/
-			schemas = new HashMap<AbstractPeerID,Schema>();
-//		}
-		
-		for (AbstractPeerID s : schemas.keySet()) {
-			System.out.println("Loaded schema " + s.toString());
-		}
+
+		schemas = new HashMap<AbstractPeerID,Schema>();
 
 		// Open databases
 		this.env = env;
@@ -517,7 +505,7 @@ public class BerkeleyDBStoreServer implements TransactionSource {
 			}
 		}
 		if (args.length < 1) {
-			System.out.println("Syntax: BerkeleyDBStoreServer [-reset] [-port {no}] {data directory}");
+			System.err.println("Syntax: BerkeleyDBStoreServer [-reset] [-port {no}] {data directory}");
 			System.exit(1);
 		}
 		String envDir = args[args.length-1];
