@@ -6,19 +6,19 @@
 
 *_Labeled Null_* different form SQL null - we can join on labeled nulls. They can be used when inferring new values though mappings. _1_ indicates there is no labeled null. All other values than _1_ are Skolem values. 
 
+*_Peer_* a participant in an Orchestra system.
+
 *_Publish_* when a peer publishes it notifies the _Update Store_ of local deltas to its instance since the peer's last publish. Publish is currently always followed by Update Exchange.
 
 Note that only net changes are included. If for example a tuple is inserted then deleted, nothing would be sent to the update store. If a tuple was inserted, deleted, and inserted, only one insert would be sent to the update store.
 
 A publish is currently always followed an update exchange. 
 
-*_Reconcile_* an optional step that will follow Update Exchange, not currently implemented, that includes the use of trust conditions to decide what tuples get inserted and deleted.  
+*_Reconcile_* a process where a list of updates is applied to a _Peer_ with any conflicts being resolved using that Peer's trust conditions. This is not supported in the current release.
 
-Takes all candidate updates and uses trust conditions.
+In some cases Reconcile is used as a synonym for _Update Exchange_.
 
-In some cases Reconcile is used to mean Update Exchange, which will make sense because the goal is to have both happen together.
-
-*_Reconcile Number_* it's a local update exchange counter kept track of by each peer.
+*_Reconcile Number_* it's an _update exchange_ counter, kept track of by the _Update Store_. Each _peer_ has its own sequence of reconcile numbers.
 
 *_State Store_* 
 
