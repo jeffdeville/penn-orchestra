@@ -58,7 +58,7 @@ public class HashTableStore extends DiffStore {
 	// The current state of the database, one element for each relation
 	// Mapping from key to StoreEntry
 //	ArrayList<HashMap<Subtuple,StoreEntry>> state;
-	Map<Integer,HashMap<Subtuple,StoreEntry>> state;
+	private Map<Integer,HashMap<Subtuple,StoreEntry>> state;
 
 	// The updates for each key, for each reconciliation; modifications
 	// get stored twice (once for old value, once for the new) unless they have
@@ -66,10 +66,10 @@ public class HashTableStore extends DiffStore {
 	// mapping from key to reconciliation to a list of relevant updates
 	// TODO: fix this
 //	ArrayList<HashMap<Subtuple,HashMap<Integer,List<Update>>>> updates;
-	Map<Integer,HashMap<Subtuple,HashMap<Integer,List<Update>>>> updates;
+	private Map<Integer,HashMap<Subtuple,HashMap<Integer,List<Update>>>> updates;
 
 	// These will be flattened together when advanceRecno is called
-	ArrayList<Update> currRecnoUpdates;
+	private ArrayList<Update> currRecnoUpdates;
 
 	public HashTableStore(AbstractPeerID pid, ISchemaIDBinding schema, int lastTid) {
 		super(pid, schema, lastTid);
