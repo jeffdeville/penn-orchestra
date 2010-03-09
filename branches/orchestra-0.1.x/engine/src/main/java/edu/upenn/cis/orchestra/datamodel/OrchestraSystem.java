@@ -589,6 +589,7 @@ public class OrchestraSystem {
 	public synchronized void reset() throws Exception {
 		// if (getRecMode()) {
 		for (Db db : _recDbs.values()) {
+			db.reset();
 			db.disconnect();
 		}
 		_recDbs.clear();
@@ -610,8 +611,8 @@ public class OrchestraSystem {
 			allSchemas.addAll(p.getSchemas());
 		}
 
-		for (Schema s : allSchemas)
-			_usf.resetStore(s);// _schema);
+		//for (Schema s : allSchemas)
+		//	_usf.resetStore(s);// _schema);
 		// } else {
 		getMappingEngine().reset();
 		// }

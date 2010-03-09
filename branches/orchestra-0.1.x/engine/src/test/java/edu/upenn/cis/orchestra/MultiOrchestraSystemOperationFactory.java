@@ -335,6 +335,7 @@ public final class MultiOrchestraSystemOperationFactory extends
 					.getOrchestraController();
 			localSystem.getMappingDb().finalize();
 			localSystem.getMappingDb().disconnect();
+			localSystem.disconnect();
 
 			MetaDataChecker checker = new MetaDataChecker.Builder()
 					.checkTypes().build();

@@ -29,6 +29,7 @@ import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
@@ -87,7 +88,12 @@ public class BerkeleyDBStore extends DiffStore {
 			String updatesName = store.getAttribute("updates");
 			String workdir = store.getAttribute("workdir");
 			File envHome = new File(workdir);
-			Environment e = new Environment(envHome, null);
+			if (!envHome.exists()) {
+				envHome.mkdir();
+			}
+			EnvironmentConfig config = new EnvironmentConfig();
+			config.setAllowCreate(true);
+			Environment e = new Environment(envHome, config);
 			return new Factory(e, stateName, updatesName);
 		}
 	}
@@ -254,7 +260,7 @@ public class BerkeleyDBStore extends DiffStore {
 				}
 
 				if (updates.size() > 2) {
-					throw new BDBStateStoreException("Should never have more than two updates for a given key during a given reconciliation");
+					throw new BDBStateStoreException("Should never have more than two updates for a given key during a given reconciliation: " + updates);
 				}
 
 				if (updates.isEmpty()) {
