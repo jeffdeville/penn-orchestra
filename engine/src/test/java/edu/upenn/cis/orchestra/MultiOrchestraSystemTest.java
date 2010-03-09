@@ -101,6 +101,7 @@ public final class MultiOrchestraSystemTest extends
 			if (orchestraSystem != null) {
 				//orchestraSystem.stopStoreServer();
 				orchestraSystem.getMappingDb().finalize();
+				orchestraSystem.reset();
 				orchestraSystem.getMappingDb().disconnect();
 				Assert.assertFalse(
 						orchestraSystem.getMappingDb().isConnected(),

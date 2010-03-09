@@ -15,6 +15,8 @@
  */
 package edu.upenn.cis.orchestra;
 
+import static edu.upenn.cis.orchestra.util.DomUtils.getChildElementByName;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -317,7 +319,13 @@ public class TestUtil {
 				peer.setAttribute("localPeer", "false");
 			}
 		}
-
+		Element store = getChildElementByName(root, "store");
+		Element state = getChildElementByName(store, "state");
+		String type = state.getAttribute("type");
+		if ("bdb".equals(type)){
+			String workdirPrefix = state.getAttribute("workdir");
+			state.setAttribute("workdir", workdirPrefix + "_" + localPeerName);
+		}
 		return document;
 	}
 

@@ -58,7 +58,7 @@
   </engine>
   <store>
     <update hostname="localhost" port="9999" type="bdb"/>
-    <state type="hash"/>
+    <state type="bdb" workdir="stateStore_env" updates="updatesDb" state="stateDb"/>
   </store>
   <!-- <trustConditions peer="pPODPeer2" schema="pPODPeer2Schema1">
     <trusts pid="pPODPeer1" pidType="STRING" priority="5" relation="OTU"/>
