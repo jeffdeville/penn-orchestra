@@ -15,7 +15,7 @@
  */
 package edu.upenn.cis.orchestra.datamodel;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
 
@@ -93,17 +93,14 @@ public class Tuple extends AbstractMutableTuple<Relation> {
 		//		* if labeled null, label (4 byte int)
 		//		* if not labeled null, length of data
 		//		  and then data
-		Relation schema = getSchema();
-		List<Integer> keyCols = schema.getKeyCols();
-		int keyColsPos = 0;
+		Relation relation = getSchema();
+		SortedSet<Integer> keyCols = relation.getKeyCols();
+
 		for (int i = 0; i < numCols; ++i) {
-			Type t = schema.getColType(i);
+			Type t = relation.getColType(i);
 			boolean isKey = false;
 			if (! allCols) {
-				if (keyColsPos < keyCols.size() && i == keyCols.get(keyColsPos)) {
-					++keyColsPos;
-					isKey = true;
-				}
+				isKey = keyCols.contains(Integer.valueOf(i));
 			}
 			if (allCols || isKey) {
 				if (isLabeledNull(i)) {

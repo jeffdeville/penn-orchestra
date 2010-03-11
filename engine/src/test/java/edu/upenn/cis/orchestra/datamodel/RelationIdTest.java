@@ -56,7 +56,7 @@ public class RelationIdTest {
 	@BeforeClass
 	public void setupSystems() throws Exception {
 		InputStream is = getClass()
-				.getResourceAsStream("relationIDTest.schema");
+				.getResourceAsStream("relationIdTest.schema");
 		Document template = createDocument(is);
 		Document firstSchemaDoc = TestUtil.setLocalPeer(template, firstPeer);
 		Document secondSchemaDoc = TestUtil.setLocalPeer(template, secondPeer);
