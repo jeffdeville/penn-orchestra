@@ -16,8 +16,8 @@
 package edu.upenn.cis.orchestra.datamodel;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.SortedSet;
 
 import edu.upenn.cis.orchestra.datamodel.AbstractTuple.LabeledNull;
 import edu.upenn.cis.orchestra.datamodel.exceptions.CompareMismatch;
@@ -98,7 +98,7 @@ public class Subtuple {
 		this.hashCode2 = hashCode2;
 	}
 	
-	public Subtuple(AbstractTuple<?> t, List<Integer> indices) {
+	public Subtuple(AbstractTuple<?> t, SortedSet<Integer> indices) {
 		this(t,indices.size(),indices.iterator());
 	}
 	
