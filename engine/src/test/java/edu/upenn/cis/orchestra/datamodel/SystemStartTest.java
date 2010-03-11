@@ -67,6 +67,7 @@ public class SystemStartTest {
 			
 		} finally {
 			if (system != null) {
+				system.clearStoreServer();
 				system.stopStoreServer();
 				system.disconnect();
 			}
