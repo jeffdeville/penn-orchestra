@@ -33,6 +33,7 @@ import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.IgnoreWhitespaceTextNodesDiff;
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStopStartClient;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -46,6 +47,8 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
 public class DatalogDeserializationTest {
 	private OrchestraSystem system;
 	private Document datalogDocument;
+	private final BerkeleyDBStoreStopStartClient usClient = new BerkeleyDBStoreStopStartClient(
+			"updateStore");
 
 	/**
 	 * Initializes the XML document.
@@ -59,7 +62,9 @@ public class DatalogDeserializationTest {
 		datalogDocument = DomUtils.createDocument(in);
 		in.close();
 		in = Config.class.getResourceAsStream("ppodLN/ppodLN.schema");
-		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(createDocument(in), "pPODPeer2"));
+		usClient.startAndClearUpdateStore();
+		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(
+				createDocument(in), "pPODPeer2"));
 		in.close();
 	}
 
@@ -68,12 +73,11 @@ public class DatalogDeserializationTest {
 	 * 
 	 * @throws Exception
 	 */
-	@AfterClass
+	@AfterClass(alwaysRun = true)
 	public void cleanupUpdateStore() throws Exception {
-		system.clearStoreServer();
-		system.stopStoreServer();
+		usClient.clearAndStopUpdateStore();
 	}
-	
+
 	/**
 	 * Checks that a round trip from serialized to deserialized to serialized is
 	 * OK.

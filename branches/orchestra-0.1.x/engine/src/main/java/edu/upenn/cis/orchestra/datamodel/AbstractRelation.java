@@ -25,9 +25,12 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.google.common.collect.ImmutableSortedSet;
 
 import edu.upenn.cis.orchestra.datamodel.AbstractTuple.IsNotLabeledNull;
 import edu.upenn.cis.orchestra.datamodel.AbstractTuple.LabeledNull;
@@ -37,7 +40,6 @@ import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
 import edu.upenn.cis.orchestra.util.BitSet;
 import edu.upenn.cis.orchestra.util.DomUtils;
-import edu.upenn.cis.orchestra.util.ReadOnlyList;
 import edu.upenn.cis.orchestra.util.WriteableByteArray;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -143,7 +145,7 @@ public abstract class AbstractRelation implements Serializable {
 	/** True if we've finished creating this schema and it won't be modified in the future. */
 	protected boolean finished;
 
-	private ReadOnlyList<Integer> _keyColumnList;
+	private SortedSet<Integer> _keyColumnList;
 
 	public AbstractRelation() {
 		this((String) null);
@@ -354,11 +356,12 @@ public abstract class AbstractRelation implements Serializable {
 		}
 		finished = true;
 
-		ArrayList<Integer> keyColumnIndices = new ArrayList<Integer>();
-		_keyColumnList = ReadOnlyList.create(keyColumnIndices);
+		ImmutableSortedSet.Builder<Integer> keyColumnBuilder = ImmutableSortedSet.naturalOrder();
+
 		for (RelationField f : (_pk == null ? _fields : _pk.getFields())) {
-			keyColumnIndices.add(_columnNum.get(f.getName()));				
+			keyColumnBuilder.add(_columnNum.get(f.getName()));
 		}
+		_keyColumnList = keyColumnBuilder.build();
 		_publicFields = Collections.unmodifiableList(_fields);
 
 		_columnTypes = new Type[_fields.size()];
@@ -480,9 +483,9 @@ public abstract class AbstractRelation implements Serializable {
 	/**
 	 * Get the column numbers of the key columns, in ascending order
 	 * 
-	 * @return			A list of the numbers, which is immutable
+	 * @return			A set of the key column numbers, which is immutable
 	 */
-	public List<Integer> getKeyCols() {
+	public SortedSet<Integer> getKeyCols() {
 		return _keyColumnList;
 	}
 

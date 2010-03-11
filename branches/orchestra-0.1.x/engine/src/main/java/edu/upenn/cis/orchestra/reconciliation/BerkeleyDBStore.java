@@ -100,11 +100,14 @@ public class BerkeleyDBStore extends DiffStore {
 
 
 	private Environment e;
+	
 	private String stateName;
 	private String updatesName;
 	// statesDb is a mapping from tuple key column bytes to byteified StoreEntry 
+	// (relationId, primary key subtuple) --> StoreEntry
 	private Database stateDb;
 	// updatesDb is a mapping from tuple key column bytes, recno to two updates
+	// (relationId, primary key subtuple, recno) --> (Update, Update)
 	private Database updatesDb;
 	public BerkeleyDBStore(Environment e, String stateName, String updatesName, AbstractPeerID pid, ISchemaIDBinding schema, int lastTid) throws DatabaseException {
 		super(pid, schema, lastTid);

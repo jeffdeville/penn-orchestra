@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import edu.upenn.cis.orchestra.Debug;
 import edu.upenn.cis.orchestra.datalog.atom.Atom;
@@ -321,7 +322,7 @@ public class DatalogViewUnfolder {
 					p2 = new ProvIdbNode(at.getRelationContext().toString(), semiringName, at.getRelationContext().isMapping());
 				}
 			} else {
-				List<Integer> keys = at.getRelation().getKeyCols();
+				SortedSet<Integer> keys = at.getRelation().getKeyCols();
 				List<AtomArgument> args = new ArrayList<AtomArgument>();
 				//				if(keys!=null){
 				//					for (Integer inx : keys)
