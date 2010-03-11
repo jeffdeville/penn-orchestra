@@ -122,13 +122,13 @@ public class OrchestraUtil {
 	public static <T> HashSet<T> newHashSet() {
 		return new HashSet<T>();
 	}
-	
+
 	/**
 	 * Convenience {@code HashSet} creator equivalent to {@code new
 	 * HashSet<T>(c)}.
 	 * 
 	 * @param <T> see description
-	 * @param c 
+	 * @param c
 	 * @return {@code new HashSet<T>(c)}
 	 */
 	public static <T> HashSet<T> newHashSet(final Collection<? extends T> c) {
@@ -161,9 +161,8 @@ public class OrchestraUtil {
 
 	/**
 	 * Returns the directory part of the path to the Orchestra schema file
-	 * indicated by {@code schemaName}. The Orchestra schema file should be in
-	 * the same package as {@code clazz} or in a subdirectory of that package
-	 * also called {@schemaName}.
+	 * indicated by {@code schemaName}. The Orchestra schema file should be in a
+	 * subdirectory of {@code clazz}'s package called {@code schemaName}.
 	 * 
 	 * @param schemaName the name of the Orchestra schema (without the '.schema'
 	 *            extension)
@@ -173,10 +172,8 @@ public class OrchestraUtil {
 	 */
 	public static String getWorkingDirectory(String schemaName, Class<?> clazz) {
 		String schemaFilename = schemaName + ".schema";
-		URL schemaURL = clazz.getResource(schemaFilename);
-		if (schemaURL == null) {
-			schemaURL = clazz.getResource(schemaName + "/" + schemaFilename);
-		}
+		URL schemaURL = clazz.getResource(schemaName + "/" + schemaFilename);
+
 		if (schemaURL == null) {
 			String packageName = clazz.getPackage().getName();
 			String altName = packageName + "/" + schemaFilename;
@@ -202,7 +199,7 @@ public class OrchestraUtil {
 		}
 		return newHashSet(set);
 	}
-	
+
 	/** Prevent inheritance and instantiation. */
 	private OrchestraUtil() {}
 

@@ -748,7 +748,10 @@ public class MainFrm extends JFrame
 			for(JInternalFrame frame :_desktop.getAllFrames()){
 				if (frame instanceof MainIFrame) {
 					MainPanel panel = ((MainIFrame)frame).getPanel();
-					panel.getSystem().getMappingDb().finalize();
+					OrchestraSystem system = panel.getSystem();
+					system.getMappingDb().finalize();
+					system.disconnect();
+					system.getMappingDb().disconnect();
 				}
 			}
 			
