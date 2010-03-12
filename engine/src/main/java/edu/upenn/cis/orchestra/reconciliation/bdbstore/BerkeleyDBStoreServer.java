@@ -647,11 +647,12 @@ public class BerkeleyDBStoreServer implements TransactionSource {
 									//oos = null;
 									//socket = null;
 									quit(this);
-									oos.close();
-									ois.close();
-									socket.close();
+									requestExit();
 									response = null;
-									oos = null;
+									//oos = null;
+									//ois.close();
+									//oos.close();
+									//socket.close();
 								} else if (tc == null && (! (o instanceof DumpMsg))) {
 									throw new RuntimeException("Trust conditions (and peer ID) have not been sent to server");
 								} else {

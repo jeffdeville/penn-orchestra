@@ -16,11 +16,16 @@
 
 package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
+import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.List;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
@@ -35,8 +40,7 @@ import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
  * @author John Frommeyer
  * 
  */
-final public class BerkeleyDBStoreStopStartClient {
-	private BerkeleyDBStoreServer server;
+final public class BerkeleyDBStoreStartStopClient {
 	private final String storeName;
 	private final int port;
 
@@ -47,7 +51,7 @@ final public class BerkeleyDBStoreStopStartClient {
 	 * @param storeName
 	 * @param port
 	 */
-	public BerkeleyDBStoreStopStartClient(
+	public BerkeleyDBStoreStartStopClient(
 			@SuppressWarnings("hiding") final String storeName,
 			@SuppressWarnings("hiding") final int port) {
 		this.storeName = storeName;
@@ -60,7 +64,7 @@ final public class BerkeleyDBStoreStopStartClient {
 	 * 
 	 * @param storeName
 	 */
-	public BerkeleyDBStoreStopStartClient(
+	public BerkeleyDBStoreStartStopClient(
 			@SuppressWarnings("hiding") final String storeName) {
 		this.storeName = storeName;
 		this.port = BerkeleyDBStoreServer.DEFAULT_PORT;
@@ -76,13 +80,10 @@ final public class BerkeleyDBStoreStopStartClient {
 	 */
 	public void clearAndStopUpdateStore() throws USException, IOException,
 			DatabaseException, InterruptedException {
-		if (server != null) {
-			try {
-				clearUpdateStore();
-			} finally {
-				server.quit();
-			}
-		}
+
+		clearUpdateStore();
+		sendRequest(Collections
+				.singletonList((Serializable) new StopUpdateStore()), EndOfStreamMsg.class);
 	}
 
 	public void startAndClearUpdateStore() throws USException,
@@ -102,34 +103,43 @@ final public class BerkeleyDBStoreStopStartClient {
 		ec.setAllowCreate(true);
 		ec.setTransactional(true);
 		Environment env = new Environment(f, ec);
-		server = new BerkeleyDBStoreServer(env, port);
+		new BerkeleyDBStoreServer(env, port);
 		clearUpdateStore();
 	}
 
-	public void clearUpdateStore() throws USException {
+	private void clearUpdateStore() throws USException {
+		sendRequest(newArrayList(new Reset(), new EndOfStreamMsg()), Ack.class);
+	}
+
+	private void sendRequest(List<Serializable> requests,
+			Class<?> expectedReturnType) throws USException {
 		try {
 			Socket clearSocket = new Socket("localhost", port);
 			ObjectOutputStream clearOos = new ObjectOutputStream(clearSocket
 					.getOutputStream());
-			ObjectInputStream clearOis = new ObjectInputStream(clearSocket
-					.getInputStream());
-			clearOos.writeObject(new Reset());
-			clearOos.writeObject(new EndOfStreamMsg());
-			clearOos.flush();
-			Object response = clearOis.readObject();
 
-			clearOos.close();
-			clearSocket.close();
-			if (response instanceof Ack) {
-				return;
-			} else if (response instanceof Exception) {
-				throw new USException("Error restoring BDB store from dump",
-						(Exception) response);
-			} else {
-				throw new USException("Recevied unexpected reply of type "
-						+ response.getClass().getName() + ": " + response);
+			for (Object request : requests) {
+				clearOos.writeObject(request);
 			}
+			clearOos.flush();
 
+			if (expectedReturnType != null) {
+				ObjectInputStream clearOis = new ObjectInputStream(clearSocket
+						.getInputStream());
+				Object response = clearOis.readObject();
+				clearOis.close();
+				if (expectedReturnType.isInstance(response)) {
+					return;
+				} else if (response instanceof Exception) {
+					throw new USException(
+							"Error restoring BDB store from dump",
+							(Exception) response);
+				} else {
+					throw new USException("Recevied unexpected reply of type "
+							+ response.getClass().getName() + ": " + response);
+				}
+			}
+			clearOos.close();
 		} catch (IOException ioe) {
 			throw new USException("Error resetting BDB store", ioe);
 		} catch (ClassNotFoundException e) {

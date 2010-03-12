@@ -48,7 +48,7 @@ public class SystemStartTest {
 	@BeforeClass
 	public void initializeDocument() throws Exception {
 		InputStream in = Config.class
-				.getResourceAsStream("ppodLN/ppodLN.schema");
+				.getResourceAsStream("ppodLN/ppodLNHash.schema");
 		document = createDocument(in);
 		in.close();
 	}

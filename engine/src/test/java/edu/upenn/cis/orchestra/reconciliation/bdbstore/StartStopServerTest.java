@@ -58,7 +58,7 @@ public class StartStopServerTest {
 	@BeforeClass
 	public void readSchema() throws IOException, XMLParseException {
 		InputStream in = Config.class
-				.getResourceAsStream("ppodLN/ppodLN.schema");
+				.getResourceAsStream("ppodLN/ppodLNHash.schema");
 		orchestraSchema = createDocument(in);
 		in.close();
 		Element store = getChildElementByName(orchestraSchema

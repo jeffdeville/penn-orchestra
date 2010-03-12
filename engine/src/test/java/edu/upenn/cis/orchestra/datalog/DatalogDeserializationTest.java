@@ -33,7 +33,7 @@ import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.IgnoreWhitespaceTextNodesDiff;
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
-import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStopStartClient;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStartStopClient;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -47,7 +47,7 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
 public class DatalogDeserializationTest {
 	private OrchestraSystem system;
 	private Document datalogDocument;
-	private final BerkeleyDBStoreStopStartClient usClient = new BerkeleyDBStoreStopStartClient(
+	private final BerkeleyDBStoreStartStopClient usClient = new BerkeleyDBStoreStartStopClient(
 			"updateStore");
 
 	/**
@@ -61,7 +61,7 @@ public class DatalogDeserializationTest {
 		InputStream in = getClass().getResourceAsStream("datalog.xml");
 		datalogDocument = DomUtils.createDocument(in);
 		in.close();
-		in = Config.class.getResourceAsStream("ppodLN/ppodLN.schema");
+		in = Config.class.getResourceAsStream("ppodLN/ppodLNHash.schema");
 		usClient.startAndClearUpdateStore();
 		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(
 				createDocument(in), "pPODPeer2"));

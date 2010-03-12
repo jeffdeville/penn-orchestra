@@ -1396,9 +1396,16 @@ public class ClientCentricDb extends Db {
 
 	@Override
 	public synchronized void reset() throws DbException {
+		reset(true);
+	}
+	
+	@Override
+	public synchronized void reset(boolean replay) throws DbException{
 		state.reset();
 		updateStore.reset();
-		replayPreviousReconciliations();
+		if (replay) {
+			replayPreviousReconciliations();
+		}
 	}
 	
 	private void replayPreviousReconciliations() throws DbException {

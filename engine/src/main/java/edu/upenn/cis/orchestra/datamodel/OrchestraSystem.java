@@ -587,9 +587,13 @@ public class OrchestraSystem {
 	}
 
 	public synchronized void reset() throws Exception {
+		reset(true);
+	}
+
+	public synchronized void reset(boolean replay) throws Exception {
 		// if (getRecMode()) {
 		for (Db db : _recDbs.values()) {
-			db.reset();
+			db.reset(replay);
 			db.disconnect();
 		}
 		_recDbs.clear();
@@ -617,7 +621,7 @@ public class OrchestraSystem {
 		getMappingEngine().reset();
 		// }
 	}
-
+	
 	static protected Element addChild(Document doc, Element parent,
 			String label, String name) {
 		Element child = doc.createElement(label);
