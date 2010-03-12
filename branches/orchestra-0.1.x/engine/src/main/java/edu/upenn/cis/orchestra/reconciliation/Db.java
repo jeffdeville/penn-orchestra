@@ -23,9 +23,9 @@ import java.util.Set;
 
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.Schema;
-import edu.upenn.cis.orchestra.datamodel.Tuple;
 import edu.upenn.cis.orchestra.datamodel.Subtuple;
 import edu.upenn.cis.orchestra.datamodel.TrustConditions;
+import edu.upenn.cis.orchestra.datamodel.Tuple;
 import edu.upenn.cis.orchestra.datamodel.TupleSet;
 import edu.upenn.cis.orchestra.datamodel.TxnPeerID;
 import edu.upenn.cis.orchestra.datamodel.Update;
@@ -336,12 +336,21 @@ public abstract class Db {
 	}
 	
 	/**
-	 * Reset all local state (i.e. unpublished transcations, etc.) and bring the
+	 * Reset all local state (i.e. unpublished transactions, etc.) and bring the
 	 * local database handle to a state that is consistent with the global state.
 	 * 
 	 * @throws DbException
 	 */
 	public abstract void reset() throws DbException;
+	
+	/**
+	 * Reset all local state (i.e. unpublished transactions, etc.) and if {@code replay == true} bring the
+	 * local database handle to a state that is consistent with the global state.
+	 * @param replay 
+	 * 
+	 * @throws DbException
+	 */
+	public abstract void reset(boolean replay) throws DbException;
 	
 	public static class InvalidUpdate extends DbException {
 		private static final long serialVersionUID = 1L;

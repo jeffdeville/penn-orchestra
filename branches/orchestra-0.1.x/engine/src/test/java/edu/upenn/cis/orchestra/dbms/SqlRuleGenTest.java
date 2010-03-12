@@ -70,7 +70,7 @@ public class SqlRuleGenTest {
 		in = getClass().getResourceAsStream("expectedInsertionCode.xml");
 		expectedInsertionCodeDoc = createDocument(in);
 		in.close();
-		in = Config.class.getResourceAsStream("ppodLN/ppodLN.schema");
+		in = Config.class.getResourceAsStream("ppodLN/ppodLNHash.schema");
 		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(createDocument(in), "pPODPeer2"));
 		in.close();
 	}

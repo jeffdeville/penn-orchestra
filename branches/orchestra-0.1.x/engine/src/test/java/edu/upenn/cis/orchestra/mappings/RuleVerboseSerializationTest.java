@@ -61,7 +61,7 @@ public class RuleVerboseSerializationTest {
 		in = getClass().getResourceAsStream("fakeMappingRule.xml");
 		fakeMappingRuleDoc = DomUtils.createDocument(in);
 		in.close();
-		in = Config.class.getResourceAsStream("ppodLN/ppodLN.schema");
+		in = Config.class.getResourceAsStream("ppodLN/ppodLNHash.schema");
 		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(createDocument(in), "pPODPeer2"));
 		in.close();
 	}
