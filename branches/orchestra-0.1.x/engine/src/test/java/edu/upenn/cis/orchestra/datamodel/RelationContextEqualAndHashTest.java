@@ -59,7 +59,7 @@ public class RelationContextEqualAndHashTest {
 		InputStream in = getClass().getResourceAsStream("relationContext.xml");
 		relationContextElement = createDocument(in).getDocumentElement();
 		in.close();
-		in = Config.class.getResourceAsStream("ppodLN/ppodLN.schema");
+		in = Config.class.getResourceAsStream("ppodLN/ppodLNHash.schema");
 		orchestraSystemDoc = createDocument(in);
 		in.close();
 	}

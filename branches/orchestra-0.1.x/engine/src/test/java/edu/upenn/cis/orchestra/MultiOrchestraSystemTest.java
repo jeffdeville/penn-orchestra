@@ -25,7 +25,7 @@ import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
-import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStopServerClient;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStartStopClient;
 
 /**
  * @see edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest
@@ -43,6 +43,8 @@ public final class MultiOrchestraSystemTest extends
 
 	/** Translates Berkeley update store into a DbUnit dataset. */
 	private BdbDataSetFactory bdbDataSetFactory;
+	
+	private BerkeleyDBStoreStartStopClient usClient = new BerkeleyDBStoreStartStopClient("updateStore");
 
 	/**
 	 * {@inheritDoc}
@@ -60,15 +62,15 @@ public final class MultiOrchestraSystemTest extends
 	@Override
 	protected void betweenPrepareAndTestImpl() throws Exception {
 		// boolean firstSystem = true;
-		File f = new File("updateStore_env");
-		if (f.exists() && f.isDirectory()) {
-			File[] contents = f.listFiles();
-			for (File file : contents) {
-				file.delete();
-			}
-			f.delete();
-		}
-
+		//File f = new File("updateStore_env");
+		//if (f.exists() && f.isDirectory()) {
+		//	File[] contents = f.listFiles();
+		//	for (File file : contents) {
+		//		file.delete();
+		//	}
+		//	f.delete();
+		//}
+		usClient.startAndClearUpdateStore();
 		for (OrchestraTestFrame testFrame : testFrames) {
 			ITestFrameWrapper<OrchestraSystem> systemFrame = new OrchestraSystemTestFrame(
 					orchestraSchema, testFrame);
@@ -101,7 +103,7 @@ public final class MultiOrchestraSystemTest extends
 			if (orchestraSystem != null) {
 				//orchestraSystem.stopStoreServer();
 				orchestraSystem.getMappingDb().finalize();
-				orchestraSystem.reset();
+				orchestraSystem.reset(false);
 				orchestraSystem.getMappingDb().disconnect();
 				Assert.assertFalse(
 						orchestraSystem.getMappingDb().isConnected(),
@@ -109,13 +111,15 @@ public final class MultiOrchestraSystemTest extends
 				logger.debug("Shutting down Orchestra system.");
 			}
 		}
-		BerkeleyDBStoreStopServerClient stop = new BerkeleyDBStoreStopServerClient("localhost", 9999);
-		stop.reconnect();
-		stop.stopUpdateStore();
-		stop.disconnect();
 		if (bdbDataSetFactory != null) {
 			bdbDataSetFactory.close();
 		}
+		usClient.clearAndStopUpdateStore();
+		//BerkeleyDBStoreStopServerClient stop = new BerkeleyDBStoreStopServerClient("localhost", 9999);
+		//stop.reconnect();
+		//stop.stopUpdateStore();
+		//stop.disconnect();
+		
 
 	}
 

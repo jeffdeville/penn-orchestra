@@ -49,7 +49,7 @@ public class LocalPeerTest {
 	@BeforeClass
 	public void setUpDocument() {
 		schemaTemplate = createDocument(Config.class
-				.getResourceAsStream("ppodLN/ppodLN.schema"));
+				.getResourceAsStream("ppodLN/ppodLNHash.schema"));
 		// write(doc, System.err);
 	}
 

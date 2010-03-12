@@ -449,8 +449,8 @@ public class BerkeleyDBStore extends DiffStore {
 		try {
 			e.truncateDatabase(null, stateName, false);
 			e.truncateDatabase(null, updatesName, false);
-		} catch (DatabaseException e) {
-			throw new BDBStateStoreException(e);
+		} catch (DatabaseException dbe) {
+			throw new BDBStateStoreException(dbe);
 		}
 		reopen();
 	}

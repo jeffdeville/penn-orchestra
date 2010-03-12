@@ -65,7 +65,7 @@ public class PrepareDbForLocalUpdaterJdbcTest {
 	@Parameters(value = { "jdbc-driver", "db-url", "db-user", "db-password" })
 	public void initializeSystem(String jdbcDriver, String dbURL,
 			String dbUser, String dbPassword) throws Exception {
-		URL url = Config.class.getResource("ppodLN/ppodLN.schema");
+		URL url = Config.class.getResource("ppodLN/ppodLNHash.schema");
 		OrchestraSchema orchestraSchema = new OrchestraSchema(new File(url
 				.toURI()));
 		system = OrchestraSystem.deserialize(orchestraSchema.toDocument(dbURL,
