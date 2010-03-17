@@ -24,7 +24,8 @@ import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.exchange.IEngine;
-import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BdbDataSetFactory;
+
 
 /**
  * Creates {@code IOrchestraOperation}s which deal directly with a collection
