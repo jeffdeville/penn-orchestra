@@ -31,7 +31,8 @@ import edu.upenn.cis.orchestra.IOrchestraOperationFactory;
 import edu.upenn.cis.orchestra.ITestFrameWrapper;
 import edu.upenn.cis.orchestra.MultiSystemOrchestraOperationExecutor;
 import edu.upenn.cis.orchestra.OrchestraTestFrame;
-import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BdbDataSetFactory;
+
 
 /**
  * An Orchestra test via the GUI.

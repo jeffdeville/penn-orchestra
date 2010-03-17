@@ -64,7 +64,6 @@ import edu.upenn.cis.orchestra.predicate.ComparePredicate;
 import edu.upenn.cis.orchestra.predicate.NotPred;
 import edu.upenn.cis.orchestra.predicate.OrPred;
 import edu.upenn.cis.orchestra.reconciliation.Decision;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.StateStore;
 import edu.upenn.cis.orchestra.reconciliation.TransactionDecisions;
 import edu.upenn.cis.orchestra.reconciliation.TxnChain;

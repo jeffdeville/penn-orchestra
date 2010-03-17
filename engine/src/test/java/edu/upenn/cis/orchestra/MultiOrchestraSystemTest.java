@@ -24,7 +24,7 @@ import java.util.Map;
 import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
-import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BdbDataSetFactory;
 import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStartStopClient;
 
 /**
@@ -72,13 +72,20 @@ public final class MultiOrchestraSystemTest extends
 		//}
 		usClient.startAndClearUpdateStore();
 		for (OrchestraTestFrame testFrame : testFrames) {
+			File f = new File("stateStore_env_" + testFrame.getPeerName());
+			if (f.exists() && f.isDirectory()) {
+				File[] contents = f.listFiles();
+				for (File file : contents) {
+					file.delete();
+				}
+				f.delete();
+			}
 			ITestFrameWrapper<OrchestraSystem> systemFrame = new OrchestraSystemTestFrame(
 					orchestraSchema, testFrame);
 			Assert.assertEquals(systemFrame.getOrchestraController().getName(),
 					orchestraSchemaName);
 			peerToOrchestraSystemFrame
 					.put(testFrame.getPeerName(), systemFrame);
-
 		}
 		assertTrue(peerToOrchestraSystemFrame.values().size() > 0);
 		
@@ -101,7 +108,6 @@ public final class MultiOrchestraSystemTest extends
 				.values()) {
 			OrchestraSystem orchestraSystem = frame.getOrchestraController();
 			if (orchestraSystem != null) {
-				//orchestraSystem.stopStoreServer();
 				orchestraSystem.getMappingDb().finalize();
 				orchestraSystem.reset(false);
 				orchestraSystem.getMappingDb().disconnect();
@@ -115,12 +121,6 @@ public final class MultiOrchestraSystemTest extends
 			bdbDataSetFactory.close();
 		}
 		usClient.clearAndStopUpdateStore();
-		//BerkeleyDBStoreStopServerClient stop = new BerkeleyDBStoreStopServerClient("localhost", 9999);
-		//stop.reconnect();
-		//stop.stopUpdateStore();
-		//stop.disconnect();
-		
-
 	}
 
 }

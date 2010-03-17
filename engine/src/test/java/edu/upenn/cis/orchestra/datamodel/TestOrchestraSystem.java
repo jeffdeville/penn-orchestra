@@ -34,7 +34,8 @@ import com.sleepycat.je.EnvironmentConfig;
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicatePeerIdException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding;
+
 
 @org.testng.annotations.Test(groups = { TestUtil.JUNIT3_TESTNG_GROUP, TestUtil.FAST_TESTNG_GROUP, TestUtil.BROKEN_TESTNG_GROUP })
 public class TestOrchestraSystem extends TestCase {

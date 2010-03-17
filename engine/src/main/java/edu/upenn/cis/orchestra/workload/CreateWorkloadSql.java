@@ -23,10 +23,10 @@ import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.reconciliation.BerkeleyDBStore;
 import edu.upenn.cis.orchestra.reconciliation.ClientCentricDb;
 import edu.upenn.cis.orchestra.reconciliation.Db;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.SqlUpdateStore;
 import edu.upenn.cis.orchestra.reconciliation.StateStore;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding;
 
 public class CreateWorkloadSql {
 	static String jdbcUrl;

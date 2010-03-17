@@ -27,11 +27,11 @@ import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.reconciliation.BerkeleyDBStore;
 import edu.upenn.cis.orchestra.reconciliation.ClientCentricDb;
 import edu.upenn.cis.orchestra.reconciliation.Db;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.StateStore;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore;
 import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreClient;
 import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreServer;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding;
 
 public class CreateWorkloadBDB {
 	static final File envDir = new File("bdbstoredir");

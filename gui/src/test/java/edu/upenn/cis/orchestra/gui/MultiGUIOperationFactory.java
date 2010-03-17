@@ -41,7 +41,8 @@ import edu.upenn.cis.orchestra.MetaDataChecker;
 import edu.upenn.cis.orchestra.OrchestraSchema;
 import edu.upenn.cis.orchestra.gui.peers.PeerCommands;
 import edu.upenn.cis.orchestra.gui.peers.PeersMgtPanel;
-import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BdbDataSetFactory;
+
 
 /**
  * Creates {@code IOrchestraOperation}s which carry out operations via the GUI.

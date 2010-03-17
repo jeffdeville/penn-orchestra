@@ -41,7 +41,7 @@ import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicatePeerIdException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateSchemaIdException;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding;
 import edu.upenn.cis.orchestra.repository.utils.dbConverter.SchemaConverterJDBC;
 import edu.upenn.cis.orchestra.repository.utils.loader.exceptions.SchemaLoaderException;
 
