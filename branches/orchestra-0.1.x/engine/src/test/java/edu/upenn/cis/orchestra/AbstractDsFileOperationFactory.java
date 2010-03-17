@@ -22,7 +22,9 @@ import org.dbunit.JdbcDatabaseTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.upenn.cis.orchestra.reconciliation.BdbDataSetFactory;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BdbDataSetFactory;
+
+
 
 /**
  * Common ancestor for {@code IOpertationFactory} implementation which are based

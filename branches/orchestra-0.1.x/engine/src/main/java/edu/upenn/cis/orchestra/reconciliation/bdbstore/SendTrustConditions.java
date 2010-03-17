@@ -20,7 +20,6 @@ import java.io.Serializable;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.TrustConditions;
 import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 
 class SendTrustConditions implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -34,7 +33,7 @@ class SendTrustConditions implements Serializable {
 		this.s = s;
 	}
 	
-	TrustConditions getTrustConditions(SchemaIDBinding sch) {
+	TrustConditions getTrustConditions(ISchemaIDBinding sch) {
 		this.sch = sch;
 		return new TrustConditions(tcBytes,sch);
 	}	

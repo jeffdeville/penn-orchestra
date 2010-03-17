@@ -21,7 +21,6 @@ import static edu.upenn.cis.orchestra.TestUtil.JUNIT4_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
 import static org.testng.AssertJUnit.assertEquals;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +36,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.sleepycat.je.DatabaseException;
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
 
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.predicate.AndPred;
@@ -47,7 +44,6 @@ import edu.upenn.cis.orchestra.predicate.Predicate;
 import edu.upenn.cis.orchestra.predicate.ComparePredicate.Op;
 import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.LocalSchemaIDBinding;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 import edu.upenn.cis.orchestra.util.DomUtils;
 
 @org.testng.annotations.Test(groups = { TestUtil.FAST_TESTNG_GROUP})

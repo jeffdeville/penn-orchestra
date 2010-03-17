@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.reconciliation;
+package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StringReader;
 import java.util.List;
-import java.util.Map;
 
+import org.dbunit.database.AmbiguousTableNameException;
 import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.DefaultDataSet;
 import org.dbunit.dataset.DefaultTable;
@@ -39,9 +39,8 @@ import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
-import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferReader;
-import edu.upenn.cis.orchestra.datamodel.Schema;
+import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
 
 /**
  * This class can be used to create a DbUnit dataset from a Berkeley database
@@ -53,19 +52,9 @@ import edu.upenn.cis.orchestra.datamodel.Schema;
 public class BdbDataSetFactory {
 
 	/** Takes care of the Berkeley database environment. */
-	private final UpdateStoreBdbEnv env;
-
-	/**
-	 * Creates a {@code BdbDataSetFactory}.
-	 * 
-	 * @param bdbDirectory
-	 * @param peerIDToSchema
-	 * @throws Exception
-	 */
-	public BdbDataSetFactory(File bdbDirectory,
-			Map<AbstractPeerID, Schema> peerIDToSchema) throws Exception {
-		env = new UpdateStoreBdbEnv(bdbDirectory, peerIDToSchema);
-	}
+	private final IBdbStoreEnvironment env;
+	private final ISchemaIDBinding schemaIDBinding;
+	//private IBdbStoreEnvironment stateStore;
 
 	/**
 	 * Creates a {@code BdbDataSetFactory}. Assumes that the schema for {@code
@@ -79,6 +68,9 @@ public class BdbDataSetFactory {
 	public BdbDataSetFactory(File bdbDirectory, String cdssName)
 			throws Exception {
 		env = new UpdateStoreBdbEnv(bdbDirectory, cdssName);
+		schemaIDBinding = env.getSchemaIDBinding();
+		//stateStore = new StateStoreBdbEnv(new File("stateStore_env_pPODPeer1"),
+				//schemaIDBinding);
 	}
 
 	/**
@@ -98,9 +90,33 @@ public class BdbDataSetFactory {
 		DefaultDataSet dataset = new DefaultDataSet();
 		BdbEnvironment envFormat = env.getFormat();
 
-		ISchemaIDBinding schemaIDBinding = env.getSchemaIDBinding();
 		List<Database> dbs = env.getDbs();
 
+		processDatabases(root, dataset, envFormat, schemaIDBinding, dbs);
+
+		//BdbEnvironment stateStoreFormat = stateStore.getFormat();
+		//List<Database> ssDbs = stateStore.getDbs();
+		//processDatabases(root, dataset, stateStoreFormat, schemaIDBinding,
+		//		ssDbs);
+		return new FlatXmlDataSet(new StringReader(dsDoc.asXML()), false, true,
+				false);
+	}
+
+	/**
+	 * DOCUMENT ME
+	 * 
+	 * @param root
+	 * @param dataset
+	 * @param envFormat
+	 * @param schemaIDBinding
+	 * @param dbs
+	 * @throws DatabaseException
+	 * @throws AmbiguousTableNameException
+	 */
+	private void processDatabases(Element root, DefaultDataSet dataset,
+			BdbEnvironment envFormat, ISchemaIDBinding schemaIDBinding,
+			List<Database> dbs) throws DatabaseException,
+			AmbiguousTableNameException {
 		for (Database db : dbs) {
 			String dbName = db.getDatabaseName();
 			DefaultTable table = new DefaultTable(dbName);
@@ -125,9 +141,6 @@ public class BdbDataSetFactory {
 				}
 			}
 		}
-
-		return new FlatXmlDataSet(new StringReader(dsDoc.asXML()), false, true,
-				false);
 	}
 
 	/**
@@ -136,6 +149,7 @@ public class BdbDataSetFactory {
 	 */
 	public void close() {
 		env.close();
+		//stateStore.close();
 	}
 
 	/**

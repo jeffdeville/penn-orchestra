@@ -33,7 +33,6 @@ import edu.upenn.cis.orchestra.predicate.Predicate;
 import edu.upenn.cis.orchestra.predicate.XMLification;
 import edu.upenn.cis.orchestra.reconciliation.DbException;
 import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.Db.IllegalPeer;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;

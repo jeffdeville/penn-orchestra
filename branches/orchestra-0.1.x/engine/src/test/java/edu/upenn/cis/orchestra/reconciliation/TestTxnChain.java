@@ -51,6 +51,7 @@ import edu.upenn.cis.orchestra.datamodel.TxnPeerID;
 import edu.upenn.cis.orchestra.datamodel.Update;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore.TransactionSource;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding;
 
 @org.testng.annotations.Test(groups = {TestUtil.FAST_TESTNG_GROUP })
 public class TestTxnChain {

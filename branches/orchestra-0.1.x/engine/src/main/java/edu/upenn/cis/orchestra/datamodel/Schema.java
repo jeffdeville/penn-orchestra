@@ -36,8 +36,8 @@ import edu.upenn.cis.orchestra.datamodel.exceptions.UnknownRefFieldException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
 import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBindingClient;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 

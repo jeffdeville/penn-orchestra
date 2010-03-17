@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.reconciliation;
-
-import static edu.upenn.cis.orchestra.reconciliation.BdbEntryInfo.getByteBufferReaderMethod;
+package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -24,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +43,10 @@ import edu.upenn.cis.orchestra.OrchestraUtil;
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferReader;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferWriter;
-import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.TxnPeerID;
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding.SchemaMap;
+import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
+import edu.upenn.cis.orchestra.reconciliation.LocalSchemaIDBinding;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding.SchemaMap;
 
 /**
  * Encapsulates some of the work needed to open a Berkeley database holding an
@@ -55,24 +55,28 @@ import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding.SchemaMap;
  * @author John Frommeyer
  * 
  */
-public class UpdateStoreBdbEnv {
+public class UpdateStoreBdbEnv implements IBdbStoreEnvironment {
 
 	/** The {@code Environment} for the databases. */
-	private Environment env;
+	private final Environment env;
 
 	/** The {@code Database}s contained in {@code env}. */
-	private List<Database> myDbs = new ArrayList<Database>();
+	private final List<Database> myDbs = new ArrayList<Database>();
 
 	/** The format of the database. */
 	private final static BdbEnvironment updateStoreFormat;
 
 	static {
 		try {
-			Method readPeerID = getByteBufferReaderMethod("readPeerID");
-			Method readTxnPeerID = getByteBufferReaderMethod("readTxnPeerID");
-			Method readBoolean = getByteBufferReaderMethod("readBoolean");
-			Method readInt = getByteBufferReaderMethod("readInt");
-			Method readUpdate = getByteBufferReaderMethod("readUpdate");
+			Method readPeerID = BdbEntryInfo
+					.getByteBufferReaderMethod("readPeerID");
+			Method readTxnPeerID = BdbEntryInfo
+					.getByteBufferReaderMethod("readTxnPeerID");
+			Method readBoolean = BdbEntryInfo
+					.getByteBufferReaderMethod("readBoolean");
+			Method readInt = BdbEntryInfo.getByteBufferReaderMethod("readInt");
+			Method readUpdate = BdbEntryInfo
+					.getByteBufferReaderMethod("readUpdate");
 
 			Method txnPeerIdFromBytes = TxnPeerID.class.getMethod("fromBytes",
 					byte[].class);
@@ -160,46 +164,7 @@ public class UpdateStoreBdbEnv {
 	 * Clients may need a {@code SchemaIDBinding} for creating {@code
 	 * ByteBufferReader}s.
 	 */
-	private ISchemaIDBinding binding;
-
-	/**
-	 * Creates an {@code UpdateStoreBdbEnv} using a schema binding which is not
-	 * dependent on a new {@code SchemaIDBinding} instance. Sets up {@code env}
-	 * and opens all databases.
-	 * 
-	 * @param peerIDToSchema
-	 * @throws Exception
-	 */
-	UpdateStoreBdbEnv(File envHome, Map<AbstractPeerID, Schema> peerIDToSchema)
-			throws Exception {
-		EnvironmentConfig myEnvConfig = new EnvironmentConfig();
-		myEnvConfig.setTransactional(true);
-		// myEnvConfig.setReadOnly(true);
-
-		// Open the environment
-		env = new Environment(envHome, myEnvConfig);
-		binding = new LocalSchemaIDBinding(peerIDToSchema);
-
-		DatabaseConfig dbConfig = new DatabaseConfig();
-		dbConfig.setAllowCreate(false);
-		dbConfig.setReadOnly(true);
-
-		List<String> dbNames = env.getDatabaseNames();
-		for (String dbName : dbNames) {
-			if (dbName.startsWith("recon")) {
-				dbConfig.setSortedDuplicates(true);
-			} else {
-				dbConfig.setSortedDuplicates(false);
-			}
-			if (dbName.equals("schemaInfo")) {
-				dbConfig.setTransactional(false);
-			} else {
-				dbConfig.setTransactional(true);
-			}
-			myDbs.add(env.openDatabase(null, dbName, dbConfig));
-
-		}
-	}
+	private final ISchemaIDBinding binding;
 
 	/**
 	 * Creates an {@code UpdateStoreBdbEnv}. Sets up {@code env} and opens all
@@ -275,17 +240,18 @@ public class UpdateStoreBdbEnv {
 	}
 
 	/**
-	 * Returns the underlying {@code Environment}.
+	 * {@inheritDoc}
 	 * 
-	 * @return the underlying {@code Environment}.
+	 * @see edu.upenn.cis.orchestra.reconciliation.IBdbStoreEnvironment#getEnv()
 	 */
 	public Environment getEnv() {
 		return env;
 	}
 
 	/**
-	 * Takes care of closing everything.
+	 * {@inheritDoc}
 	 * 
+	 * @see edu.upenn.cis.orchestra.reconciliation.IBdbStoreEnvironment#close()
 	 */
 	public void close() {
 		if (env != null) {
@@ -302,27 +268,27 @@ public class UpdateStoreBdbEnv {
 	}
 
 	/**
-	 * Returns the underlying {@code Database}s.
+	 * {@inheritDoc}
 	 * 
-	 * @return the list of {@code Database}s.
+	 * @see edu.upenn.cis.orchestra.reconciliation.IBdbStoreEnvironment#getDbs()
 	 */
 	public List<Database> getDbs() {
 		return myDbs;
 	}
 
 	/**
-	 * Returns a {@code ISchemaIDBinding}.
+	 * {@inheritDoc}
 	 * 
-	 * @return the schemaIDBinding.
+	 * @see edu.upenn.cis.orchestra.reconciliation.IBdbStoreEnvironment#getSchemaIDBinding()
 	 */
 	public ISchemaIDBinding getSchemaIDBinding() {
 		return binding;
 	}
 
 	/**
-	 * Returns the format information for this database.
+	 * {@inheritDoc}
 	 * 
-	 * @return the format information for this database.
+	 * @see edu.upenn.cis.orchestra.reconciliation.IBdbStoreEnvironment#getFormat()
 	 */
 	public BdbEnvironment getFormat() {
 		return updateStoreFormat;
@@ -619,11 +585,17 @@ class BdbEntryInfo {
 			InvocationTargetException {
 		Object returnVal = null;
 		if (Modifier.isStatic(entryReader.getModifiers())) {
-			returnVal = entryReader.invoke(null, bbr.readByteArrayNoLength(bbr
-					.getLengthRemaining()));
+			Class<?>[] paramters = entryReader.getParameterTypes();
+			if (Arrays.asList(paramters).contains(ByteBufferReader.class)) {
+				returnVal = entryReader.invoke(null, bbr);
+			} else {
+				returnVal = entryReader.invoke(null, bbr
+						.readByteArrayNoLength(bbr.getLengthRemaining()));
+			}
 		} else {
 			returnVal = entryReader.invoke(bbr, (Object[]) null);
 		}
+
 		return returnVal;
 	}
 

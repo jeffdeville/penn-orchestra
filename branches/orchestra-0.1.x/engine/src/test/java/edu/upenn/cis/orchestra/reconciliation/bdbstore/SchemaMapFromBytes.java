@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.reconciliation;
+package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
 import java.io.IOException;
 
-import edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding.SchemaMap;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding.SchemaMap;
 
 /**
  * Helper for {@code BdbDataSetFactory}. Restores a {@code StaticMap} instance

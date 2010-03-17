@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.reconciliation;
+package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
@@ -56,6 +56,7 @@ import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateRelationIdException
 import edu.upenn.cis.orchestra.datamodel.exceptions.RelationNotFoundException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnknownRefFieldException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
+import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
