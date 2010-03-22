@@ -24,7 +24,6 @@ import org.fest.swing.annotation.GUITest;
 import org.fest.swing.core.BasicRobot;
 import org.fest.swing.core.Robot;
 import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
-import org.testng.Assert;
 
 import edu.upenn.cis.orchestra.AbstractMultiSystemOrchestraTest;
 import edu.upenn.cis.orchestra.IOrchestraOperationFactory;
@@ -32,7 +31,6 @@ import edu.upenn.cis.orchestra.ITestFrameWrapper;
 import edu.upenn.cis.orchestra.MultiSystemOrchestraOperationExecutor;
 import edu.upenn.cis.orchestra.OrchestraTestFrame;
 import edu.upenn.cis.orchestra.reconciliation.bdbstore.BdbDataSetFactory;
-
 
 /**
  * An Orchestra test via the GUI.
@@ -67,19 +65,19 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 	 */
 	@Override
 	protected void betweenPrepareAndTestImpl() throws Exception {
-		File f = new File("updateStore_env");
-		if (f.exists() && f.isDirectory()) {
-			File[] files = f.listFiles();
-			for (File file : files) {
-				file.delete();
-			}
-			String[] contents = f.list();
-			Assert.assertTrue(contents.length == 0,
-					"Store server did not clear.");
-		}
+		usClient.startAndClearUpdateStore();
+
 		FailOnThreadViolationRepaintManager.install();
 		robot = BasicRobot.robotWithNewAwtHierarchy();
 		for (OrchestraTestFrame testFrame : testFrames) {
+			File f = new File("stateStore_env_" + testFrame.getPeerName());
+			if (f.exists() && f.isDirectory()) {
+				File[] contents = f.listFiles();
+				for (File file : contents) {
+					file.delete();
+				}
+				f.delete();
+			}
 			ITestFrameWrapper<OrchestraGUIController> guiTestFrame = new OrchestraGUITestFrame(
 					orchestraSchema, testFrame, robot);
 			peerNameToTestFrame.put(testFrame.getPeerName(), guiTestFrame);
@@ -89,7 +87,7 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 		}
 
 		bdbDataSetFactory = new BdbDataSetFactory(new File("updateStore_env"),
-				orchestraSchema.getName());
+				orchestraSchema.getName(), peerNameToTestFrame.keySet());
 		IOrchestraOperationFactory factory = new MultiGUIOperationFactory(
 				orchestraSchema, testDataDirectory, onlyGenerateDataSets,
 				peerNameToTestFrame, bdbDataSetFactory);
@@ -112,8 +110,9 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 			}
 		}
 		robot.cleanUp();
-		if (bdbDataSetFactory != null) {
-			bdbDataSetFactory.close();
-		}
+		usClient.clearAndStopUpdateStore();
+		//if (bdbDataSetFactory != null) {
+		//	bdbDataSetFactory.close();
+		//}
 	}
 }

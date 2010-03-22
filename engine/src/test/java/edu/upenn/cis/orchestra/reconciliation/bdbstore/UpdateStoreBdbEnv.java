@@ -242,15 +242,6 @@ public class UpdateStoreBdbEnv implements IBdbStoreEnvironment {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see edu.upenn.cis.orchestra.reconciliation.IBdbStoreEnvironment#getEnv()
-	 */
-	public Environment getEnv() {
-		return env;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
 	 * @see edu.upenn.cis.orchestra.reconciliation.IBdbStoreEnvironment#close()
 	 */
 	public void close() {
@@ -306,6 +297,8 @@ class BdbEnvironment {
 	/** The name of the BDb environment. The relative directory name. */
 	private String name;
 
+	private String peerName;
+	
 	/** The directory which is the database environment. */
 	private File environmentFile;
 
@@ -320,7 +313,21 @@ class BdbEnvironment {
 	 */
 	BdbEnvironment(String environmentName, Map<String, BdbDatabase> databaseMap) {
 		name = environmentName;
+		peerName = null;
 		environmentFile = new File(environmentName);
+		databases = databaseMap;
+	}
+	
+	/**
+	 * Create a {@code BdbEnvironment}.
+	 * 
+	 * @param environmentName
+	 * @param databaseMap
+	 */
+	BdbEnvironment(String environmentName, String peer, Map<String, BdbDatabase> databaseMap) {
+		name = environmentName;
+		peerName = peer;
+		environmentFile = new File(environmentName + "_" + peer);
 		databases = databaseMap;
 	}
 
@@ -388,6 +395,9 @@ class BdbEnvironment {
 		return name;
 	}
 
+	public String getPeerName() {
+		return peerName;
+	}
 	/**
 	 * @return the environmentFile
 	 */

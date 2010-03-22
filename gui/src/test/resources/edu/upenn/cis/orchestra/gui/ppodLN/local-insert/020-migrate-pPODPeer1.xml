@@ -45,4 +45,6 @@
   <reconAcceptedTxns/>
   <reconRejectedTxns/>
   <txns/>
+  <pPODPeer1.stateDb/>
+  <pPODPeer1.updatesDb/>
 </dataset>

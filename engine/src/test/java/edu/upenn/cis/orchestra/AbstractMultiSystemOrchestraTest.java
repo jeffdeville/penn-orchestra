@@ -44,6 +44,7 @@ import org.xml.sax.SAXException;
 
 import edu.upenn.cis.orchestra.datalog.atom.Atom.AtomType;
 import edu.upenn.cis.orchestra.datamodel.Relation;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStartStopClient;
 import edu.upenn.cis.orchestra.util.DomUtils;
 
 /**
@@ -151,6 +152,8 @@ public abstract class AbstractMultiSystemOrchestraTest {
 
 	/** One test frame for each peer in the test. */
 	protected List<OrchestraTestFrame> testFrames = newArrayList();
+
+	protected BerkeleyDBStoreStartStopClient usClient = new BerkeleyDBStoreStartStopClient("updateStore");
 
 	/**
 	 * These are the table name extensions which do not start with "_L".

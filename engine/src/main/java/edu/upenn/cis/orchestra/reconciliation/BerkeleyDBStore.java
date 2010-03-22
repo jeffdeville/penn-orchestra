@@ -49,7 +49,7 @@ public class BerkeleyDBStore extends DiffStore {
 		BDBStateStoreException(DatabaseException dbe) {
 			super(dbe);
 		}
-		
+
 		BDBStateStoreException(String msg) {
 			super(msg);
 		}
@@ -59,19 +59,23 @@ public class BerkeleyDBStore extends DiffStore {
 		Environment e;
 		String stateName;
 		String updatesName;
+
 		public Factory(Environment e, String stateName, String updatesName) {
 			this.e = e;
 			this.stateName = stateName;
 			this.updatesName = updatesName;
 		}
-		public StateStore getStateStore(AbstractPeerID pid, ISchemaIDBinding s, int lastTid) throws BDBStateStoreException {
+
+		public StateStore getStateStore(AbstractPeerID pid, ISchemaIDBinding s,
+				int lastTid) throws BDBStateStoreException {
 			try {
-				return new BerkeleyDBStore(e, stateName, updatesName, pid, s, lastTid);
+				return new BerkeleyDBStore(e, stateName, updatesName, pid, s,
+						lastTid);
 			} catch (DatabaseException dbe) {
 				throw new BDBStateStoreException(dbe);
 			}
 		}
-		
+
 		public void serialize(Document doc, Element store) {
 			store.setAttribute("type", "bdb");
 			store.setAttribute("state", stateName);
@@ -79,11 +83,12 @@ public class BerkeleyDBStore extends DiffStore {
 			try {
 				store.setAttribute("workdir", e.getHome().getPath());
 			} catch (DatabaseException e) {
-				assert(false);	// shouldn't happen
+				assert (false); // shouldn't happen
 			}
 		}
-		
-		static public Factory deserialize(Element store) throws DatabaseException {
+
+		static public Factory deserialize(Element store)
+				throws DatabaseException {
 			String stateName = store.getAttribute("state");
 			String updatesName = store.getAttribute("updates");
 			String workdir = store.getAttribute("workdir");
@@ -98,18 +103,22 @@ public class BerkeleyDBStore extends DiffStore {
 		}
 	}
 
-
 	private Environment e;
-	
+
 	private String stateName;
 	private String updatesName;
-	// statesDb is a mapping from tuple key column bytes to byteified StoreEntry 
+	// statesDb is a mapping from tuple key column bytes to byteified StoreEntry
 	// (relationId, primary key subtuple) --> StoreEntry
 	private Database stateDb;
 	// updatesDb is a mapping from tuple key column bytes, recno to two updates
 	// (relationId, primary key subtuple, recno) --> (Update, Update)
 	private Database updatesDb;
-	public BerkeleyDBStore(Environment e, String stateName, String updatesName, AbstractPeerID pid, ISchemaIDBinding schema, int lastTid) throws DatabaseException {
+	private final File envHome;
+	private final EnvironmentConfig envConfig;
+
+	public BerkeleyDBStore(Environment e, String stateName, String updatesName,
+			AbstractPeerID pid, ISchemaIDBinding schema, int lastTid)
+			throws DatabaseException {
 		super(pid, schema, lastTid);
 
 		this.e = e;
@@ -117,6 +126,8 @@ public class BerkeleyDBStore extends DiffStore {
 		this.updatesName = updatesName;
 		DatabaseConfig dbc = new DatabaseConfig();
 		dbc.setAllowCreate(true);
+		envHome = this.e.getHome();
+		envConfig = this.e.getConfig();
 		stateDb = e.openDatabase(null, stateName, dbc);
 		updatesDb = e.openDatabase(null, updatesName, dbc);
 	}
@@ -125,16 +136,21 @@ public class BerkeleyDBStore extends DiffStore {
 		try {
 			stateDb.close();
 			updatesDb.close();
+			e.close();
 		} catch (DatabaseException de) {
 			throw new BDBStateStoreException(de);
 		}
 		stateDb = null;
 		updatesDb = null;
+		e = null;
 	}
 
 	public void reopen() throws BDBStateStoreException {
 		try {
-			stateDb = e.openDatabase(null, updatesName, null);
+			if (e == null) {
+				e = new Environment(envHome, envConfig);
+			}
+			stateDb = e.openDatabase(null, stateName, null);
 			updatesDb = e.openDatabase(null, updatesName, null);
 		} catch (DatabaseException de) {
 			throw new BDBStateStoreException(de);
@@ -153,7 +169,8 @@ public class BerkeleyDBStore extends DiffStore {
 				byte[] bytes = key.getData();
 				final int bytesPerInt = IntType.bytesPerInt;
 				int keyLength = IntType.getValFromBytes(bytes, 0);
-				int recordRecno = IntType.getValFromBytes(bytes, bytesPerInt + keyLength);
+				int recordRecno = IntType.getValFromBytes(bytes, bytesPerInt
+						+ keyLength);
 				if (recordRecno < recno) {
 					os = c.delete();
 				}
@@ -196,6 +213,7 @@ public class BerkeleyDBStore extends DiffStore {
 		} catch (DatabaseException de) {
 			throw new BDBStateStoreException(de);
 		}
+
 	}
 
 	@Override
@@ -214,7 +232,7 @@ public class BerkeleyDBStore extends DiffStore {
 			bbw.addToBuffer(u.getOldVal().getKeyColumnBytes());
 			bbw.addToBuffer(recno);
 			keys.add(bbw.getByteArray());
-			if (! u.getOldVal().sameKey(u.getNewVal())) {
+			if (!u.getOldVal().sameKey(u.getNewVal())) {
 				bbw.clear();
 				bbw.addToBuffer(u.getNewVal().getKeyColumnBytes());
 				bbw.addToBuffer(recno);
@@ -223,13 +241,14 @@ public class BerkeleyDBStore extends DiffStore {
 		}
 
 		for (byte[] key : keys) {
-			ArrayList<Update> updates  = new ArrayList<Update>(2);
+			ArrayList<Update> updates = new ArrayList<Update>(2);
 
 			ByteBufferReader bbr = new ByteBufferReader(schMap);
 			try {
 				DatabaseEntry keyEntry = new DatabaseEntry(key);
 				DatabaseEntry value = new DatabaseEntry();
-				OperationStatus os = updatesDb.get(null, keyEntry, value, LockMode.DEFAULT);
+				OperationStatus os = updatesDb.get(null, keyEntry, value,
+						LockMode.DEFAULT);
 				if (os == OperationStatus.NOTFOUND) {
 					updates.add(u);
 				} else {
@@ -238,8 +257,9 @@ public class BerkeleyDBStore extends DiffStore {
 					bbr.reset(valBytes, 0, valBytes.length);
 					Update u1 = bbr.readUpdate();
 					Update u2 = bbr.readUpdate();
-					if (! bbr.hasFinished()) {
-						throw new BDBStateStoreException("Value from database is too long");
+					if (!bbr.hasFinished()) {
+						throw new BDBStateStoreException(
+								"Value from database is too long");
 					}
 					if (u1 != null) {
 						updates.add(u1);
@@ -251,27 +271,35 @@ public class BerkeleyDBStore extends DiffStore {
 					Update lastUpdate = updates.get(updates.size() - 1);
 					if (u.isDeletion()) {
 						updates.remove(updates.size() - 1);
-						if (! lastUpdate.isInsertion()) {
-							updates.add(new Update(lastUpdate.getOldVal(), null));
+						if (!lastUpdate.isInsertion()) {
+							updates
+									.add(new Update(lastUpdate.getOldVal(),
+											null));
 						}
 					} else if (u.isUpdate()) {
 						updates.remove(updates.size() - 1);
-						updates.add(new Update(lastUpdate.getOldVal(), u.getNewVal()));
+						updates.add(new Update(lastUpdate.getOldVal(), u
+								.getNewVal()));
 					} else if (u.isInsertion()) {
 						updates.add(u);
 					}
 				}
 
 				if (updates.size() > 2) {
-					throw new BDBStateStoreException("Should never have more than two updates for a given key during a given reconciliation: " + updates);
+					throw new BDBStateStoreException(
+							"Should never have more than two updates for a given key during a given reconciliation: "
+									+ updates);
 				}
 
 				if (updates.isEmpty()) {
 					updatesDb.delete(null, keyEntry);
 				} else {
 					bbw.clear();
-					bbw.addToBuffer(updates.get(0), Update.SerializationLevel.VALUES_ONLY);
-					bbw.addToBuffer(updates.size() == 2 ? updates.get(1) : null, Update.SerializationLevel.VALUES_ONLY);
+					bbw.addToBuffer(updates.get(0),
+							Update.SerializationLevel.VALUES_ONLY);
+					bbw.addToBuffer(
+							updates.size() == 2 ? updates.get(1) : null,
+							Update.SerializationLevel.VALUES_ONLY);
 					value.setData(bbw.getByteArray());
 					updatesDb.put(null, keyEntry, value);
 				}
@@ -282,7 +310,8 @@ public class BerkeleyDBStore extends DiffStore {
 	}
 
 	@Override
-	List<Update> getUpdateList(Tuple t, int startRecno) throws BDBStateStoreException {
+	List<Update> getUpdateList(Tuple t, int startRecno)
+			throws BDBStateStoreException {
 		ByteBufferWriter bbw = new ByteBufferWriter();
 		ByteBufferReader bbr = new ByteBufferReader(schMap);
 		bbw.addToBuffer(t.getKeyColumnBytes());
@@ -298,17 +327,19 @@ public class BerkeleyDBStore extends DiffStore {
 		DatabaseEntry key = new DatabaseEntry();
 		DatabaseEntry value = new DatabaseEntry();
 
-		for ( ; ; ) {
+		for (;;) {
 			key.setData(keyBytes);
 			try {
-				OperationStatus os = updatesDb.get(null, key, value, LockMode.DEFAULT);
+				OperationStatus os = updatesDb.get(null, key, value,
+						LockMode.DEFAULT);
 				if (os == OperationStatus.SUCCESS) {
 					byte[] valBytes = value.getData();
 					bbr.reset(valBytes, 0, valBytes.length);
 					Update u1 = bbr.readUpdate();
 					Update u2 = bbr.readUpdate();
 					if (u1 == null) {
-						throw new BDBStateStoreException("Entry in updates database should always contain at least one update");
+						throw new BDBStateStoreException(
+								"Entry in updates database should always contain at least one update");
 					}
 					retval.add(u1);
 					if (u2 != null) {
@@ -318,7 +349,6 @@ public class BerkeleyDBStore extends DiffStore {
 			} catch (DatabaseException de) {
 				throw new BDBStateStoreException(de);
 			}
-
 
 			if (recno == currRecno) {
 				break;
@@ -336,16 +366,16 @@ public class BerkeleyDBStore extends DiffStore {
 
 	@Override
 	void recnoHasAdvanced() {
-		// Doesn't need to do anything, since we flatten even the most
-		// recent reconciliation as we go
+	// Doesn't need to do anything, since we flatten even the most
+	// recent reconciliation as we go
 	}
 
-	public ResultIterator<Tuple> getStateIterator(String relname) throws BDBStateStoreException {
-//		final int id = schMap.getIDForName(relname);
+	public ResultIterator<Tuple> getStateIterator(String relname)
+			throws BDBStateStoreException {
+		// final int id = schMap.getIDForName(relname);
 		final int id = schMap.getRelationNamed(relname).getRelationID();
 		final DatabaseEntry key = new DatabaseEntry(IntType.getBytes(id));
 		final DatabaseEntry val = new DatabaseEntry();
-
 
 		try {
 
@@ -353,7 +383,8 @@ public class BerkeleyDBStore extends DiffStore {
 				Cursor c = stateDb.openCursor(null, null);
 				boolean atEnd = false;
 				{
-					OperationStatus os = c.getSearchKeyRange(key, val, LockMode.DEFAULT);
+					OperationStatus os = c.getSearchKeyRange(key, val,
+							LockMode.DEFAULT);
 					atEnd = (os == OperationStatus.NOTFOUND);
 				}
 				// Number of tuples known to exist for this relation
@@ -365,7 +396,9 @@ public class BerkeleyDBStore extends DiffStore {
 					try {
 						c.close();
 					} catch (DatabaseException e) {
-						throw new IteratorException("Could not close BerkeleyDB State Store iterator", e);
+						throw new IteratorException(
+								"Could not close BerkeleyDB State Store iterator",
+								e);
 					}
 					c = null;
 				}
@@ -384,14 +417,16 @@ public class BerkeleyDBStore extends DiffStore {
 					return pos > 0;
 				}
 
-				public Tuple next() throws IteratorException, NoSuchElementException {
-					if (! hasNext()) {
+				public Tuple next() throws IteratorException,
+						NoSuchElementException {
+					if (!hasNext()) {
 						throw new NoSuchElementException();
 					}
 					byte[] data = val.getData();
 					Tuple retval;
 					try {
-						retval = StoreEntry.fromBytes(schMap, data, 0, data.length).value;
+						retval = StoreEntry.fromBytes(schMap, data, 0,
+								data.length).value;
 					} catch (SSException e) {
 						throw new IteratorException(e);
 					}
@@ -399,7 +434,9 @@ public class BerkeleyDBStore extends DiffStore {
 					try {
 						os = c.getNext(key, val, LockMode.DEFAULT);
 					} catch (DatabaseException e) {
-						throw new IteratorException("Could not read from BerkeleyDB State Store iterator", e);
+						throw new IteratorException(
+								"Could not read from BerkeleyDB State Store iterator",
+								e);
 					}
 					atEnd = (os == OperationStatus.NOTFOUND);
 					++pos;
@@ -409,8 +446,9 @@ public class BerkeleyDBStore extends DiffStore {
 					return retval;
 				}
 
-				public Tuple prev() throws IteratorException, NoSuchElementException {
-					if (! hasPrev()) {
+				public Tuple prev() throws IteratorException,
+						NoSuchElementException {
+					if (!hasPrev()) {
 						throw new NoSuchElementException();
 					}
 					if (atEnd) {
@@ -419,18 +457,23 @@ public class BerkeleyDBStore extends DiffStore {
 						atEnd = false;
 					} else {
 						try {
-							OperationStatus os = c.getPrev(key, val, LockMode.DEFAULT);
+							OperationStatus os = c.getPrev(key, val,
+									LockMode.DEFAULT);
 							if (os != OperationStatus.SUCCESS) {
-								throw new IteratorException("Inconsistent state in BerkeleyDB State Store iterator");
+								throw new IteratorException(
+										"Inconsistent state in BerkeleyDB State Store iterator");
 							}
 						} catch (DatabaseException e) {
-							throw new IteratorException("Could not read from BerkeleyDB State Store iterator", e);
-						}						
+							throw new IteratorException(
+									"Could not read from BerkeleyDB State Store iterator",
+									e);
+						}
 					}
 					byte[] data = val.getData();
 					Tuple retval;
 					try {
-						retval = StoreEntry.fromBytes(schMap, data, 0, data.length).value;
+						retval = StoreEntry.fromBytes(schMap, data, 0,
+								data.length).value;
 					} catch (SSException e) {
 						throw new IteratorException(e);
 					}
@@ -447,6 +490,9 @@ public class BerkeleyDBStore extends DiffStore {
 	protected void resetDiffStore() throws SSException {
 		close();
 		try {
+			if (e == null) {
+				e = new Environment(envHome, envConfig);
+			}
 			e.truncateDatabase(null, stateName, false);
 			e.truncateDatabase(null, updatesName, false);
 		} catch (DatabaseException dbe) {

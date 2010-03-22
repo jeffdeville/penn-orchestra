@@ -517,24 +517,6 @@ public class OrchestraSystem {
 		}
 	}
 	
-	private static Db createLocalRecDb(String name, OrchestraSystem system)
-			throws DbException {
-
-		Db db = system._recDbs.get(name);
-		if (db == null) {
-
-			db = new ClientCentricDb(system._mapStore, null,
-					new StringPeerID(name), system._usf, system._ssf);
-
-			system._recDbs.put(name, db);
-
-		} else {
-			throw new IllegalStateException("Peer " + name
-					+ " already has a RecDb.");
-		}
-		return db;
-	}
-
 	public boolean isLocalUpdateStore() {
 		return _usf.isLocal();
 	}
