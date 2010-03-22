@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
@@ -33,11 +34,12 @@ import edu.upenn.cis.orchestra.OrchestraUtil;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferReader;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.Tuple;
+import edu.upenn.cis.orchestra.datamodel.Type;
 import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
 import edu.upenn.cis.orchestra.reconciliation.StateStore.SSException;
 
 /**
- * DOCUMENT ME
+ * Represents a Berkeley database state store environment and format.
  * 
  * @author John Frommeyer
  * 
@@ -51,74 +53,91 @@ public class StateStoreBdbEnv implements IBdbStoreEnvironment {
 	private List<Database> myDbs = new ArrayList<Database>();
 
 	/** The format of the database. */
-	private final static BdbEnvironment stateStoreFormat;
+	private final BdbEnvironment stateStoreFormat;
+	private final static Method readInt;
+	private final static Method readTuple;
+	private final static Method readStoreEntry;
+	private final static Method readUpdate;
 	static {
 		try {
-			Method readInt = BdbEntryInfo.getByteBufferReaderMethod("readInt");
-			Method readTuple = StateStoreBdbEnv.class.getMethod(
-					"keyTupleFromBytes", ByteBufferReader.class);
-			Method readStoreEntry = StateStoreBdbEnv.class.getMethod(
+			readInt = BdbEntryInfo.getByteBufferReaderMethod("readInt");
+			readTuple = StateStoreBdbEnv.class.getMethod("keyTupleFromBytes",
+					ByteBufferReader.class);
+			readStoreEntry = StateStoreBdbEnv.class.getMethod(
 					"storeEntryFromBytes", ByteBufferReader.class);
 
-			Method readUpdate = BdbEntryInfo
-					.getByteBufferReaderMethod("readUpdate");
-
-			Map<String, BdbDatabase> databases = OrchestraUtil.newHashMap();
-			List<BdbEntryInfo> keyInfo = OrchestraUtil.newArrayList();
-			List<BdbEntryInfo> dataInfo = OrchestraUtil.newArrayList();
-
-			// updates:(relationId, primary key subtuple, recno) --> (Update,
-			// Update)
-			//keyInfo.add(new BdbEntryInfo("relationID", readInt, false));
-			keyInfo.add(new BdbEntryInfo("key", readTuple, false));
-			keyInfo.add(new BdbEntryInfo("recno", readInt, false));
-			dataInfo.add(new BdbEntryInfo("update1", readUpdate, false));
-			dataInfo.add(new BdbEntryInfo("update2", readUpdate, false));
-
-			databases.put("updatesDb", new BdbDatabase("decisions", keyInfo,
-					dataInfo));
-			keyInfo.clear();
-			dataInfo.clear();
-
-			// state: (relationId, primary key subtuple) --> StoreEntry
-			//keyInfo.add(new BdbEntryInfo("relationID", readInt, false));
-			keyInfo.add(new BdbEntryInfo("key", readTuple, false));
-			dataInfo.add(new BdbEntryInfo("storeEntry", readStoreEntry, false));
-			databases.put("stateDb",
-					new BdbDatabase("state", keyInfo, dataInfo));
-
-			keyInfo.clear();
-			dataInfo.clear();
-
-			stateStoreFormat = new BdbEnvironment("stateStore_env", databases);
+			readUpdate = BdbEntryInfo.getByteBufferReaderMethod("readUpdate");
 
 		} catch (Throwable e) {
 			throw new ExceptionInInitializerError(e);
 		}
 	}
+
+	/**
+	 * DOCUMENT ME
+	 * 
+	 */
+	private static BdbEnvironment initializeFormat(String envPrefix,
+			String peerName) {
+		Map<String, BdbDatabase> databases = OrchestraUtil.newHashMap();
+		List<BdbEntryInfo> keyInfo = OrchestraUtil.newArrayList();
+		List<BdbEntryInfo> dataInfo = OrchestraUtil.newArrayList();
+
+		// updates:(relationId, primary key subtuple, recno) --> (Update,
+		// Update)
+		// keyInfo.add(new BdbEntryInfo("relationID", readInt, false));
+		keyInfo.add(new BdbEntryInfo("key", readTuple, false));
+		keyInfo.add(new BdbEntryInfo("recno", readInt, false));
+		dataInfo.add(new BdbEntryInfo("update1", readUpdate, false));
+		dataInfo.add(new BdbEntryInfo("update2", readUpdate, false));
+
+		databases.put("updatesDb", new BdbDatabase("updatesDb", keyInfo,
+				dataInfo));
+		keyInfo.clear();
+		dataInfo.clear();
+
+		// state: (relationId, primary key subtuple) --> StoreEntry
+		// keyInfo.add(new BdbEntryInfo("relationID", readInt, false));
+		keyInfo.add(new BdbEntryInfo("key", readTuple, false));
+		dataInfo.add(new BdbEntryInfo("storeEntry", readStoreEntry, false));
+		databases.put("stateDb", new BdbDatabase("stateDb", keyInfo, dataInfo));
+
+		keyInfo.clear();
+		dataInfo.clear();
+
+		BdbEnvironment format = new BdbEnvironment(envPrefix, peerName,
+				databases);
+		return format;
+	}
+
 	/**
 	 * Clients may need a {@code SchemaIDBinding} for creating {@code
 	 * ByteBufferReader}s.
 	 */
 	private final ISchemaIDBinding binding;
 
-	StateStoreBdbEnv(File envHome, ISchemaIDBinding schemaIDBinding)
+	StateStoreBdbEnv(String envPrefix, String peerName,
+			ISchemaIDBinding schemaIDBinding)
 			throws EnvironmentLockedException, DatabaseException {
+		File envHome = new File(envPrefix + "_" + peerName);
+		stateStoreFormat = initializeFormat(envPrefix, peerName);
 		binding = schemaIDBinding;
 
 		EnvironmentConfig myEnvConfig = new EnvironmentConfig();
 		// myEnvConfig.setTransactional(true);
 
-		// Open the environment
-		env = new Environment(envHome, myEnvConfig);
-		DatabaseConfig dbConfig = new DatabaseConfig();
-		dbConfig.setAllowCreate(false);
-		dbConfig.setReadOnly(true);
+		if (envHome.exists()) {
+			// Open the environment
+			env = new Environment(envHome, myEnvConfig);
+			DatabaseConfig dbConfig = new DatabaseConfig();
+			dbConfig.setAllowCreate(false);
+			dbConfig.setReadOnly(true);
 
-		List<String> dbNames = env.getDatabaseNames();
-		for (String dbName : dbNames) {
-			myDbs.add(env.openDatabase(null, dbName, dbConfig));
+			List<String> dbNames = env.getDatabaseNames();
+			for (String dbName : dbNames) {
+				myDbs.add(env.openDatabase(null, dbName, dbConfig));
 
+			}
 		}
 	}
 
@@ -155,16 +174,6 @@ public class StateStoreBdbEnv implements IBdbStoreEnvironment {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see edu.upenn.cis.orchestra.reconciliation.bdbstore.IBdbStoreEnvironment#getEnv()
-	 */
-	@Override
-	public Environment getEnv() {
-		return env;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
 	 * @see edu.upenn.cis.orchestra.reconciliation.bdbstore.IBdbStoreEnvironment#getFormat()
 	 */
 	@Override
@@ -182,7 +191,17 @@ public class StateStoreBdbEnv implements IBdbStoreEnvironment {
 		return binding;
 	}
 
-	public static String storeEntryFromBytes(ByteBufferReader bbr) throws SSException {
+	/**
+	 * Returns a string representation of the {@code StoreEntry} encoded in
+	 * {@code bbr}.
+	 * 
+	 * @param bbr
+	 * @return a string representation of the {@code StoreEntry} encoded in
+	 *         {@code bbr}
+	 * @throws SSException
+	 */
+	public static String storeEntryFromBytes(ByteBufferReader bbr)
+			throws SSException {
 		StringBuffer sb = new StringBuffer();
 		Tuple value = bbr.readTuple();
 		sb.append(value);
@@ -202,16 +221,41 @@ public class StateStoreBdbEnv implements IBdbStoreEnvironment {
 		return sb.toString();
 	}
 
+	/**
+	 * Returns a string representation of the key tuple encoded in {@code bbr}.
+	 * 
+	 * @param bbr
+	 * @return a string representation of the key tuple encoded in {@code bbr}
+	 */
 	public static String keyTupleFromBytes(ByteBufferReader bbr) {
-		
+
 		StringBuffer sb = new StringBuffer();
 		Relation r = bbr.readRelationFromId();
-		if (r != null){
-			sb.append(r.getName());
-		} else {
-			assert false;
+		if (r == null) {
+			// updatesDb puts a record length in front of the relation ID.
+			r = bbr.readRelationFromId();
 		}
-		sb.append("...");
+		sb.append(r.getName());
+		sb.append("(");
+		int numCols = r.getNumCols();
+		SortedSet<Integer> keyCols = r.getKeyCols();
+		for (int i = 0; i < numCols; i++) {
+			if (keyCols.contains(Integer.valueOf(i))) {
+				boolean labeledNull = bbr.readBoolean();
+				if (labeledNull) {
+					sb.append("LN(");
+					sb.append(bbr.readInt());
+					sb.append("), ");
+				} else {
+					Type t = r.getColType(i);
+					int length = bbr.readInt();
+					byte[] bytes = bbr.readByteArrayNoLength(length);
+					sb.append(t.fromBytes(bytes));
+					sb.append(", ");
+				}
+			}
+		}
+		sb.append(")");
 		return sb.toString();
 	}
 }

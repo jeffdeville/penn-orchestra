@@ -108,6 +108,7 @@ public class MultiSystemOrchestraOperationExecutor implements
 			String operation = parsedName[1];
 			String peer = parsedName[2];
 			OrchestraTestFrame testFrame = opFactory.getOrchestraTestFrame(peer);
+
 			logger.debug("Operation {} is {}", parsedName[0], operation);
 			if (operation.equalsIgnoreCase("insert")) {
 				DbUnitUtil.executeDbUnitOperation(DatabaseOperation.INSERT,

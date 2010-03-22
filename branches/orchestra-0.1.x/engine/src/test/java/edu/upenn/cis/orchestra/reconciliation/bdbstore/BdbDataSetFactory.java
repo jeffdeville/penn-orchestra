@@ -15,27 +15,32 @@
  */
 package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
+import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
-import org.dbunit.database.AmbiguousTableNameException;
-import org.dbunit.dataset.DataSetException;
 import org.dbunit.dataset.DefaultDataSet;
 import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sleepycat.je.Cursor;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.EnvironmentLockedException;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
 
@@ -52,9 +57,14 @@ import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
 public class BdbDataSetFactory {
 
 	/** Takes care of the Berkeley database environment. */
-	private final IBdbStoreEnvironment env;
-	private final ISchemaIDBinding schemaIDBinding;
-	//private IBdbStoreEnvironment stateStore;
+	private IBdbStoreEnvironment env;
+	private ISchemaIDBinding schemaIDBinding;
+	private final List<IBdbStoreEnvironment> stateStoreEnvs = newArrayList();
+	private final File usHome;
+	private final String cdss;
+	private final Collection<String> peerNames;
+	private static final Logger logger = LoggerFactory
+			.getLogger(BdbDataSetFactory.class);
 
 	/**
 	 * Creates a {@code BdbDataSetFactory}. Assumes that the schema for {@code
@@ -62,15 +72,28 @@ public class BdbDataSetFactory {
 	 * 
 	 * @param bdbDirectory
 	 * @param cdssName
-	 * @param peerIDToSchema
+	 * @param peers
 	 * @throws Exception
 	 */
-	public BdbDataSetFactory(File bdbDirectory, String cdssName)
-			throws Exception {
-		env = new UpdateStoreBdbEnv(bdbDirectory, cdssName);
-		schemaIDBinding = env.getSchemaIDBinding();
-		//stateStore = new StateStoreBdbEnv(new File("stateStore_env_pPODPeer1"),
-				//schemaIDBinding);
+	public BdbDataSetFactory(File bdbDirectory, String cdssName,
+			Collection<String> peers) throws Exception {
+		usHome = bdbDirectory;
+		cdss = cdssName;
+		peerNames = peers;
+		initializeEnvironments(usHome, cdss, peerNames);
+	}
+
+	private void initializeEnvironments(File bdbDirectory, String cdssName,
+			Collection<String> peers) throws Exception,
+			EnvironmentLockedException, DatabaseException {
+		if (env == null) {
+			env = new UpdateStoreBdbEnv(bdbDirectory, cdssName);
+			schemaIDBinding = env.getSchemaIDBinding();
+			for (String peer : peers) {
+				stateStoreEnvs.add(new StateStoreBdbEnv("stateStore_env", peer,
+						schemaIDBinding));
+			}
+		}
 	}
 
 	/**
@@ -78,63 +101,56 @@ public class BdbDataSetFactory {
 	 * Berkeley database.
 	 * 
 	 * @return a {@code FlatXmlDataSet} representation of the Berkeley database.
-	 * @throws DataSetException
-	 * @throws IOException
-	 * @throws DatabaseException
+	 * @throws Exception
 	 */
-	public FlatXmlDataSet getDataSet() throws DataSetException, IOException,
-			DatabaseException {
+	public FlatXmlDataSet getDataSet() throws Exception {
 
 		Element root = DocumentHelper.createElement("dataset");
 		Document dsDoc = DocumentHelper.createDocument(root);
 		DefaultDataSet dataset = new DefaultDataSet();
+		initializeEnvironments(usHome, cdss, peerNames);
 		BdbEnvironment envFormat = env.getFormat();
 
 		List<Database> dbs = env.getDbs();
 
-		processDatabases(root, dataset, envFormat, schemaIDBinding, dbs);
-
-		//BdbEnvironment stateStoreFormat = stateStore.getFormat();
-		//List<Database> ssDbs = stateStore.getDbs();
-		//processDatabases(root, dataset, stateStoreFormat, schemaIDBinding,
-		//		ssDbs);
+		processDatabases(root, dataset, envFormat, dbs);
+		for (IBdbStoreEnvironment ss : stateStoreEnvs) {
+			BdbEnvironment stateStoreFormat = ss.getFormat();
+			List<Database> ssDbs = ss.getDbs();
+			processDatabases(root, dataset, stateStoreFormat, ssDbs);
+		}
+		close();
 		return new FlatXmlDataSet(new StringReader(dsDoc.asXML()), false, true,
 				false);
 	}
 
-	/**
-	 * DOCUMENT ME
-	 * 
-	 * @param root
-	 * @param dataset
-	 * @param envFormat
-	 * @param schemaIDBinding
-	 * @param dbs
-	 * @throws DatabaseException
-	 * @throws AmbiguousTableNameException
-	 */
 	private void processDatabases(Element root, DefaultDataSet dataset,
-			BdbEnvironment envFormat, ISchemaIDBinding schemaIDBinding,
-			List<Database> dbs) throws DatabaseException,
-			AmbiguousTableNameException {
+			BdbEnvironment envFormat, List<Database> dbs) throws Exception {
+
 		for (Database db : dbs) {
 			String dbName = db.getDatabaseName();
-			DefaultTable table = new DefaultTable(dbName);
+			BdbDatabase dbFormat = envFormat.getDatabase(dbName);
+			String peerName = envFormat.getPeerName();
+			String tagName = (peerName == null) ? dbName : envFormat
+					.getPeerName()
+					+ "." + dbName;
+
+			DefaultTable table = new DefaultTable(tagName);
 			dataset.addTable(table);
 			DatabaseEntry key = new DatabaseEntry();
 			DatabaseEntry data = new DatabaseEntry();
-			BdbDatabase dbFormat = envFormat.getDatabase(dbName);
+
 			if (dbFormat != null) {
 				Cursor c = db.openCursor(null, null);
 				int rows = 0;
 				try {
 					while (c.getNext(key, data, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
 						rows++;
-						byteBufferRead(root, dbName, key, data, dbFormat,
+						byteBufferRead(root, tagName, key, data, dbFormat,
 								schemaIDBinding);
 					}
 					if (rows == 0) {
-						root.addElement(dbName);
+						root.addElement(tagName);
 					}
 				} finally {
 					c.close();
@@ -147,9 +163,13 @@ public class BdbDataSetFactory {
 	 * Closes up the underlying Berkeley database.
 	 * 
 	 */
-	public void close() {
+	private void close() {
 		env.close();
-		//stateStore.close();
+		for (IBdbStoreEnvironment ss : stateStoreEnvs) {
+			ss.close();
+		}
+		env = null;
+		stateStoreEnvs.clear();
 	}
 
 	/**
@@ -167,14 +187,12 @@ public class BdbDataSetFactory {
 		 */
 
 		BdbDataSetFactory factory = new BdbDataSetFactory(new File(
-				"updateStore_env"), "ppodLN");
-		// factory.printBdb();
-		try {
-			FlatXmlDataSet ds = factory.getDataSet();
-			FlatXmlDataSet.write(ds, new FileWriter("updateStore.xml", false));
-		} finally {
-			factory.close();
-		}
+				"updateStore_env"), "ppodLN", newArrayList("pPODPeer1",
+				"pPODPeer2"));
+
+		FlatXmlDataSet ds = factory.getDataSet();
+		FlatXmlDataSet.write(ds, new FileWriter("updateStore.xml", false));
+
 	}
 
 	/**
@@ -200,21 +218,27 @@ public class BdbDataSetFactory {
 	 * Translates the {@code key} and {@code entry} into an {@code Element}.
 	 * 
 	 * @param root
-	 * @param dbName
+	 * @param tagName
 	 * @param key
 	 * @param data
 	 * @param dbFormat
 	 * @param schemaIDBinding
 	 */
-	private static void byteBufferRead(Element root, String dbName,
+	private static void byteBufferRead(Element root, String tagName,
 			DatabaseEntry key, DatabaseEntry data, BdbDatabase dbFormat,
 			ISchemaIDBinding schemaIDBinding) {
 
-		Element row = root.addElement(dbName);
-
+		Element row = root.addElement(tagName);
+		if (logger.isTraceEnabled()) {
+			byte[] bytes = key.getData();
+			logger.trace("{} key: {}", tagName, Arrays.toString(bytes));
+		}
 		List<BdbEntryInfo> keyFormat = dbFormat.getKeyInfo();
 		entryToAttributes(row, key, keyFormat, schemaIDBinding);
-
+		if (logger.isTraceEnabled()) {
+			byte[] bytes = data.getData();
+			logger.trace("{} data: {}", tagName, Arrays.toString(bytes));
+		}
 		List<BdbEntryInfo> dataFormat = dbFormat.getDataInfo();
 		entryToAttributes(row, data, dataFormat, schemaIDBinding);
 
@@ -230,6 +254,7 @@ public class BdbDataSetFactory {
 	 */
 	private static void entryToAttributes(Element row, DatabaseEntry entry,
 			List<BdbEntryInfo> entryFormat, ISchemaIDBinding schemaIDBinding) {
+
 		ByteBufferReader keyReader = new ByteBufferReader(schemaIDBinding,
 				entry.getData());
 		for (BdbEntryInfo info : entryFormat) {
@@ -246,7 +271,9 @@ public class BdbDataSetFactory {
 					}
 				} else {
 					Object keyPiece = info.invokeMethod(keyReader);
-					row.addAttribute(info.getEntryTag(), keyPiece.toString());
+					String value = keyPiece == null ? "null" : keyPiece
+							.toString();
+					row.addAttribute(info.getEntryTag(), value);
 				}
 			} catch (Exception e) {
 				ex = e;
