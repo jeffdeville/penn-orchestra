@@ -24,18 +24,12 @@ import com.sleepycat.je.Environment;
 import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBinding;
 
 /**
- * DOCUMENT ME
+ * Represents either a Berkeley update store or state store.
+ * 
  * @author John Frommeyer
- *
+ * 
  */
 public interface IBdbStoreEnvironment {
-
-	/**
-	 * Returns the underlying {@code Environment}.
-	 * 
-	 * @return the underlying {@code Environment}.
-	 */
-	public Environment getEnv();
 
 	/**
 	 * Takes care of closing everything.

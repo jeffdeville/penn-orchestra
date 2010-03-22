@@ -52,7 +52,7 @@ public class TestBerkeleyDBStore extends TestStore {
 	public void tearDown() throws Exception {
 		super.tearDown();
 		((BerkeleyDBStore) ss).close();
-		e.close();
+		//Environment is closed by store.
 	}
 
 }

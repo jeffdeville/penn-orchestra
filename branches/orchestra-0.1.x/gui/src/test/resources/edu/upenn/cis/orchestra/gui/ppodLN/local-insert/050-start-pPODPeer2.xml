@@ -9,4 +9,6 @@
   <reconAcceptedTxns peerID="@pPODPeer1" recno="1" txnPeerID="0@pPODPeer1"/>
   <reconRejectedTxns/>
   <txns txnPeerID="0@pPODPeer1" update_0="+OTU(1,Primates,3,4) [0@pPODPeer1]"/>
+  <pPODPeer1.stateDb key="OTU(1, )" storeEntry="OTU(1,Primates,3,4) {0@pPODPeer1, }"/>
+  <pPODPeer1.updatesDb key="OTU(1, )" recno="1" update1="+OTU(1,Primates,3,4)" update2="+OTU(1,Primates,3,4)"/>
 </dataset>

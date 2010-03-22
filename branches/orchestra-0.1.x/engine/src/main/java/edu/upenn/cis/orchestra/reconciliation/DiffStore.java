@@ -36,7 +36,7 @@ public abstract class DiffStore extends StateStore {
 
 	// The schema for this store
 //	Schema schema;
-	ISchemaIDBinding schMap;
+	protected ISchemaIDBinding schMap;
 
 	protected static class UnknownTable extends SSException {
 		private static final long serialVersionUID = 1L;
