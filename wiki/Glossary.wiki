@@ -20,7 +20,7 @@ In some cases Reconcile is used as a synonym for _Update Exchange_.
 
 *_Reconcile Number_* it's an _update exchange_ counter, kept track of by the _Update Store_. Each _peer_ has its own sequence of reconcile numbers.
 
-*_State Store_* 
+*_State Store_* a peer's local store of some of the same information contained in the _update store_. It is redundant in the sense that it can be recreated from the update store. It lessens the peer's need to communicate with the update store.
 
 *_Schema_* a definition, written in XML, of an Orchestra system. Sometimes called an "Orchestra schema" to differentiate from a database schema.
 
