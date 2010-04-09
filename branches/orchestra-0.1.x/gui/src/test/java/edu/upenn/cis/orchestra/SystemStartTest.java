@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.datamodel;
+package edu.upenn.cis.orchestra;
 
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
@@ -21,12 +21,12 @@ import static org.testng.Assert.assertEquals;
 
 import java.io.InputStream;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 
-import edu.upenn.cis.orchestra.Config;
-import edu.upenn.cis.orchestra.TestUtil;
+import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 
 /**
  * Testing changes to how an {@code OrchestraSystem} starts.
@@ -34,10 +34,12 @@ import edu.upenn.cis.orchestra.TestUtil;
  * @author John Frommeyer
  * 
  */
-@Test(groups = { FAST_TESTNG_GROUP/*, DEV_TESTNG_GROUP*/})
+@Test(groups = { FAST_TESTNG_GROUP /* , DEV_TESTNG_GROUP */})
 public class SystemStartTest {
 
 	private Document document;
+	private OrchestraSystem system;
+	private String oldExecutable;
 
 	/**
 	 * Initializes the XML document.
@@ -55,22 +57,34 @@ public class SystemStartTest {
 
 	/**
 	 * What happens when an {@code OrchestraSystem} starts.
-	 * @throws Exception 
+	 * 
+	 * @throws Exception
 	 * 
 	 */
 	public void startupTest() throws Exception {
-		OrchestraSystem system = null;
-		try {
-			system = OrchestraSystem.deserialize(TestUtil
-				.setLocalPeer(document, "pPODPeer2"));
-			assertEquals(system.getPeers().size(), 2);
-			
-		} finally {
-			if (system != null) {
-				system.clearStoreServer();
-				system.stopStoreServer();
-				system.disconnect();
-			}
+		String os = System.getProperty("os.name");
+		oldExecutable = Config.getUpdateStoreExecutable();
+		if (os.startsWith("Windows")) {
+			Config
+					.setUpdateStoreExecutable("../engine/target/updateStore/bin/updateStore.bat");
+		} else {
+			Config
+					.setUpdateStoreExecutable("../engine/target/updateStore/bin/updateStore");
+		}
+		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(document,
+				"pPODPeer2"));
+		assertEquals(system.getPeers().size(), 2);
+	}
+
+	@AfterMethod(alwaysRun = true)
+	public void cleanUp() throws Exception {
+		if (oldExecutable != null) {
+			Config.setUpdateStoreExecutable(oldExecutable);
+		}
+		if (system != null) {
+			system.clearStoreServer();
+			system.stopStoreServer();
+			system.disconnect();
 		}
 	}
 }

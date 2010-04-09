@@ -21,7 +21,6 @@ import static org.testng.Assert.assertNotNull;
 
 import java.io.InputStream;
 
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
@@ -29,6 +28,7 @@ import org.w3c.dom.Element;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.TestUtil;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -59,19 +59,9 @@ public class RelationContextSerializationTest {
 		provenanceRelation = createDocument(in);
 		in.close();
 		in = Config.class.getResourceAsStream("ppodLN/ppodLNHash.schema");
-		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(createDocument(in), "pPODPeer2"));
+		Document schema = TestUtil.setLocalPeer(createDocument(in), "pPODPeer2");
+		system = new OrchestraSystem(schema, new StubSchemaIDBindingClient.StubFactory(schema));
 		in.close();
-	}
-
-	/**
-	 * Clear and stop update store.
-	 * 
-	 * @throws Exception
-	 */
-	@AfterClass
-	public void cleanupUpdateStore() throws Exception {
-		system.clearStoreServer();
-		system.stopStoreServer();
 	}
 	
 	/**

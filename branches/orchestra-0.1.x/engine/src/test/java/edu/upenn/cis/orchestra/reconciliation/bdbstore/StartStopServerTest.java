@@ -15,6 +15,7 @@
  */
 package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
+import static edu.upenn.cis.orchestra.TestUtil.DEV_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
 import static edu.upenn.cis.orchestra.util.DomUtils.getChildElementByName;
@@ -42,7 +43,7 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
  * @author John Frommeyer
  * 
  */
-@Test(groups = { FAST_TESTNG_GROUP  /*,DEV_TESTNG_GROUP*/})
+@Test(groups = { FAST_TESTNG_GROUP, DEV_TESTNG_GROUP})
 public class StartStopServerTest {
 	private Document orchestraSchema;
 	private Element updateStoreElement;
@@ -76,12 +77,13 @@ public class StartStopServerTest {
 	 */
 	public void startTest() throws USException, IOException {
 		usFactory.startUpdateStoreServer();
-		// startUpdateStoreServerExec();
-		/*server = TestUtil
-				.startUpdateStoreServerExec(
-						9999,
-						"updateStore_env",
-						".");*/
+		
+		
+		 try {
+		 Thread.sleep(500);
+		 } catch (InterruptedException e) {
+		 Thread.currentThread().interrupt();
+		 }
 		usFactory.resetStore(null);
 		ISchemaIDBindingClient client = usFactory.getSchemaIDBindingClient();
 		client.reconnect();
@@ -122,12 +124,12 @@ public class StartStopServerTest {
 		//server.waitFor();
 	}
 
-	private static void main(String[] args) throws IOException,
+	public static void main(String[] args) throws IOException,
 			XMLParseException, USException, InterruptedException {
 		StartStopServerTest test = new StartStopServerTest();
 		test.readSchema();
 		test.startTest();
-		test.stopTest();
+		//test.stopTest();
 
 		/*TestListenerAdapter tla = new TestListenerAdapter();
 		TestNG testng = new TestNG();

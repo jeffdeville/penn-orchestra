@@ -17,21 +17,15 @@ package edu.upenn.cis.orchestra.datamodel;
 
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
-import static edu.upenn.cis.orchestra.util.DomUtils.getChildElementByName;
 import static edu.upenn.cis.orchestra.util.DomUtils.getChildElementsByName;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,6 +38,7 @@ import edu.upenn.cis.orchestra.datamodel.exceptions.RelationNotFoundException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnknownRefFieldException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
 import edu.upenn.cis.orchestra.reconciliation.ISchemaIDBindingClient;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
 import edu.upenn.cis.orchestra.util.XMLParseException;
@@ -58,7 +53,6 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
 public class PeerFactoryTest {
 	private Document orchestraSchema;
 	private Element pPODPeer1Element;
-	private Element updateStoreElement;
 	private final String peerName = "pPODPeer1";
 	private UpdateStore.Factory usFactory;
 
@@ -83,28 +77,9 @@ public class PeerFactoryTest {
 			}
 		}
 		assertNotNull(pPODPeer1Element);
-		Element store = getChildElementByName(orchestraSchema
-				.getDocumentElement(), "store");
-		updateStoreElement = getChildElementByName(store, "update");
-		usFactory = UpdateStore.deserialize(updateStoreElement);
+		usFactory = new StubSchemaIDBindingClient.StubFactory(orchestraSchema);
 	}
 
-	/**
-	 * Starts the update store and empties it for test.
-	 * 
-	 * @throws USException
-	 */
-	@BeforeMethod
-	public void startAndEmptyUpdateStore() throws USException {
-		usFactory.startUpdateStoreServer();
-		usFactory.resetStore(null);
-		ISchemaIDBindingClient client = usFactory.getSchemaIDBindingClient();
-		client.reconnect();
-		Set<String> systems = client.getHostedSystems();
-		client.disconnect();
-		assertTrue(systems.isEmpty());
-	}
-	
 	/**
 	 * Make sure we can get Peers from the factory.
 	 * 
@@ -124,10 +99,8 @@ public class PeerFactoryTest {
 		ISchemaIDBindingClient client = usFactory.getSchemaIDBindingClient();
 		client.reconnect();
 		List<Peer> peers = getPeersFromNewClient();
-		Set<String> systems = client.getHostedSystems();
 		client.disconnect();
 		assertTrue(peers.size() == 2);
-		assertEquals(systems, Collections.singleton("ppodLN"));
 	}
 
 	private List<Peer> getPeersFromNewClient() throws USException,
@@ -135,20 +108,13 @@ public class PeerFactoryTest {
 
 		ISchemaIDBindingClient client = usFactory.getSchemaIDBindingClient();
 		client.reconnect();
-		PeerFactory factory1 = new PeerFactory(orchestraSchema, client);
+		Element catalog = orchestraSchema.getDocumentElement();
+		PeerFactory factory1 = new PeerFactory(catalog.getAttribute("name"),
+				getChildElementsByName(catalog, "peer"), client);
 		List<Peer> peer1 = factory1.retrievePeers();
 		assertNotNull(peer1);
 		client.disconnect();
 		return peer1;
 	}
-	
-	/**
-	 * Stop the update store.
-	 * 
-	 * @throws USException
-	 */
-	@AfterMethod(alwaysRun = true)
-	public void stopServer() throws USException {
-		usFactory.stopUpdateStoreServer();
-	}
+
 }

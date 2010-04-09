@@ -23,7 +23,6 @@ import static org.testng.Assert.assertTrue;
 import java.io.InputStream;
 import java.util.Map;
 
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -32,6 +31,7 @@ import org.w3c.dom.Element;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.TestUtil;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 
 /**
  * Testing {@code Peer.equals()} and {@code hashCode()}.
@@ -71,23 +71,13 @@ public class RelationContextEqualAndHashTest {
 	 */
 	@BeforeMethod
 	public void deserialize() throws Exception {
-		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(orchestraSystemDoc, "pPODPeer2"));
+		Document schema = TestUtil.setLocalPeer(orchestraSystemDoc, "pPODPeer2");
+		system = new OrchestraSystem(schema, new StubSchemaIDBindingClient.StubFactory(schema));
 		rc1 = RelationContext.deserialize(relationContextElement, system);
 		rc2 = RelationContext.deserialize(relationContextElement, system);
 
 	}
 
-	/**
-	 * Clear and stop update store.
-	 * 
-	 * @throws Exception
-	 */
-	@AfterMethod
-	public void cleanupUpdateStore() throws Exception {
-		system.clearStoreServer();
-		system.stopStoreServer();
-	}
-	
 	/**
 	 * Should have {@code x1.equals(x2)} => {@code x1.hashCode() ==
 	 * x2.hashCode()}.

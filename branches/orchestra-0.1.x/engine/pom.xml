@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.upenn.cis.orchestra</groupId>
@@ -20,29 +19,20 @@
 	</parent>
 	<build>
 		<testResources>
-		    <testResource>
-		        	<directory>src/test/resources</directory>
-					<filtering>true</filtering>
-		    </testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
 		</testResources>
 		<plugins>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clover-plugin</artifactId>
-				<configuration>
-					<licenseLocation>${clover.license.path}
-					</licenseLocation>
-					<jdk>1.6</jdk>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>instrument</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!--
+				<plugin> <groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clover-plugin</artifactId> <configuration>
+				<licenseLocation>${clover.license.path} </licenseLocation>
+				<jdk>1.6</jdk> </configuration> <executions> <execution>
+				<phase>pre-site</phase> <goals> <goal>instrument</goal> </goals>
+				</execution> </executions> </plugin>
+			-->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -67,7 +57,10 @@
 				<executions>
 					<execution>
 						<goals>
-							<!-- Create a jar of test-classes, so that engine and gui can share test code. -->
+							<!--
+								Create a jar of test-classes, so that engine and gui can share
+								test code.
+							-->
 							<goal>test-jar</goal>
 						</goals>
 					</execution>
@@ -77,9 +70,49 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<suiteXmlFiles>
-        				<suiteXmlFile>target/test-classes/testng.xml</suiteXmlFile>
-      				</suiteXmlFiles>
+						<suiteXmlFile>target/test-classes/testng.xml</suiteXmlFile>
+					</suiteXmlFiles>
 					<forkMode>once</forkMode>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>build-classpath</id>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<!-- configure the plugin here -->
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>create-update-store-script</id>
+						<goals>
+							<goal>assemble</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<assembleDirectory>${project.build.directory}/updateStore</assembleDirectory>
+					<repositoryName>lib</repositoryName>
+					<repositoryLayout>flat</repositoryLayout>
+					<includeConfigurationDirectoryInClasspath>false</includeConfigurationDirectoryInClasspath>
+					<programs>
+						<program>
+							<mainClass>edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreServer</mainClass>
+							<name>updateStore</name>
+						</program>
+					</programs>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -87,17 +120,22 @@
 	<profiles>
 		<profile>
 			<id>requires-database-tests</id>
-			<activation><activeByDefault>false</activeByDefault></activation>
-			<build><plugins><plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<suiteXmlFiles>
-        				<suiteXmlFile>target/test-classes/testng.xml,target/test-classes/requires-database-testng.xml,target/test-classes/orchestra-test-testng.xml</suiteXmlFile>
-      				</suiteXmlFiles>
-					<forkMode>once</forkMode>
-				</configuration>
-			</plugin>
-		</plugins></build>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<suiteXmlFiles>
+								<suiteXmlFile>target/test-classes/testng.xml,target/test-classes/requires-database-testng.xml,target/test-classes/orchestra-test-testng.xml</suiteXmlFile>
+							</suiteXmlFiles>
+							<forkMode>once</forkMode>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 

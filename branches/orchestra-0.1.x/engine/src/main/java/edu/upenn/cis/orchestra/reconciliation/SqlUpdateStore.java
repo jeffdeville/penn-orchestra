@@ -435,8 +435,9 @@ public class SqlUpdateStore extends UpdateStore implements TransactionDecisions 
 		 * @see edu.upenn.cis.orchestra.reconciliation.UpdateStore.Factory#startUpdateStoreServer()
 		 */
 		@Override
-		public void startUpdateStoreServer() throws USException {
+		public Process startUpdateStoreServer() throws USException {
 			// TODO Auto-generated method stub
+			return null;
 			
 		}
 		/* (non-Javadoc)

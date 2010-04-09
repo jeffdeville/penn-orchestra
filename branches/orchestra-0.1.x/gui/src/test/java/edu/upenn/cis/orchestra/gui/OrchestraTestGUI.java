@@ -65,8 +65,6 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 	 */
 	@Override
 	protected void betweenPrepareAndTestImpl() throws Exception {
-		usClient.startAndClearUpdateStore();
-
 		FailOnThreadViolationRepaintManager.install();
 		robot = BasicRobot.robotWithNewAwtHierarchy();
 		for (OrchestraTestFrame testFrame : testFrames) {
@@ -110,9 +108,5 @@ public final class OrchestraTestGUI extends AbstractMultiSystemOrchestraTest {
 			}
 		}
 		robot.cleanUp();
-		usClient.clearAndStopUpdateStore();
-		//if (bdbDataSetFactory != null) {
-		//	bdbDataSetFactory.close();
-		//}
 	}
 }

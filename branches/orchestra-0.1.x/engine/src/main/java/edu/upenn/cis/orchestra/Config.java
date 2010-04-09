@@ -114,9 +114,9 @@ public class Config {
 		return s_props.getProperty(name);
 	}
 	
-	public static void setProperty(String key, String value) {
-		s_props.setProperty(key, value);
+	public static Object setProperty(String key, String value) {
 		Debug.println("SET: KEY=" + key + ", VALUE=" + s_props.getProperty(key));
+		return s_props.setProperty(key, value);
 	}
 	
 	public static void removeProperty(String key) {
@@ -695,5 +695,13 @@ public class Config {
 	
 	public static void setCompactNulls(boolean cns) {
 		setBoolean("compactNulls", cns);
+	}
+	
+	public static String setUpdateStoreExecutable(String executable) {
+		return (String) setProperty("updateStoreExecutable", executable);
+	}
+	
+	public static String getUpdateStoreExecutable() {
+		return getProperty("updateStoreExecutable");
 	}
 }

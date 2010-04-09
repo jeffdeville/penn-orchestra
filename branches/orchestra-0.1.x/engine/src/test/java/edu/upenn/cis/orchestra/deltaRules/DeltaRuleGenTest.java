@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.custommonkey.xmlunit.Diff;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
@@ -33,6 +32,7 @@ import edu.upenn.cis.orchestra.IgnoreWhitespaceTextNodesDiff;
 import edu.upenn.cis.orchestra.OrchestraDifferenceListener;
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
 /**
@@ -41,7 +41,7 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
  * @author John Frommeyer
  * 
  */
-@Test(groups = { FAST_TESTNG_GROUP})
+@Test(groups = { FAST_TESTNG_GROUP })
 public class DeltaRuleGenTest {
 	private Document builtInSchemas;
 	private Document translationRulesDoc;
@@ -69,24 +69,14 @@ public class DeltaRuleGenTest {
 		expectedInsertionRulesDoc = createDocument(in);
 		in.close();
 		in = Config.class.getResourceAsStream("ppodLN/ppodLNHash.schema");
-		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(createDocument(in), "pPODPeer2"));
+		Document schema = TestUtil
+				.setLocalPeer(createDocument(in), "pPODPeer2");
+		system = new OrchestraSystem(schema,
+				new StubSchemaIDBindingClient.StubFactory(schema));
 		in.close();
 
 	}
 
-	/**
-	 * Clear and stop update store.
-	 * 
-	 * @throws Exception
-	 */
-	@AfterClass
-	public void cleanupUpdateStore() throws Exception {
-		if (system != null) {
-			system.clearStoreServer();
-			system.stopStoreServer();
-		}
-	}
-	
 	/**
 	 * Test deletion rule generation.
 	 * 
@@ -99,8 +89,8 @@ public class DeltaRuleGenTest {
 		IDeltaRules delRules = delRuleGen.getDeltaRules();
 		Document actualRules = delRules.serialize();
 
-		//DomUtils.write(actualRules, new
-		//FileWriter("actualDeletionRules.xml"));
+		// DomUtils.write(actualRules, new
+		// FileWriter("actualDeletionRules.xml"));
 		// Document doc = toSqlDoc(delRules.getCode());
 		// write(doc, new FileWriter("deletionSql.xml"));
 
@@ -122,10 +112,10 @@ public class DeltaRuleGenTest {
 		IDeltaRules insRules = insRuleGen.getDeltaRules();
 		Document actualRules = insRules.serialize();
 
-		//DomUtils.write(actualRules, new
-		//FileWriter("actualInsertionRules.xml"));
-		//Document doc = insRules.serializeAsCode();
-		//DomUtils.write(doc, new FileWriter("insertionSql.xml"));
+		// DomUtils.write(actualRules, new
+		// FileWriter("actualInsertionRules.xml"));
+		// Document doc = insRules.serializeAsCode();
+		// DomUtils.write(doc, new FileWriter("insertionSql.xml"));
 
 		Diff diff = new IgnoreWhitespaceTextNodesDiff(
 				expectedInsertionRulesDoc, actualRules);

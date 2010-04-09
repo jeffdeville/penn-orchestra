@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.custommonkey.xmlunit.Diff;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -35,6 +34,7 @@ import org.w3c.dom.Node;
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.IgnoreWhitespaceTextNodesDiff;
 import edu.upenn.cis.orchestra.TestUtil;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -78,21 +78,13 @@ public class MappingVerboseSerializationTest {
 	public void initializeOrchestraSystem() throws Exception {
 		InputStream in = Config.class
 				.getResourceAsStream("ppodLN/ppodLNHash.schema");
-		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(createDocument(in), "pPODPeer2"));
+		Document schema = TestUtil
+				.setLocalPeer(createDocument(in), "pPODPeer2");
+		system = new OrchestraSystem(schema,
+				new StubSchemaIDBindingClient.StubFactory(schema));
 		in.close();
 	}
 
-	/**
-	 * Clear and stop update store.
-	 * 
-	 * @throws Exception
-	 */
-	@AfterMethod
-	public void cleanupUpdateStore() throws Exception {
-		system.clearStoreServer();
-		system.stopStoreServer();
-	}
-	
 	/**
 	 * Making sure that we can deserialize {@code Mapping} instances.
 	 * 
