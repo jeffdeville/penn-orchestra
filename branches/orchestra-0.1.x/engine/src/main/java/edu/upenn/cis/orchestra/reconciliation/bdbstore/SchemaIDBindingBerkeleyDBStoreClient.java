@@ -24,6 +24,8 @@ import java.net.Socket;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
@@ -45,6 +47,8 @@ public class SchemaIDBindingBerkeleyDBStoreClient implements
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	private final Map<AbstractPeerID, Schema> schemas = newHashMap();
+	private final static Logger logger = LoggerFactory
+			.getLogger(SchemaIDBindingBerkeleyDBStoreClient.class);
 
 	// private static final Logger logger = LoggerFactory
 	// .getLogger(SchemaIDBindingBerkeleyDBStoreClient.class);
@@ -127,26 +131,26 @@ public class SchemaIDBindingBerkeleyDBStoreClient implements
 	}
 
 	@Override
-	public void reconnect() throws USException {
+	public boolean reconnect() {
 		if (socket != null) {
 			// Already connected
-			return;
+			return true;
 		}
 		try {
 			socket = new Socket(host.getAddress(), host.getPort());
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
+			Object response = sendRequest(new Ping(), Ack.class);
+			if (response == null || !(response instanceof Ack)) {
+				return false;
+			}
 		} catch (Exception e) {
-			throw new USException(
-					"Could not connect to update store server at "
-							+ host.getAddress() + ":" + host.getPort() + ".", e);
+			logger.error("Could not connect to update store server at {}:{}.",
+					host.getAddress(), Integer.valueOf(host.getPort()));
+			return false;
 		}
 
-		Object response = sendRequest(new Ping(), Ack.class);
-		if (response == null || !(response instanceof Ack)) {
-			throw new USException("Could not contact update store server at "
-					+ host.getAddress() + ":" + host.getPort() + ".");
-		}
+		return true;
 
 	}
 

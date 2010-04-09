@@ -76,10 +76,10 @@ public interface ISchemaIDBindingClient {
 
 	/**
 	 * If this client is disconnected, will attempt to reconnect to the server.
+	 * @return {@code true} if connection succeeded, {@code false} otherwise
 	 * 
-	 * @throws USException
 	 */
-	void reconnect() throws USException;
+	boolean reconnect();
 
 	/**
 	 * Returns the result of loading the {@code SchemaIDBinding} with the

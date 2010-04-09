@@ -43,20 +43,22 @@ import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
 public class PeerFactory {
 	private final String cdss;
 	private final ISchemaIDBindingClient schemaIDBindingClient;
-	//private final Logger logger = LoggerFactory.getLogger(getClass());
+	// private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final List<Element> peerElements;
 	private ISchemaIDBinding localSchemaIDBinding;
+
 	/**
 	 * Construct the factory.
 	 * 
-	 * @param orchestraSchema
+	 * @param cdssName
+	 * @param peerElements
 	 * @param bindingClient
 	 */
-	public PeerFactory(Document orchestraSchema,
+	public PeerFactory(String cdssName,
+			@SuppressWarnings("hiding") final List<Element> peerElements,
 			ISchemaIDBindingClient bindingClient) {
-		Element root = orchestraSchema.getDocumentElement();
-		cdss = root.getAttribute("name");
-		peerElements = getChildElementsByName(root, "peer");
+		cdss = cdssName;
+		this.peerElements = peerElements;
 		schemaIDBindingClient = bindingClient;
 	}
 

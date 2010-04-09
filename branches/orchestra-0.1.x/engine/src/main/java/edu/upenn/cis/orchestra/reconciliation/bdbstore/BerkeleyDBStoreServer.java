@@ -646,7 +646,7 @@ public class BerkeleyDBStoreServer implements TransactionSource {
 									//oos = null;
 									//socket = null;
 									quit(this);
-									requestExit();
+									//requestExit();
 									response = null;
 									//oos = null;
 									//ois.close();

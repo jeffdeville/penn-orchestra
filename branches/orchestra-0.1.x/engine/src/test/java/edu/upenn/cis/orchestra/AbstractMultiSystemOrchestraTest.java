@@ -153,7 +153,8 @@ public abstract class AbstractMultiSystemOrchestraTest {
 	/** One test frame for each peer in the test. */
 	protected List<OrchestraTestFrame> testFrames = newArrayList();
 
-	protected BerkeleyDBStoreStartStopClient usClient = new BerkeleyDBStoreStartStopClient("updateStore");
+	private BerkeleyDBStoreStartStopClient usClient = new BerkeleyDBStoreStartStopClient(
+			"updateStore");
 
 	/**
 	 * These are the table name extensions which do not start with "_L".
@@ -292,6 +293,7 @@ public abstract class AbstractMultiSystemOrchestraTest {
 	 */
 	@BeforeClass(dependsOnMethods = { "prepare" })
 	public final void betweenPrepareAndTest() throws Exception {
+		usClient.startAndClearUpdateStore();
 		betweenPrepareAndTestImpl();
 	}
 
@@ -321,7 +323,11 @@ public abstract class AbstractMultiSystemOrchestraTest {
 	 */
 	@AfterClass(alwaysRun = true)
 	public final void shutdown() throws Exception {
-		shutdownImpl();
+		try {
+			shutdownImpl();
+		} finally {
+			usClient.clearAndStopUpdateStore();
+		}
 	}
 
 	/**

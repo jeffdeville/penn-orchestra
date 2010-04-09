@@ -15,8 +15,10 @@
  */
 package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -30,12 +32,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sleepycat.je.Environment;
-import com.sleepycat.je.EnvironmentConfig;
-
+import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.ByteBufferReader;
 import edu.upenn.cis.orchestra.datamodel.Schema;
@@ -65,9 +67,9 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 	private Map<AbstractPeerID,Schema> schemas;
 	private TrustConditions tc;
 	private Benchmark b;
-	
 	private ISchemaIDBinding _mapStore;
 	
+	private final static Logger logger = LoggerFactory.getLogger(BerkeleyDBStoreClient.class);
 	
 
 	public static class Factory implements UpdateStore.Factory {
@@ -203,7 +205,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		 * startUpdateStoreServer()
 		 */
 		@Override
-		public void startUpdateStoreServer() throws USException {
+		public Process startUpdateStoreServer() throws USException {
+			Process process = null;
 			if (isLocal()) {
 				try {
 					String storeName = "updateStore";
@@ -211,16 +214,17 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 					if (!f.exists()) {
 						f.mkdir();
 					}
-
-					EnvironmentConfig ec = new EnvironmentConfig();
-					ec.setAllowCreate(true);
-					ec.setTransactional(true);
-					Environment env = new Environment(f, ec);
-					storeServer = new BerkeleyDBStoreServer(env, host.getPort());
+					process = startUpdateStoreServerExec(host.getPort(), f.getAbsolutePath(), ".");
+					//EnvironmentConfig ec = new EnvironmentConfig();
+					//ec.setAllowCreate(true);
+					//ec.setTransactional(true);
+					//Environment env = new Environment(f, ec);
+					//storeServer = new BerkeleyDBStoreServer(env, host.getPort());
 				} catch (Exception e) {
 					throw new USException(e);
 				}
 			}
+			return process;
 		}
 
 		/* (non-Javadoc)
@@ -228,11 +232,13 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		 */
 		@Override
 		public void stopUpdateStoreServer() throws USException {
-			/*try {
+			try {
 				Socket socket = new Socket(host.getAddress(), host.getPort());
 				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 				oos.writeObject(new StopUpdateStore());
+				// Server writes an EndOfStream message.
+				ois.readObject();
 				oos.flush();
 
 				oos.close();
@@ -240,13 +246,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 				socket.close();
 			} catch (IOException ioe) {
 				throw new USException("Error stopping BDB store", ioe);
-			}*/
-			if (storeServer != null) {
-				try {
-					storeServer.quit();
-				} catch (Exception e) {
-					throw new USException("Error stopping BDB store", e);
-				}
+			} catch (ClassNotFoundException e) {
+				throw new USException("Error stopping BDB store", e);
 			}
 		}
 
@@ -690,5 +691,54 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		}
 		schemas.put(pid,s);
 		return s;
+	}
+
+	/**
+	 * Returns the {@code Process} resulting from the attempt to start a {@code
+	 * BerkeleyDBStoreServer} in a new process. The class path is {@code
+	 * java.class.path}.
+	 * 
+	 * @param port the port the server should listen on
+	 * @param serverDirectoryName the directory where the Berkeley database
+	 *            files should be kept
+	 * @param workingDirectoryName the working directory of the process.
+	 * 
+	 * @return a {@code BerkeleyDBStoreServer} {@code Process}
+	 * 
+	 * @throws IOException
+	 */
+	private static Process startUpdateStoreServerExec(int port,
+			String serverDirectoryName, String workingDirectoryName)
+			throws IOException {
+		String pathToScript = Config.getUpdateStoreExecutable();
+		String[] cmdarray = new String[] { pathToScript, "-port",
+				Integer.toString(port), serverDirectoryName };
+		ProcessBuilder builder = new ProcessBuilder();
+		builder.command(cmdarray);
+		builder.redirectErrorStream(true);
+		builder.directory(new File(workingDirectoryName));
+		final Process process = builder.start();
+		
+	
+		new Thread() {
+			@Override
+			public void run() {
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(process.getInputStream()));
+				String line = null;
+				try {
+					while ((line = reader.readLine()) != null) {
+						logger.debug(line);
+					}
+				} catch (IOException e) {
+					logger.error(
+							"Error reading output from update store process.",
+							e);
+				}
+			}
+	
+		}.start();
+	
+		return process;
 	}
 }

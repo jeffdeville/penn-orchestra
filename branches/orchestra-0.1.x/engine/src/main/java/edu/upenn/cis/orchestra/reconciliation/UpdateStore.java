@@ -25,8 +25,6 @@ import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sleepycat.je.DatabaseException;
-
 import edu.upenn.cis.orchestra.datamodel.AbstractPeerID;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.TrustConditions;
@@ -54,11 +52,12 @@ public abstract class UpdateStore implements TransactionDecisions {
 
 		/**
 		 * If the server is local, attempts to start server.
+		 * @return the server process if applicable, otherwise {@code null}
 		 * 
 		 * @throws USException
 		 * 
 		 */
-		public void startUpdateStoreServer() throws USException;
+		public Process startUpdateStoreServer() throws USException;
 		
 		/**
 		 * Attempts to shutdown the Update Store.

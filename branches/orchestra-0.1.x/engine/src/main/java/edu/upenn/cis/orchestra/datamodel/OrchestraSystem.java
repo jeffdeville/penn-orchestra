@@ -18,6 +18,7 @@ package edu.upenn.cis.orchestra.datamodel;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
 import static edu.upenn.cis.orchestra.util.DomUtils.getChildElementByName;
+import static edu.upenn.cis.orchestra.util.DomUtils.getChildElementsByName;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -76,6 +77,8 @@ import edu.upenn.cis.orchestra.dbms.IDb;
 import edu.upenn.cis.orchestra.exchange.BasicEngine;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdater;
 import edu.upenn.cis.orchestra.localupdates.LocalUpdaterFactory;
+import edu.upenn.cis.orchestra.localupdates.exceptions.NoLocalUpdaterClassException;
+import edu.upenn.cis.orchestra.localupdates.extract.exceptions.NoExtractorClassException;
 import edu.upenn.cis.orchestra.mappings.Rule;
 import edu.upenn.cis.orchestra.mappings.exceptions.RecursionException;
 import edu.upenn.cis.orchestra.predicate.AndPred;
@@ -112,32 +115,32 @@ public class OrchestraSystem {
 
 	/** Set of peers composing the system */
 	private Map<String, Peer> _peers;
-	/** The local peer for this system. All publishing and reconciling will be done with respect to this peer. */
+	/**
+	 * The local peer for this system. All publishing and reconciling will be
+	 * done with respect to this peer.
+	 */
 	private Peer _localPeer;
 	/** This will handle any updates to the local peer. */
 	private ILocalUpdater _localUpdater;
-	private static Logger _logger = LoggerFactory.getLogger(OrchestraSystem.class);
-	
+	private static Logger _logger = LoggerFactory
+			.getLogger(OrchestraSystem.class);
+
 	/** Local objects: mapping and reconciliation engines */
 	protected BasicEngine _mappingEngine;
-	protected UpdateStore.Factory _usf;
-	protected StateStore.Factory _ssf;
-	protected Map<String, Db> _recDbs;
+	private UpdateStore.Factory _usf;
+	private StateStore.Factory _ssf;
+	private Map<String, Db> _recDbs;
 	private ISchemaIDBinding _mapStore;
-	protected Map<String, Map<String, TrustConditions>> _tcs;
+	private Map<String, Map<String, TrustConditions>> _tcs;
 	// protected
 	// Map<String,Map<String,edu.upenn.cis.orchestra.datamodel.Schema>> _schemas
 	// = new
 	// Hashtable<String,Map<String,edu.upenn.cis.orchestra.datamodel.Schema>>();
 
 	// protected Schema _schema;
-	protected Map<Peer, Schema> _schemas;
-	protected boolean _recMode;
-	protected String _name = "";
-
-	
-	private static final String storeName = "updateStore";
-
+	private Map<Peer, Schema> _schemas;
+	private boolean _recMode;
+	private String _name = "";
 	/**
 	 * Indicates that this System contains bidirectional mappings.
 	 */
@@ -175,7 +178,7 @@ public class OrchestraSystem {
 		Map<Peer, Peer> oldNewPeers = new HashMap<Peer, Peer>();
 		for (Peer p : system.getPeers()) {
 			Peer np = p.deepCopy();
-			if (system.isLocalPeer(p)){
+			if (system.isLocalPeer(p)) {
 				_localPeer = np;
 			}
 			oldNewPeers.put(p, np);
@@ -255,16 +258,16 @@ public class OrchestraSystem {
 	 * Add a list of peers to the system
 	 * 
 	 * @param peers new peers
-	 * @return the number of local peers found in {@code peers} 
 	 * @throws DuplicatePeerIdException If at least one peer in
 	 *             <code>peers</code> uses an id already used in the system, or
 	 *             if at least two peers in this list have a common id.
-	 * @throws NoLocalPeerException 
+	 * @throws NoLocalPeerException
 	 */
-	public void addPeers(List<Peer> peers) throws DuplicatePeerIdException, NoLocalPeerException {
+	public void addPeers(List<Peer> peers) throws DuplicatePeerIdException,
+			NoLocalPeerException {
 		for (Peer p : peers) {
 			addPeer(p);
-			if (p.isLocalPeer()){
+			if (p.isLocalPeer()) {
 				if (_localPeer == null) {
 					_localPeer = p;
 				} else {
@@ -500,12 +503,11 @@ public class OrchestraSystem {
 		if (db == null) {
 			if (_tcs.get(name) != null
 					&& _tcs.get(name).get(schemaName) != null) {
-				db = new ClientCentricDb(_mapStore, schema,
-						new StringPeerID(name), _tcs.get(name).get(schemaName),
-						_usf, _ssf);
+				db = new ClientCentricDb(_mapStore, schema, new StringPeerID(
+						name), _tcs.get(name).get(schemaName), _usf, _ssf);
 			} else {
-				db = new ClientCentricDb(_mapStore, schema,
-						new StringPeerID(name), _usf, _ssf);
+				db = new ClientCentricDb(_mapStore, schema, new StringPeerID(
+						name), _usf, _ssf);
 			}
 			_recDbs.put(name, db);
 			return db;
@@ -516,7 +518,7 @@ public class OrchestraSystem {
 			return db;
 		}
 	}
-	
+
 	public boolean isLocalUpdateStore() {
 		return _usf.isLocal();
 	}
@@ -542,7 +544,7 @@ public class OrchestraSystem {
 			_mappingEngine.close();
 			_mappingEngine = null;
 		}
-		
+
 		for (Db db : _recDbs.values()) {
 			if (db.isConnected()) {
 				db.disconnect();
@@ -597,15 +599,15 @@ public class OrchestraSystem {
 			allSchemas.addAll(p.getSchemas());
 		}
 
-		//for (Schema s : allSchemas)
-		//	_usf.resetStore(s);// _schema);
+		// for (Schema s : allSchemas)
+		// _usf.resetStore(s);// _schema);
 		// } else {
 		getMappingEngine().reset();
 		// }
 	}
-	
-	static protected Element addChild(Document doc, Element parent,
-			String label, String name) {
+
+	static private Element addChild(Document doc, Element parent, String label,
+			String name) {
 		Element child = doc.createElement(label);
 		child.setAttribute("name", name);
 		parent.appendChild(child);
@@ -662,8 +664,8 @@ public class OrchestraSystem {
 		}
 	}
 
-	static private Map<String, Schema> deserializeBuiltInFunctions(InputStream in)
-			throws XMLParseException {
+	static private Map<String, Schema> deserializeBuiltInFunctions(
+			InputStream in) throws XMLParseException {
 		Document document = DomUtils.createDocument(in);
 		return deserializeBuiltInFunctions(document);
 	}
@@ -676,7 +678,7 @@ public class OrchestraSystem {
 	 * 
 	 * @param document
 	 * @return a mapping from {@code Schema} names to {@code Schema}s of the
-	 * built-in functions represented by {@code document}
+	 *         built-in functions represented by {@code document}
 	 * @throws XMLParseException
 	 */
 	static public Map<String, Schema> deserializeBuiltInFunctions(
@@ -709,7 +711,7 @@ public class OrchestraSystem {
 					e);
 		}
 	}
-	
+
 	/**
 	 * Returns an {@code OrchestraSystem} defined by the Orchestra schema file
 	 * represented by {@code document}.
@@ -723,7 +725,9 @@ public class OrchestraSystem {
 	 */
 	static public OrchestraSystem deserialize(Document document)
 			throws Exception {
-		try {
+		
+		return new OrchestraSystem(document);
+		/*try {
 			System.out.println("*******deserializing catalog********");
 			OrchestraSystem catalog = new OrchestraSystem();
 
@@ -742,13 +746,14 @@ public class OrchestraSystem {
 
 			createStoreFactories(catalog, root);
 			ISchemaIDBindingClient client = startStoreServer(catalog);
-			PeerFactory peerFactory = new PeerFactory(document, client);
+			PeerFactory peerFactory = new PeerFactory(catName,
+					getChildElementsByName(root, "peer"), client);
 			List<Peer> peers = peerFactory.retrievePeers();
 			catalog._mapStore = peerFactory.getSchemaIDBinding();
 			client.disconnect();
-			
+
 			catalog.addPeers(peers);
-			
+
 			NodeList list = root.getChildNodes();
 
 			for (int i = 0; i < list.getLength(); i++) {
@@ -760,7 +765,8 @@ public class OrchestraSystem {
 						Mapping mapping = Mapping.deserialize(catalog, el);
 						Peer peer = mapping.getMappingHead().get(0).getPeer();
 						peer.addMapping(mapping);
-						if (!catalog._bidirectional && mapping.isBidirectional()){
+						if (!catalog._bidirectional
+								&& mapping.isBidirectional()) {
 							catalog._bidirectional = true;
 						}
 					} else if (name.equals("engine")) {
@@ -774,7 +780,11 @@ public class OrchestraSystem {
 						BasicEngine engine = BasicEngine.deserialize(catalog,
 								builtInSchemas, el);
 						catalog.setMappingEngine(engine);
-						catalog._localUpdater = LocalUpdaterFactory.newInstance(engine.getMappingDb().getUsername(), engine.getMappingDb().getPassword(), engine.getMappingDb().getServer());
+						catalog._localUpdater = LocalUpdaterFactory
+								.newInstance(engine.getMappingDb()
+										.getUsername(), engine.getMappingDb()
+										.getPassword(), engine.getMappingDb()
+										.getServer());
 					} else if (el.getNodeName().equals("trustConditions")) {
 						if (!el.hasAttribute("peer")
 								|| !el.hasAttribute("schema")) {
@@ -821,11 +831,164 @@ public class OrchestraSystem {
 			throw new XMLParseException("Duplicate mapping name "
 					+ e.getMappingId());
 		}
-		return null;
+		return null;*/
 	}
 
 	/**
-	 * Deserializes store information contained in the {@code store} child of
+	 * Returns an {@code OrchestraSystem} defined by the Orchestra schema file
+	 * represented by {@code document}.
+	 * 
+	 * @param document a {@code Document} representing an Orchestra schema file.
+
+	 * @throws Exception
+	 */
+	public OrchestraSystem(Document document) throws Exception {
+		this(document, null);
+	}
+
+	/**
+	 * Returns an {@code OrchestraSystem} defined by the Orchestra schema file
+	 * represented by {@code document}.
+	 * 
+	 * @param document a {@code Document} representing an Orchestra schema file.
+	 * @param updateStoreFactory 
+	 * 
+	 * 
+	 * @throws Exception
+	 */
+	public OrchestraSystem(Document document, UpdateStore.Factory updateStoreFactory) throws Exception {
+		this();
+		try {
+			System.out.println("*******deserializing catalog********");
+
+			Element catalogElement = document.getDocumentElement();
+			createPeers(catalogElement, updateStoreFactory);
+
+			NodeList list = catalogElement.getChildNodes();
+			for (int i = 0; i < list.getLength(); i++) {
+				Node node = list.item(i);
+				if (node instanceof Element) {
+					Element el = (Element) node;
+					String name = el.getNodeName();
+					if (name.equals("mapping")) {
+						Mapping mapping = Mapping.deserialize(this, el);
+						Peer peer = mapping.getMappingHead().get(0).getPeer();
+						peer.addMapping(mapping);
+						if (!_bidirectional && mapping.isBidirectional()) {
+							_bidirectional = true;
+						}
+					} else if (el.getNodeName().equals("trustConditions")) {
+						if (!el.hasAttribute("peer")
+								|| !el.hasAttribute("schema")) {
+							throw new XMLParseException(
+									"Missing 'peer' or 'schema' attribute", el);
+						}
+						String peer = el.getAttribute("peer");
+						String schemaName = el.getAttribute("schema");
+						TrustConditions tc = TrustConditions.deserialize(el,
+								getPeers(), new StringPeerID(peer));
+						Map<String, TrustConditions> tcForPeer = _tcs.get(peer);
+						if (tcForPeer == null) {
+							tcForPeer = new HashMap<String, TrustConditions>();
+							_tcs.put(peer, tcForPeer);
+						}
+						tcForPeer.put(schemaName, tc);
+					}
+				}
+			}
+			// Engine creation must come after mapping creation.
+			Element engineElement = getChildElementByName(catalogElement,
+			"engine");
+			createEngineElement(engineElement);
+			if (_usf == null || _ssf == null) {
+				throw new XMLParseException(
+						"Missing <store> element to describe state and update stores");
+			}
+		} catch (ParserConfigurationException e) {
+			assert (false); // can't happen
+		} catch (DuplicatePeerIdException e) {
+			throw new XMLParseException("Duplicate peer name " + e.getPeerId());
+		} catch (DuplicateSchemaIdException e) {
+			throw new XMLParseException("Duplicate schema name "
+					+ e.getSchemaId());
+		} catch (DuplicateRelationIdException e) {
+			throw new XMLParseException("Duplicate relation name "
+					+ e.getRelId());
+		} catch (UnknownRefFieldException e) {
+			throw new XMLParseException("Unknown field in key: " + e);
+		} catch (DuplicateMappingIdException e) {
+			throw new XMLParseException("Duplicate mapping name "
+					+ e.getMappingId());
+		}
+	}
+
+	/**
+	 * Given and "engine" element, creates and sets the mapping {@code
+	 * BasicEngine} for this {@code OrchestraSystem}.
+	 * 
+	 * @param engineElement
+	 * @throws XMLParseException
+	 * @throws Exception
+	 * @throws NoLocalUpdaterClassException
+	 * @throws NoExtractorClassException
+	 */
+	private void createEngineElement(Element engineElement)
+			throws XMLParseException, Exception, NoLocalUpdaterClassException,
+			NoExtractorClassException {
+		InputStream inFile = Config.class
+				.getResourceAsStream("functions.schema");
+		if (inFile == null) {
+			throw new XMLParseException("Cannot find built-in functions");
+		}
+		Map<String, Schema> builtInSchemas = deserializeBuiltInFunctions(inFile);
+		BasicEngine engine = BasicEngine.deserialize(this, builtInSchemas,
+				engineElement);
+		setMappingEngine(engine);
+		_localUpdater = LocalUpdaterFactory.newInstance(engine.getMappingDb()
+				.getUsername(), engine.getMappingDb().getPassword(), engine
+				.getMappingDb().getServer());
+	}
+
+	/**
+	 * Given a "catalog" {@code Element} creates and sets the peers for this
+	 * {@code OrchestraSystem}.
+	 * 
+	 * @param catalogElement
+	 * @throws XMLParseException
+	 * @throws Exception
+	 * @throws USException
+	 * @throws DuplicateSchemaIdException
+	 * @throws DuplicatePeerIdException
+	 * @throws NoLocalPeerException
+	 */
+	private void createPeers(Element catalogElement, UpdateStore.Factory updateStoreFactory) throws XMLParseException,
+			Exception, USException, DuplicateSchemaIdException,
+			DuplicatePeerIdException, NoLocalPeerException {
+		if (!catalogElement.getNodeName().equals("catalog")) {
+			throw new XMLParseException("Missing top-level catalog element");
+		}
+		String catName = catalogElement.getAttribute("name");
+		if (catName == null || catName.length() == 0) {
+			throw new XMLParseException("Catalog must have a name");
+		}
+		setName(catName);
+		boolean recMode = Boolean.parseBoolean(catalogElement
+				.getAttribute("recmode"));
+		setRecMode(recMode);
+
+		createStoreFactories(catalogElement, updateStoreFactory);
+		ISchemaIDBindingClient client = startUpdateStoreServer();
+		PeerFactory peerFactory = new PeerFactory(catName,
+				getChildElementsByName(catalogElement, "peer"), client);
+		List<Peer> peers = peerFactory.retrievePeers();
+		_mapStore = peerFactory.getSchemaIDBinding();
+		client.disconnect();
+
+		addPeers(peers);
+	}
+
+	/**
+	 * Deserialize store information contained in the {@code store} child of
 	 * {@code root}.
 	 * 
 	 * @param catalog
@@ -837,8 +1000,6 @@ public class OrchestraSystem {
 		// Create store factories
 		Element store = getChildElementByName(root, "store");
 
-		
-
 		Element update = DomUtils.getChildElementByName(store, "update");
 		Element state = DomUtils.getChildElementByName(store, "state");
 		if (update == null || state == null) {
@@ -847,6 +1008,36 @@ public class OrchestraSystem {
 		}
 		catalog._usf = UpdateStore.deserialize(update);
 		catalog._ssf = StateStore.deserialize(state);
+	}
+
+	/**
+	 * Deserialize store information contained in the {@code store} child of
+	 * {@code root}. If {@code updateStoreFactory} is non-null, then it is used
+	 * and the "update" Element is ignored.
+	 * 
+	 * @param root
+	 * @param updateStoreFactory
+	 * 
+	 */
+	private void createStoreFactories(Element root,
+			UpdateStore.Factory updateStoreFactory) throws XMLParseException {
+		// Create store factories
+		Element store = getChildElementByName(root, "store");
+
+		Element state = DomUtils.getChildElementByName(store, "state");
+		_ssf = StateStore.deserialize(state);
+
+		if (updateStoreFactory == null) {
+			Element update = DomUtils.getChildElementByName(store, "update");
+			if (update == null || state == null) {
+				throw new XMLParseException("Missing <update> or <state> tag",
+						store);
+			}
+			_usf = UpdateStore.deserialize(update);
+		} else {
+			_usf = updateStoreFactory;
+		}
+
 	}
 
 	/**
@@ -929,13 +1120,16 @@ public class OrchestraSystem {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Tuple> runUnfoldedQuery(BufferedReader source, boolean provenanceQuery) throws Exception {
+	public List<Tuple> runUnfoldedQuery(BufferedReader source,
+			boolean provenanceQuery) throws Exception {
 		List<Rule> rules = unfoldQuery(source);
 
-		return runUnfoldedQuery(rules, false, "", true, provenanceQuery); 
+		return runUnfoldedQuery(rules, false, "", true, provenanceQuery);
 	}
 
-	public List<Tuple> runUnfoldedQuery(List<Rule> rules, boolean provenance, String semiringName, boolean returnResults, boolean provenanceQuery) throws Exception {
+	public List<Tuple> runUnfoldedQuery(List<Rule> rules, boolean provenance,
+			String semiringName, boolean returnResults, boolean provenanceQuery)
+			throws Exception {
 		List<Tuple> results = new ArrayList<Tuple>();
 		BasicEngine eng = getMappingEngine();
 
@@ -974,7 +1168,8 @@ public class OrchestraSystem {
 			long time = 0;
 			long timeRes = 0;
 			Calendar before = Calendar.getInstance();
-			List<ResultSetIterator<Tuple>> res = eng.evalRuleSet(rules, semiringName, provenanceQuery);
+			List<ResultSetIterator<Tuple>> res = eng.evalRuleSet(rules,
+					semiringName, provenanceQuery);
 			Calendar after = Calendar.getInstance();
 			time += after.getTimeInMillis() - before.getTimeInMillis();
 			System.out.println("PROQL EXP: NET EVAL TIME: " + time + " msec");
@@ -1250,9 +1445,9 @@ public class OrchestraSystem {
 	 */
 	@Deprecated
 	public void startStoreServer() throws Exception {
-		
+
 	}
-	
+
 	private static ISchemaIDBindingClient startStoreServer(
 			OrchestraSystem system) throws Exception {
 		InetSocketAddress ias = system.getBdbStorePort();
@@ -1262,16 +1457,52 @@ public class OrchestraSystem {
 
 		ISchemaIDBindingClient schemaIDBindingClient = system._usf
 				.getSchemaIDBindingClient();
-		try {
-			schemaIDBindingClient.reconnect();
-		} catch (USException e) {
+		boolean connected = schemaIDBindingClient.reconnect();
+		if (!connected) {
 			Debug
 					.println("Cannot connect to update store. Checking to see if update store should live here.");
 			system._usf.startUpdateStoreServer();
-			schemaIDBindingClient.reconnect();
+			int tries = 20;
+			for (int i = 1; i <= tries && !connected; i++) {
+				connected = schemaIDBindingClient.reconnect();
+				if (_logger.isDebugEnabled() && !connected) {
+					_logger
+							.debug(
+									"Failed to connect to update store on try {} of {}.",
+									Integer.valueOf(i), Integer.valueOf(tries));
+				}
+			}
+			if (!connected) {
+				throw new USException("Cannot connect to the update store");
+			}
 		}
 		return schemaIDBindingClient;
 
+	}
+
+	private ISchemaIDBindingClient startUpdateStoreServer() throws Exception {
+		ISchemaIDBindingClient schemaIDBindingClient = _usf
+				.getSchemaIDBindingClient();
+		boolean connected = schemaIDBindingClient.reconnect();
+		if (!connected) {
+			Debug
+					.println("Cannot connect to update store. Checking to see if update store should live here.");
+			_usf.startUpdateStoreServer();
+			int tries = 20;
+			for (int i = 1; i <= tries && !connected; i++) {
+				connected = schemaIDBindingClient.reconnect();
+				if (_logger.isDebugEnabled() && !connected) {
+					_logger
+							.debug(
+									"Failed to connect to update store on try {} of {}.",
+									Integer.valueOf(i), Integer.valueOf(tries));
+				}
+			}
+			if (!connected) {
+				throw new USException("Cannot connect to the update store");
+			}
+		}
+		return schemaIDBindingClient;
 	}
 
 	/**
@@ -1337,7 +1568,7 @@ public class OrchestraSystem {
 		List<Relation> relations = getLocalPeerRelations();
 		_localUpdater.postReconcileHook(getMappingDb(), relations);
 	}
-	
+
 	/**
 	 * Publish the local peer's updates.
 	 * 
@@ -1347,14 +1578,16 @@ public class OrchestraSystem {
 	public int fetch() throws Exception {
 		_logger.debug("Starting publish.");
 		_localUpdater.extractAndApplyLocalUpdates(_localPeer);
-		int count = getMappingDb().fetchDbTransactions(_localPeer, getRecDb(_localPeer.getId()));
+		int count = getMappingDb().fetchDbTransactions(_localPeer,
+				getRecDb(_localPeer.getId()));
 		getRecDb(_localPeer.getId()).publish();
 		_logger.debug("Publish finished.");
 		return count;
 	}
-	
+
 	/**
-	 * Publishes the local peer's updates and then performs an update exchange mapping.
+	 * Publishes the local peer's updates and then performs an update exchange
+	 * mapping.
 	 * 
 	 * @return the number of update transactions published
 	 * @throws Exception
@@ -1384,10 +1617,9 @@ public class OrchestraSystem {
 	 */
 	public void importUpdates(String dir, ArrayList<String> succeeded,
 			ArrayList<String> failed) throws IOException {
-		getMappingEngine().importUpdates(_localPeer,
-				dir, succeeded, failed);
+		getMappingEngine().importUpdates(_localPeer, dir, succeeded, failed);
 	}
-	
+
 	/**
 	 * Returns an {@code OrchestraSystem} defined by the Orchestra schema file
 	 * represented by {@code in}.
@@ -1401,19 +1633,21 @@ public class OrchestraSystem {
 	 */
 	public static OrchestraSystem deserialize(InputStream in) throws Exception {
 		Document document = createDocument(in);
-		
+
 		return deserialize(document);
 	}
 
 	/**
-	 * Returns {@code true} if this {@code OrchestraSystem} contains bidirectional mappings, otherwise {@code false}.
+	 * Returns {@code true} if this {@code OrchestraSystem} contains
+	 * bidirectional mappings, otherwise {@code false}.
 	 * 
-	 * @return {@code true} if this {@code OrchestraSystem} contains bidirectional mappings, otherwise {@code false}
+	 * @return {@code true} if this {@code OrchestraSystem} contains
+	 *         bidirectional mappings, otherwise {@code false}
 	 */
 	public boolean isBidirectional() {
 		return _bidirectional;
 	}
-	
+
 	private void setLocalPeer(Peer peer) throws NoLocalPeerException {
 		if (_localPeer != null) {
 			throw new NoLocalPeerException(_localPeer, peer);
@@ -1421,7 +1655,7 @@ public class OrchestraSystem {
 		_localPeer = peer;
 
 	}
-	
+
 	/**
 	 * Returns {@code true} if {@code peer} is this {@code OrchestraSystem}'s
 	 * local peer, and {@code false} otherwise.
@@ -1433,7 +1667,7 @@ public class OrchestraSystem {
 	public boolean isLocalPeer(Peer peer) {
 		return _localPeer.equals(peer);
 	}
-	
+
 	/**
 	 * Called once during Migrate to allow the {@code ILocalUpdater} to perform
 	 * any initial setup.
@@ -1443,7 +1677,7 @@ public class OrchestraSystem {
 		List<Relation> relations = getLocalPeerRelations();
 		_localUpdater.prepare(getMappingDb(), relations);
 	}
-	
+
 	private List<Relation> getLocalPeerRelations() {
 		List<Relation> relations = newArrayList();
 		for (Schema schema : _localPeer.getSchemas()) {
@@ -1455,4 +1689,5 @@ public class OrchestraSystem {
 		}
 		return relations;
 	}
+
 }

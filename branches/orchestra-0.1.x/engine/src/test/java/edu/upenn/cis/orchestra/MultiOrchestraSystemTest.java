@@ -58,16 +58,6 @@ public final class MultiOrchestraSystemTest extends
 	 */
 	@Override
 	protected void betweenPrepareAndTestImpl() throws Exception {
-		// boolean firstSystem = true;
-		//File f = new File("updateStore_env");
-		//if (f.exists() && f.isDirectory()) {
-		//	File[] contents = f.listFiles();
-		//	for (File file : contents) {
-		//		file.delete();
-		//	}
-		//	f.delete();
-		//}
-		usClient.startAndClearUpdateStore();
 		for (OrchestraTestFrame testFrame : testFrames) {
 			File f = new File("stateStore_env_" + testFrame.getPeerName());
 			if (f.exists() && f.isDirectory()) {
@@ -116,10 +106,6 @@ public final class MultiOrchestraSystemTest extends
 				logger.debug("Shutting down Orchestra system.");
 			}
 		}
-		//if (bdbDataSetFactory != null) {
-		//	bdbDataSetFactory.close();
-		//}
-		usClient.clearAndStopUpdateStore();
 	}
 
 }

@@ -31,6 +31,7 @@ import org.dbunit.dataset.xml.FlatDtdDataSet;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.w3c.dom.Document;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.DbUnitUtil;
@@ -38,6 +39,7 @@ import edu.upenn.cis.orchestra.OrchestraSchema;
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.localupdates.extract.sql.ExtractorDefault;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 
 /**
  * 
@@ -68,8 +70,10 @@ public class PrepareDbForLocalUpdaterJdbcTest {
 		URL url = Config.class.getResource("ppodLN/ppodLNHash.schema");
 		OrchestraSchema orchestraSchema = new OrchestraSchema(new File(url
 				.toURI()));
-		system = OrchestraSystem.deserialize(orchestraSchema.toDocument(dbURL,
-				dbUser, dbPassword, "pPODPeer2"));
+		Document schemaDoc = orchestraSchema.toDocument(dbURL, dbUser,
+				dbPassword, "pPODPeer2");
+		system = new OrchestraSystem(schemaDoc,
+				new StubSchemaIDBindingClient.StubFactory(schemaDoc));
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
 		Config.setJDBCDriver(jdbcDriver);
 		// Class.forName(jdbcDriver);
