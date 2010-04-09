@@ -15,6 +15,8 @@
  */
 package edu.upenn.cis.orchestra.reconciliation.bdbstore;
 
+import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -64,17 +66,18 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 	private Socket socket;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
-	private Map<AbstractPeerID,Schema> schemas;
+	private Map<AbstractPeerID, Schema> schemas;
 	private TrustConditions tc;
 	private Benchmark b;
 	private ISchemaIDBinding _mapStore;
-	
-	private final static Logger logger = LoggerFactory.getLogger(BerkeleyDBStoreClient.class);
-	
+
+	private final static Logger logger = LoggerFactory
+			.getLogger(BerkeleyDBStoreClient.class);
 
 	public static class Factory implements UpdateStore.Factory {
 		public final InetSocketAddress host;
 		private BerkeleyDBStoreServer storeServer;
+
 		public Factory(InetSocketAddress host) {
 			this.host = host;
 		}
@@ -82,18 +85,22 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		// Is the factory creating a local update store?
 		public boolean isLocal() {
 			try {
-				return host.getHostName().equals("localhost") ||
-					host.getAddress().equals(InetAddress.getLocalHost());
+				return host.getHostName().equals("localhost")
+						|| host.getAddress().equals(InetAddress.getLocalHost());
 			} catch (UnknownHostException u) {
 				return false;
 			}
 		}
-		
-		public UpdateStore getUpdateStore(AbstractPeerID pid, ISchemaIDBinding sch, Schema s, TrustConditions tc) throws USException {
-			if (! pid.equals(tc.getOwner())) {
-				throw new IllegalArgumentException("Supplied peer ID " + pid + " does not match owner of trust conditions " + tc.getOwner());
+
+		public UpdateStore getUpdateStore(AbstractPeerID pid,
+				ISchemaIDBinding sch, Schema s, TrustConditions tc)
+				throws USException {
+			if (!pid.equals(tc.getOwner())) {
+				throw new IllegalArgumentException("Supplied peer ID " + pid
+						+ " does not match owner of trust conditions "
+						+ tc.getOwner());
 			}
-			return new BerkeleyDBStoreClient(host, sch, s, tc);//s, tc);
+			return new BerkeleyDBStoreClient(host, sch, s, tc);// s, tc);
 		}
 
 		public void serialize(Document doc, Element update) {
@@ -112,62 +119,76 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		public void resetStore(Schema s) throws USException {
 			try {
 				Socket socket = new Socket(host.getAddress(), host.getPort());
-				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-				ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+				ObjectOutputStream oos = new ObjectOutputStream(socket
+						.getOutputStream());
+				ObjectInputStream ois = new ObjectInputStream(socket
+						.getInputStream());
 				oos.writeObject(new Reset());
 				oos.writeObject(new EndOfStreamMsg());
 				oos.flush();
-				Object response = ois.readObject();			
+				Object response = ois.readObject();
 
 				oos.close();
 				socket.close();
 				if (response instanceof Ack) {
 					return;
 				} else if (response instanceof Exception) {
-					throw new USException("Error restoring BDB store from dump", (Exception) response);
+					throw new USException(
+							"Error restoring BDB store from dump",
+							(Exception) response);
 				} else {
-					throw new USException("Recevied unexpected reply of type " + response.getClass().getName() + ": " + response);
+					throw new USException("Recevied unexpected reply of type "
+							+ response.getClass().getName() + ": " + response);
 				}
 
 			} catch (IOException ioe) {
 				throw new USException("Error resetting BDB store", ioe);
 			} catch (ClassNotFoundException e) {
-				throw new USException("Could not deserialize response from BDB store", e);
+				throw new USException(
+						"Could not deserialize response from BDB store", e);
 			}
 		}
 
-		public USDump dumpUpdateStore(ISchemaIDBinding binding, Schema schema) throws USException {
+		public USDump dumpUpdateStore(ISchemaIDBinding binding, Schema schema)
+				throws USException {
 			try {
 				Socket socket = new Socket(host.getAddress(), host.getPort());
-				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-				ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+				ObjectOutputStream oos = new ObjectOutputStream(socket
+						.getOutputStream());
+				ObjectInputStream ois = new ObjectInputStream(socket
+						.getInputStream());
 				oos.writeObject(new DumpMsg(schema));
 				oos.writeObject(new EndOfStreamMsg());
 				oos.flush();
 
-				Object response = ois.readObject();			
+				Object response = ois.readObject();
 				ois.close();
 				oos.close();
 				socket.close();
 				if (response instanceof USDump) {
 					return (USDump) response;
 				} else if (response instanceof Exception) {
-					throw new USException("Error dumping BDB store", (Exception) response);
+					throw new USException("Error dumping BDB store",
+							(Exception) response);
 				} else {
-					throw new USException("Recevied unexpected reply of type " + response.getClass().getName() + ": " + response);
+					throw new USException("Recevied unexpected reply of type "
+							+ response.getClass().getName() + ": " + response);
 				}
 			} catch (IOException ioe) {
 				throw new USException("Error dumping BDB store", ioe);
 			} catch (ClassNotFoundException e) {
-				throw new USException("Could not deserialize response from BDB store", e);
+				throw new USException(
+						"Could not deserialize response from BDB store", e);
 			}
 		}
 
 		public void restoreUpdateStore(USDump d) throws USException {
 			try {
 				Socket socket = new Socket(host.getAddress(), host.getPort());
-				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-				ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+				ObjectOutputStream oos = new ObjectOutputStream(socket
+						.getOutputStream());
+				ObjectInputStream ois = new ObjectInputStream(socket
+						.getInputStream());
 				oos.writeObject(new Reset(d));
 				oos.flush();
 
@@ -178,20 +199,30 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 				if (response instanceof Ack) {
 					return;
 				} else if (response instanceof Exception) {
-					throw new USException("Error restoring BDB store from dump", (Exception) response);
+					throw new USException(
+							"Error restoring BDB store from dump",
+							(Exception) response);
 				} else {
-					throw new USException("Recevied unexpected reply of type " + response.getClass().getName() + ": " + response);
+					throw new USException("Recevied unexpected reply of type "
+							+ response.getClass().getName() + ": " + response);
 				}
 			} catch (IOException ioe) {
-				throw new USException("Error restoring BDB store from Dump", ioe);
+				throw new USException("Error restoring BDB store from Dump",
+						ioe);
 			} catch (ClassNotFoundException e) {
-				throw new USException("Could not deserialize response from BDB store", e);
+				throw new USException(
+						"Could not deserialize response from BDB store", e);
 			}
 
 		}
 
-		/* (non-Javadoc)
-		 * @see edu.upenn.cis.orchestra.reconciliation.UpdateStore.Factory#getSchemaIDBindingClient(edu.upenn.cis.orchestra.datamodel.AbstractPeerID, edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding)
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @seeedu.upenn.cis.orchestra.reconciliation.UpdateStore.Factory#
+		 * getSchemaIDBindingClient
+		 * (edu.upenn.cis.orchestra.datamodel.AbstractPeerID,
+		 * edu.upenn.cis.orchestra.reconciliation.SchemaIDBinding)
 		 */
 		@Override
 		public ISchemaIDBindingClient getSchemaIDBindingClient() {
@@ -214,12 +245,14 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 					if (!f.exists()) {
 						f.mkdir();
 					}
-					process = startUpdateStoreServerExec(host.getPort(), f.getAbsolutePath(), ".");
-					//EnvironmentConfig ec = new EnvironmentConfig();
-					//ec.setAllowCreate(true);
-					//ec.setTransactional(true);
-					//Environment env = new Environment(f, ec);
-					//storeServer = new BerkeleyDBStoreServer(env, host.getPort());
+					process = startUpdateStoreServerExec(host.getPort(), f
+							.getAbsolutePath(), ".");
+					// EnvironmentConfig ec = new EnvironmentConfig();
+					// ec.setAllowCreate(true);
+					// ec.setTransactional(true);
+					// Environment env = new Environment(f, ec);
+					// storeServer = new BerkeleyDBStoreServer(env,
+					// host.getPort());
 				} catch (Exception e) {
 					throw new USException(e);
 				}
@@ -227,15 +260,20 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 			return process;
 		}
 
-		/* (non-Javadoc)
-		 * @see edu.upenn.cis.orchestra.reconciliation.UpdateStore.Factory#stopUpdateStoreServer()
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @seeedu.upenn.cis.orchestra.reconciliation.UpdateStore.Factory#
+		 * stopUpdateStoreServer()
 		 */
 		@Override
 		public void stopUpdateStoreServer() throws USException {
 			try {
 				Socket socket = new Socket(host.getAddress(), host.getPort());
-				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-				ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+				ObjectOutputStream oos = new ObjectOutputStream(socket
+						.getOutputStream());
+				ObjectInputStream ois = new ObjectInputStream(socket
+						.getInputStream());
 				oos.writeObject(new StopUpdateStore());
 				// Server writes an EndOfStream message.
 				ois.readObject();
@@ -270,14 +308,14 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 				Object response = ois.readObject();
 				oos.writeObject(new EndOfStreamMsg());
 				oos.flush();
-				ois.readObject();//EndOfStreamMsg as a response to our EndOfStreamMsg.
+				ois.readObject();// EndOfStreamMsg as a response to our
+									// EndOfStreamMsg.
 				oos.close();
 				socket.close();
 				if (response instanceof Ack) {
 					return true;
 				}
 				return false;
-				
 
 			} catch (Exception e) {
 				return false;
@@ -285,8 +323,9 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		}
 	}
 
-	BerkeleyDBStoreClient(InetSocketAddress host, ISchemaIDBinding sch, Schema s, TrustConditions tc) throws USException {
-		schemas = new HashMap<AbstractPeerID,Schema>();
+	BerkeleyDBStoreClient(InetSocketAddress host, ISchemaIDBinding sch,
+			Schema s, TrustConditions tc) throws USException {
+		schemas = new HashMap<AbstractPeerID, Schema>();
 		schemas.put(tc.getOwner(), s);
 		_mapStore = sch;
 		this.tc = tc;
@@ -296,7 +335,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 
 	}
 
-	private synchronized Object sendRequest(Object o, Class<?>... classes) throws USException {
+	private synchronized Object sendRequest(Object o, Class<?>... classes)
+			throws USException {
 		Object reply;
 		try {
 			oos.writeObject(o);
@@ -311,7 +351,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		}
 
 		if (reply instanceof BadMsg) {
-			throw new USException("Server received unexpected message: " + ((BadMsg) reply).o);
+			throw new USException("Server received unexpected message: "
+					+ ((BadMsg) reply).o);
 		}
 
 		for (Class<?> c : classes) {
@@ -320,7 +361,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 			}
 		}
 
-		throw new USException("Received object is of unexpected type " + reply.getClass().getName());
+		throw new USException("Received object is of unexpected type "
+				+ reply.getClass().getName());
 	}
 
 	@Override
@@ -335,7 +377,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 			ois.close();
 			socket.close();
 		} catch (Exception e) {
-			throw new USException("Could not disconnect from update store server", e);
+			throw new USException(
+					"Could not disconnect from update store server", e);
 		}
 		oos = null;
 		ois = null;
@@ -356,7 +399,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 			throw new USException("Could not connect to update store server", e);
 		}
 
-		sendRequest(new SendTrustConditions(tc,_mapStore,schemas.get(tc.getOwner())), Ack.class);
+		sendRequest(new SendTrustConditions(tc, _mapStore, schemas.get(tc
+				.getOwner())), Ack.class);
 
 	}
 
@@ -364,7 +408,6 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 	public boolean isConnected() {
 		return (socket != null);
 	}
-
 
 	@Override
 	public Benchmark getBenchmark() {
@@ -376,7 +419,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		if (b != null) {
 			resetElapsedTime();
 		}
-		int lastRecno = (Integer) sendRequest(new GetLastReconciliation(), Integer.class);
+		int lastRecno = (Integer) sendRequest(new GetLastReconciliation(),
+				Integer.class);
 		if (b != null) {
 			b.getCurrentRecnoNet += getElapsedTime();
 		}
@@ -384,18 +428,21 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 	}
 
 	@Override
-	public void getReconciliationData(int recno, Set<TxnPeerID> ownAcceptedTxns,
+	public void getReconciliationData(int recno,
+			Set<TxnPeerID> ownAcceptedTxns,
 			Map<Integer, List<TxnChain>> trustedTxns, Set<TxnPeerID> mustReject)
-	throws USException {
+			throws USException {
 		if (b != null) {
 			resetElapsedTime();
 		}
-		ReconciliationData rd = (ReconciliationData) sendRequest(new GetReconciliationData(recno, ownAcceptedTxns), ReconciliationData.class);
+		ReconciliationData rd = (ReconciliationData) sendRequest(
+				new GetReconciliationData(recno, ownAcceptedTxns),
+				ReconciliationData.class);
 		if (b != null) {
 			b.getReconciliationDataNet += getElapsedTime(true);
 		}
 
-		rd.beginReading(_mapStore);//getSchema(tc.getOwner()));
+		rd.beginReading(_mapStore);// getSchema(tc.getOwner()));
 
 		ReconciliationData.Entry rde;
 
@@ -433,7 +480,7 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 	}
 
 	protected void recordTxnDecisionsImpl(Iterable<Decision> decisions)
-	throws USException {
+			throws USException {
 		if (b != null) {
 			resetElapsedTime();
 		}
@@ -478,50 +525,61 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		return (List<Decision>) sendRequest(new GetDecisions(recno), List.class);
 	}
 
-
 	@Override
-	public ResultIterator<ReconciliationEpoch> getReconciliations() throws USException {
-		int lastRecno = (Integer) sendRequest(new GetLastReconciliation(), Integer.class);
+	public ResultIterator<ReconciliationEpoch> getReconciliations()
+			throws USException {
+		int lastRecno = (Integer) sendRequest(new GetLastReconciliation(),
+				Integer.class);
 
 		return new IntegerIterator<ReconciliationEpoch>(lastRecno) {
 			@Override
-			protected ReconciliationEpoch getData(int recno) throws IteratorException {
+			protected ReconciliationEpoch getData(int recno)
+					throws IteratorException {
 				int epoch;
 				try {
-					epoch = (Integer) sendRequest(new GetRecnoEpoch(recno), Integer.class);
+					epoch = (Integer) sendRequest(new GetRecnoEpoch(recno),
+							Integer.class);
 				} catch (USException e) {
 					throw new IteratorException(e.getMessage(), e.getCause());
 				}
 				return new ReconciliationEpoch(recno, epoch);
 			}
-		};		
+		};
 	}
 
 	@SuppressWarnings("unchecked")
-	public ResultIterator<ReconciliationEpoch> getReconciliations(boolean buffer) throws USException {
+	public ResultIterator<ReconciliationEpoch> getReconciliations(boolean buffer)
+			throws USException {
 		if (buffer) {
-			// This implementation buffers the entire list of reconciliations and
+			// This implementation buffers the entire list of reconciliations
+			// and
 			// epochs, which could be bad for large numbers of reconciliations.
-			List<Integer> epochs  = (List<Integer>) sendRequest(new GetRecnoEpochs(), List.class);
+			List<Integer> epochs = (List<Integer>) sendRequest(
+					new GetRecnoEpochs(), List.class);
 			final int numRecons = epochs.size();
 
-			List<ReconciliationEpoch> retvalList = new ArrayList<ReconciliationEpoch>(numRecons);
+			List<ReconciliationEpoch> retvalList = new ArrayList<ReconciliationEpoch>(
+					numRecons);
 
 			for (int i = 0; i < numRecons; ++i) {
 				retvalList.add(new ReconciliationEpoch(i, epochs.get(i)));
 			}
 
-			return new ListIteratorResultIterator<ReconciliationEpoch>(retvalList.listIterator());
+			return new ListIteratorResultIterator<ReconciliationEpoch>(
+					retvalList.listIterator());
 		} else {
 			return getReconciliations();
-		} 
+		}
 	}
+
 	@Override
-	public ResultIterator<Update> getPublishedUpdatesForRelation(String relname) throws USException {
+	public ResultIterator<Update> getPublishedUpdatesForRelation(String relname)
+			throws USException {
 		int lastEpoch = (Integer) sendRequest(new GetLastEpoch(), Integer.class);
 
 		try {
-			return new FlatteningIterator<Update>(new EpochIterator(lastEpoch, relname));
+			return new FlatteningIterator<Update>(new EpochIterator(lastEpoch,
+					relname));
 		} catch (Exception e) {
 			throw new USException("Error creating updates iterator", e);
 		}
@@ -530,6 +588,7 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 	private class EpochIterator extends IntegerIterator<List<Update>> {
 		private final int relId;
 		private final boolean hasRelId;
+
 		EpochIterator(int lastEpoch, String relname) throws USException {
 			super(lastEpoch);
 			if (relname == null) {
@@ -542,28 +601,32 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		}
 
 		EpochIterator(int lastEpoch) throws USException {
-			this(lastEpoch,null);
+			this(lastEpoch, null);
 		}
 
 		@Override
 		protected List<Update> getData(int epoch) throws IteratorException {
 			byte[] data;
 			try {
-				data = (byte[]) sendRequest(new GetEpochContents(epoch), byte[].class);
+				data = (byte[]) sendRequest(new GetEpochContents(epoch),
+						byte[].class);
 			} catch (USException e) {
 				throw new IteratorException(e.getMessage(), e.getCause());
 			}
 			ByteBufferReader bbr = new ByteBufferReader(_mapStore, data);
 			List<Update> retval = new ArrayList<Update>();
-			while (! bbr.hasFinished()) {
+			while (!bbr.hasFinished()) {
 				TxnPeerID tpi = bbr.readTxnPeerID();
 				int size = bbr.readInt();
 				try {
-//					bbr.setSchema(getSchema(tpi.getPeerID()));
+					// bbr.setSchema(getSchema(tpi.getPeerID()));
 					while (size > 0) {
 						--size;
 						Update u = bbr.readUpdate();
-						if (hasRelId && ( (! getSchema(u.getLastTid().getPeerID()).equals(getSchema(tc.getOwner()))))  || u.getRelationID() != relId) {
+						if (hasRelId
+								&& ((!getSchema(u.getLastTid().getPeerID())
+										.equals(getSchema(tc.getOwner()))))
+								|| u.getRelationID() != relId) {
 							continue;
 						}
 						retval.add(u);
@@ -583,15 +646,19 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		byte[] data = (byte[]) sendRequest(txn, byte[].class);
 
 		List<Update> retval = new ArrayList<Update>();
-		ByteBufferReader bbr = new ByteBufferReader(_mapStore/*getSchema(txn.getPeerID())*/, data);
-		while (! bbr.hasFinished()) {
+		ByteBufferReader bbr = new ByteBufferReader(_mapStore/*
+															 * getSchema(txn.getPeerID
+															 * ())
+															 */, data);
+		while (!bbr.hasFinished()) {
 			retval.add(bbr.readUpdate());
 		}
 		return retval;
 	}
 
 	@Override
-	public ResultIterator<TxnPeerID> getTransactionsForReconciliation(int recno) throws USException {
+	public ResultIterator<TxnPeerID> getTransactionsForReconciliation(int recno)
+			throws USException {
 		int currentRecno = getCurrentRecno();
 
 		int firstEpoch, lastEpoch;
@@ -602,19 +669,23 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 			if (currentRecno == StateStore.FIRST_RECNO) {
 				firstEpoch = BerkeleyDBStoreServer.FIRST_EPOCH;
 			} else {
-				firstEpoch = ((Integer) sendRequest(new GetRecnoEpoch(currentRecno - 1), Integer.class)) + 1;
+				firstEpoch = ((Integer) sendRequest(new GetRecnoEpoch(
+						currentRecno - 1), Integer.class)) + 1;
 			}
 		} else {
-			lastEpoch = (Integer) sendRequest(new GetRecnoEpoch(recno), Integer.class);
+			lastEpoch = (Integer) sendRequest(new GetRecnoEpoch(recno),
+					Integer.class);
 			if (recno == StateStore.FIRST_RECNO) {
 				firstEpoch = BerkeleyDBStoreServer.FIRST_EPOCH;
 			} else {
-				firstEpoch = ((Integer) sendRequest(new GetRecnoEpoch(recno - 1), Integer.class)) + 1;
+				firstEpoch = ((Integer) sendRequest(
+						new GetRecnoEpoch(recno - 1), Integer.class)) + 1;
 			}
 		}
 
 		try {
-			return new FlatteningIterator<TxnPeerID>(new EpochTxnsIterator(firstEpoch,lastEpoch));
+			return new FlatteningIterator<TxnPeerID>(new EpochTxnsIterator(
+					firstEpoch, lastEpoch));
 		} catch (IteratorException e) {
 			throw new USException(e.getMessage(), e.getCause());
 		}
@@ -630,7 +701,8 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		@Override
 		protected List<TxnPeerID> getData(int epoch) throws IteratorException {
 			try {
-				return (List<TxnPeerID>) sendRequest(new GetEpochTransactions(epoch), List.class);
+				return (List<TxnPeerID>) sendRequest(new GetEpochTransactions(
+						epoch), List.class);
 			} catch (USException e) {
 				throw new IteratorException(e.getMessage(), e.getCause());
 			}
@@ -640,31 +712,35 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<TxnPeerID, List<Update>> getTransactionsAcceptedAtRecno(int recno) throws USException {
+	public Map<TxnPeerID, List<Update>> getTransactionsAcceptedAtRecno(int recno)
+			throws USException {
 		HashSet<TxnPeerID> accepted = new HashSet<TxnPeerID>();
-		List<Decision> decisions = (List<Decision>) sendRequest(new GetDecisions(recno), List.class);
+		List<Decision> decisions = (List<Decision>) sendRequest(
+				new GetDecisions(recno), List.class);
 
 		for (Decision d : decisions) {
 			if (d.recno != recno) {
-				throw new USException("Received decision for recno " + d.recno + ", expected " + recno);
+				throw new USException("Received decision for recno " + d.recno
+						+ ", expected " + recno);
 			}
 			if (d.accepted) {
 				accepted.add(d.tpi);
 			}
 		}
 
-		byte[] updateContents = (byte[]) sendRequest(new GetTxns(accepted), byte[].class);
+		byte[] updateContents = (byte[]) sendRequest(new GetTxns(accepted),
+				byte[].class);
 
-		Map<TxnPeerID,List<Update>> retval = new HashMap<TxnPeerID,List<Update>>();
+		Map<TxnPeerID, List<Update>> retval = new HashMap<TxnPeerID, List<Update>>();
 
 		ByteBufferReader bbr = new ByteBufferReader(_mapStore, updateContents);
 
-		while (! bbr.hasFinished()) {
+		while (!bbr.hasFinished()) {
 			TxnPeerID tid = bbr.readTxnPeerID();
 			int size = bbr.readInt();
 			List<Update> txn = new ArrayList<Update>();
 			retval.put(tid, txn);
-//			bbr.setSchema(getSchema(tid.getPeerID()));
+			// bbr.setSchema(getSchema(tid.getPeerID()));
 			while (size > 0) {
 				txn.add(bbr.readUpdate());
 				--size;
@@ -689,7 +765,7 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 		if (s == null) {
 			throw new USException("Schema for peer " + pid + " is not known");
 		}
-		schemas.put(pid,s);
+		schemas.put(pid, s);
 		return s;
 	}
 
@@ -710,11 +786,12 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 	private static Process startUpdateStoreServerExec(int port,
 			String serverDirectoryName, String workingDirectoryName)
 			throws IOException {
-		String pathToScript = Config.getUpdateStoreExecutable();
-		String[] cmdarray = new String[] { pathToScript, "-port",
-				Integer.toString(port), serverDirectoryName };
+		String[] pathToScript = Config.getUpdateStoreExecutable();
+		List<String> cmdList = newArrayList(pathToScript);
+		cmdList.addAll(newArrayList( "-port",
+				Integer.toString(port), serverDirectoryName));
 		ProcessBuilder builder = new ProcessBuilder();
-		builder.command(cmdarray);
+		builder.command(cmdList);
 		builder.redirectErrorStream(true);
 		builder.directory(new File(workingDirectoryName));
 		final Process process = builder.start();

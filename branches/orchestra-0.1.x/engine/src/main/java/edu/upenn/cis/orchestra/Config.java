@@ -27,6 +27,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Joiner;
+
 /**
  * {@code Config} manages and provides access to a list of properties
  * determining the system's runtime configuration. These properties can be
@@ -105,6 +107,16 @@ public class Config {
 		return Float.parseFloat(getProperty(name));
 	}
 
+	public static void setStringArray(String name, String[] value) {
+		Joiner joiner = Joiner.on(",");
+		s_props.setProperty(name, joiner.join(value));
+	}
+	
+	public static String[] getStringArray(String name) {
+		String value = s_props.getProperty(name);
+		return ((value == null) ? null : value.split(","));
+	}
+	
 	public static void setFloat(String name, float value) {
 		s_props.setProperty(name, Float.toString(value));
 	}
@@ -697,11 +709,11 @@ public class Config {
 		setBoolean("compactNulls", cns);
 	}
 	
-	public static String setUpdateStoreExecutable(String executable) {
-		return (String) setProperty("updateStoreExecutable", executable);
+	public static void setUpdateStoreExecutable(String[] executable) {
+		setStringArray("updateStoreExecutable", executable);
 	}
 	
-	public static String getUpdateStoreExecutable() {
-		return getProperty("updateStoreExecutable");
+	public static String[] getUpdateStoreExecutable() {
+		return getStringArray("updateStoreExecutable");
 	}
 }
