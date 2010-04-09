@@ -30,7 +30,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -39,6 +38,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import edu.upenn.cis.orchestra.TestUtil;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 
 /**
  * Test that we correctly identify systems with bidirectional mappings.
@@ -85,11 +85,6 @@ public class BidirDetectionTest {
 		mappingElement = (Element) mappingNodes.item(0);
 	}
 
-	@AfterMethod
-	public void cleanupUpdateStore() throws Exception {
-		bidirSystem.clearStoreServer();
-		bidirSystem.stopStoreServer();
-	}
 	/**
 	 * An Orchestra schema file with a bidirectional mapping should result in a
 	 * bidirectional {@code OrchestraSystem}.
@@ -98,8 +93,7 @@ public class BidirDetectionTest {
 	 */
 	public void bidirTest() throws Exception {
 		mappingElement.setAttribute("bidirectional", "true");
-		bidirSystem = OrchestraSystem
-				.deserialize(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
+		createOrchestraSystem();
 		assertTrue(bidirSystem.isBidirectional());
 	}
 
@@ -111,8 +105,7 @@ public class BidirDetectionTest {
 	 */
 	public void notBidirTest() throws Exception {
 		mappingElement.setAttribute("bidirectional", "false");
-		bidirSystem = OrchestraSystem
-				.deserialize(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
+		createOrchestraSystem();
 		assertFalse(bidirSystem.isBidirectional());
 	}
 
@@ -125,9 +118,14 @@ public class BidirDetectionTest {
 	 */
 	public void defaultBidirTest() throws Exception {
 		assertNull(mappingElement.getAttributeNode("bidirectional"));
-		bidirSystem = OrchestraSystem
-				.deserialize(TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2"));
+		createOrchestraSystem();
 		assertFalse(bidirSystem.isBidirectional());
 	}
-	
+
+	private void createOrchestraSystem() throws Exception, InterruptedException {
+		Document schema = TestUtil.setLocalPeer(bidirSystemDoc, "pPODPeer2");
+		bidirSystem = new OrchestraSystem(schema,
+				new StubSchemaIDBindingClient.StubFactory(schema));
+	}
+
 }

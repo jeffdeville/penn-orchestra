@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.custommonkey.xmlunit.Diff;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
@@ -33,7 +32,7 @@ import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.IgnoreWhitespaceTextNodesDiff;
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
-import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStartStopClient;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -47,8 +46,6 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
 public class DatalogDeserializationTest {
 	private OrchestraSystem system;
 	private Document datalogDocument;
-	private final BerkeleyDBStoreStartStopClient usClient = new BerkeleyDBStoreStartStopClient(
-			"updateStore");
 
 	/**
 	 * Initializes the XML document.
@@ -62,20 +59,11 @@ public class DatalogDeserializationTest {
 		datalogDocument = DomUtils.createDocument(in);
 		in.close();
 		in = Config.class.getResourceAsStream("ppodLN/ppodLNHash.schema");
-		usClient.startAndClearUpdateStore();
-		system = OrchestraSystem.deserialize(TestUtil.setLocalPeer(
-				createDocument(in), "pPODPeer2"));
+		Document schema = TestUtil
+				.setLocalPeer(createDocument(in), "pPODPeer2");
+		system = new OrchestraSystem(schema,
+				new StubSchemaIDBindingClient.StubFactory(schema));
 		in.close();
-	}
-
-	/**
-	 * Clear and stop update store.
-	 * 
-	 * @throws Exception
-	 */
-	@AfterClass(alwaysRun = true)
-	public void cleanupUpdateStore() throws Exception {
-		usClient.clearAndStopUpdateStore();
 	}
 
 	/**

@@ -446,6 +446,34 @@ public class SchemaIDBinding implements ISchemaIDBinding {
 		Map<AbstractPeerID, Schema> peerIDToSchema = newHashMap();
 		List<Schema> schemas = newArrayList();
 		Map<AbstractPeerID, Integer> peerIDToInteger = newHashMap();
+		loadSchemas(peers, schemas, peerIDToSchema, peerIDToInteger);
+		registerAllSchemas(cdss, schemas, peerIDToInteger);
+		return peerIDToSchema;
+
+	}
+	
+	/**
+	 * Populates the passed in
+	 * collections with the result of deserializing the peer elements contained in {@code peers}.
+	 * 
+	 * @param peers
+	 * @param schemas a non-null set
+	 * @param peerIDToSchema a non-null map
+	 * @param peerIDToInteger a non-null map
+	 * 
+	 * @throws DuplicateRelationIdException
+	 * @throws UnknownRefFieldException
+	 * @throws XMLParseException
+	 * @throws UnsupportedTypeException
+	 * @throws RelationNotFoundException
+	 */
+	static public void loadSchemas(
+			List<Element> peers, List<Schema> schemas,
+			Map<AbstractPeerID, Schema> peerIDToSchema,
+			Map<AbstractPeerID, Integer> peerIDToInteger)
+			throws DuplicateRelationIdException, UnknownRefFieldException,
+			XMLParseException, UnsupportedTypeException,
+			RelationNotFoundException {
 		int i = 0;
 		for (Element peer : peers) {
 			AbstractPeerID pid = new StringPeerID(peer.getAttribute("name"));
@@ -455,9 +483,6 @@ public class SchemaIDBinding implements ISchemaIDBinding {
 			schemas.add(schema);
 			peerIDToInteger.put(pid, Integer.valueOf(i++));
 		}
-		registerAllSchemas(cdss, schemas, peerIDToInteger);
-		return peerIDToSchema;
-
 	}
 
 	/**

@@ -29,6 +29,7 @@ import org.w3c.dom.Document;
 
 import edu.upenn.cis.orchestra.TestUtil;
 import edu.upenn.cis.orchestra.datamodel.exceptions.RelationNotFoundException;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreStartStopClient;
 
 /**
  * Verifies that each {@code OrchestraSystem} agrees on the integer ids of the
@@ -47,6 +48,8 @@ public class RelationIdTest {
 	private static final String secondSchema = "pPODPeer2Schema1";
 	private static final String[] firstRelations = { "OTU", "OTU2" };
 	private static final String[] secondRelations = { "OTU" };
+	private final BerkeleyDBStoreStartStopClient usClient = new BerkeleyDBStoreStartStopClient(
+			"updateStore");
 
 	/**
 	 * Instantiate the {@code OrchestraSystem}s.
@@ -60,6 +63,7 @@ public class RelationIdTest {
 		Document template = createDocument(is);
 		Document firstSchemaDoc = TestUtil.setLocalPeer(template, firstPeer);
 		Document secondSchemaDoc = TestUtil.setLocalPeer(template, secondPeer);
+		usClient.startAndClearUpdateStore();
 		firstSystem = OrchestraSystem.deserialize(firstSchemaDoc);
 		secondSystem = OrchestraSystem.deserialize(secondSchemaDoc);
 
@@ -84,8 +88,9 @@ public class RelationIdTest {
 	public void stopUpdateStore() throws Exception {
 		firstSystem.disconnect();
 		secondSystem.disconnect();
-		firstSystem.clearStoreServer();
-		firstSystem.stopStoreServer();
+		usClient.clearAndStopUpdateStore();
+		//firstSystem.clearStoreServer();
+		//firstSystem.stopStoreServer();
 	}
 
 	private void checkRelationId(String peer, String schema, String[] relations)
@@ -95,8 +100,10 @@ public class RelationIdTest {
 					peer, schema, relation);
 			RelationContext relationFromSecond = secondSystem
 					.getRelationByName(peer, schema, relation);
-			assertTrue(relationFromFirst.getRelation().getRelationID() == relationFromSecond
-					.getRelation().getRelationID());
+			int idFromFirst = relationFromFirst.getRelation().getRelationID();
+			int idFromSecond = relationFromSecond.getRelation().getRelationID();
+			assertTrue(idFromFirst == idFromSecond, idFromFirst + " != "
+					+ idFromSecond);
 		}
 	}
 }

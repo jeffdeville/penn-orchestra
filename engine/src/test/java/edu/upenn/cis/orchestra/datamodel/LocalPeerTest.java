@@ -22,21 +22,21 @@ import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datamodel.exceptions.NoLocalPeerException;
+import edu.upenn.cis.orchestra.reconciliation.StubSchemaIDBindingClient;
 
 /**
- * DOCUMENT ME
+ * Makes sure we are setting local peer correctly.
  * 
  * @author John Frommeyer
  * 
  */
-@Test(groups = { FAST_TESTNG_GROUP})
+@Test(groups = { FAST_TESTNG_GROUP })
 public class LocalPeerTest {
 
 	private Document schemaTemplate;
@@ -54,27 +54,14 @@ public class LocalPeerTest {
 	}
 
 	/**
-	 * Clear and stop update store.
-	 * 
-	 * @throws Exception
-	 */
-	@AfterMethod
-	public void cleanupUpdateStore() throws Exception {
-		if (system != null) {
-			system.clearStoreServer();
-			system.stopStoreServer();
-		}
-	}
-	
-	/**
 	 * Make sure we set the correct peer as local
 	 * 
 	 * @throws Exception
 	 */
 	public void localPeerTest() throws Exception {
-
-		system = OrchestraSystem.deserialize(setLocalPeer(
-				schemaTemplate, "pPODPeer2"));
+		Document schema = setLocalPeer(schemaTemplate, "pPODPeer2");
+		system = new OrchestraSystem(schema,
+				new StubSchemaIDBindingClient.StubFactory(schema));
 		assertTrue(system.isLocalPeer(system.getPeer("pPODPeer2")));
 		assertFalse(system.isLocalPeer(system.getPeer("pPODPeer1")));
 	}
@@ -87,7 +74,8 @@ public class LocalPeerTest {
 	@Test(expectedExceptions = { NoLocalPeerException.class }, groups = { BROKEN_TESTNG_GROUP })
 	public void noLocalPeerTest() throws Exception {
 
-		system = OrchestraSystem.deserialize(schemaTemplate);
+		system = new OrchestraSystem(schemaTemplate,
+				new StubSchemaIDBindingClient.StubFactory(schemaTemplate));
 
 	}
 }

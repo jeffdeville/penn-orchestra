@@ -83,7 +83,8 @@ final public class BerkeleyDBStoreStartStopClient {
 
 		clearUpdateStore();
 		sendRequest(Collections
-				.singletonList((Serializable) new StopUpdateStore()), EndOfStreamMsg.class);
+				.singletonList((Serializable) new StopUpdateStore()),
+				EndOfStreamMsg.class);
 	}
 
 	public void startAndClearUpdateStore() throws USException,
@@ -146,5 +147,15 @@ final public class BerkeleyDBStoreStartStopClient {
 			throw new USException(
 					"Could not deserialize response from BDB store", e);
 		}
+	}
+
+	public static void main(String[] args) throws USException,
+			EnvironmentLockedException, DatabaseException, IOException,
+			ClassNotFoundException, InterruptedException {
+		BerkeleyDBStoreStartStopClient usClient = new BerkeleyDBStoreStartStopClient(
+				"updateStoreClientTest");
+		usClient.startAndClearUpdateStore();
+		Thread.sleep(1000);
+		usClient.clearAndStopUpdateStore();
 	}
 }
