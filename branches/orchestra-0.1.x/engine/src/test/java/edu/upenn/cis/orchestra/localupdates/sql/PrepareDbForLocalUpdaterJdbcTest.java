@@ -106,8 +106,6 @@ public class PrepareDbForLocalUpdaterJdbcTest {
 							+ ExtractorDefault.TABLE_SUFFIX });
 			Assertion.assertEquals(expected, actual);
 		} finally {
-			system.clearStoreServer();
-			system.stopStoreServer();
 			system.getMappingDb().finalize();
 			if (testConnection != null) {
 				testConnection.close();
