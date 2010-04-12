@@ -1488,15 +1488,14 @@ public class OrchestraSystem {
 			Debug
 					.println("Cannot connect to update store. Checking to see if update store should live here.");
 			_usf.startUpdateStoreServer();
-			int tries = 20;
-			for (int i = 1; i <= tries && !connected; i++) {
+			long stopTime = System.currentTimeMillis() + 5000;
+			for (long currentTime = System.currentTimeMillis(); currentTime < stopTime
+					&& !connected; currentTime = System.currentTimeMillis()) {
+				_logger
+						.debug("Failed to connect to update store. Trying again.");
 				connected = schemaIDBindingClient.reconnect();
-				if (_logger.isDebugEnabled() && !connected) {
-					_logger
-							.debug(
-									"Failed to connect to update store on try {} of {}.",
-									Integer.valueOf(i), Integer.valueOf(tries));
-				}
+
+				Thread.sleep(100);
 			}
 			if (!connected) {
 				throw new USException("Cannot connect to the update store");
@@ -1512,9 +1511,7 @@ public class OrchestraSystem {
 	 * @throws Exception
 	 */
 	@Deprecated
-	public void stopStoreServer() throws Exception {
-		_usf.stopUpdateStoreServer();
-	}
+	public void stopStoreServer() throws Exception {}
 
 	/**
 	 * Returns {@code true} if the update store is running, and {@code false}
