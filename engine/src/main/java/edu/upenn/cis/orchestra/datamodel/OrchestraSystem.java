@@ -25,7 +25,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -41,10 +40,6 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +90,6 @@ import edu.upenn.cis.orchestra.reconciliation.StateStore;
 import edu.upenn.cis.orchestra.reconciliation.USDump;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
-import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreClient;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -899,7 +893,7 @@ public class OrchestraSystem {
 			// Engine creation must come after mapping creation.
 			Element engineElement = getChildElementByName(catalogElement,
 			"engine");
-			createEngineElement(engineElement);
+			createEngine(engineElement);
 			if (_usf == null || _ssf == null) {
 				throw new XMLParseException(
 						"Missing <store> element to describe state and update stores");
@@ -932,7 +926,7 @@ public class OrchestraSystem {
 	 * @throws NoLocalUpdaterClassException
 	 * @throws NoExtractorClassException
 	 */
-	private void createEngineElement(Element engineElement)
+	private void createEngine(Element engineElement)
 			throws XMLParseException, Exception, NoLocalUpdaterClassException,
 			NoExtractorClassException {
 		InputStream inFile = Config.class
@@ -989,29 +983,6 @@ public class OrchestraSystem {
 
 	/**
 	 * Deserialize store information contained in the {@code store} child of
-	 * {@code root}.
-	 * 
-	 * @param catalog
-	 * @param root
-	 * @throws XMLParseException
-	 */
-	private static void createStoreFactories(OrchestraSystem catalog,
-			Element root) throws XMLParseException {
-		// Create store factories
-		Element store = getChildElementByName(root, "store");
-
-		Element update = DomUtils.getChildElementByName(store, "update");
-		Element state = DomUtils.getChildElementByName(store, "state");
-		if (update == null || state == null) {
-			throw new XMLParseException("Missing <update> or <state> tag",
-					store);
-		}
-		catalog._usf = UpdateStore.deserialize(update);
-		catalog._ssf = StateStore.deserialize(state);
-	}
-
-	/**
-	 * Deserialize store information contained in the {@code store} child of
 	 * {@code root}. If {@code updateStoreFactory} is non-null, then it is used
 	 * and the "update" Element is ignored.
 	 * 
@@ -1038,41 +1009,6 @@ public class OrchestraSystem {
 			_usf = updateStoreFactory;
 		}
 
-	}
-
-	/**
-	 * Returns the name of the local peer for {@code document}.
-	 * 
-	 * @param document
-	 * @return
-	 * @throws XMLParseException
-	 */
-	private static String getLocalPeerName(Document document)
-			throws XMLParseException {
-		try {
-			XPathFactory xpathFactory = XPathFactory.newInstance();
-			XPath xpath = xpathFactory.newXPath();
-			NodeList localPeers = (NodeList) xpath.evaluate(
-					"//peer[@localPeer = 'true']/@name", document,
-					XPathConstants.NODESET);
-			if (localPeers.getLength() != 1) {
-				throw new XMLParseException(
-						"Must specifiy exactly one peer with \"localPeer = 'true'\".");
-			}
-			return localPeers.item(0).getNodeValue();
-
-		} catch (XPathExpressionException e) {
-			throw new XMLParseException(e);
-		}
-
-	}
-
-	private InetSocketAddress getBdbStorePort() {
-		if (_usf instanceof BerkeleyDBStoreClient.Factory) {
-			return ((BerkeleyDBStoreClient.Factory) _usf).host;
-		} else {
-			return null;
-		}
 	}
 
 	/**
@@ -1448,38 +1384,6 @@ public class OrchestraSystem {
 
 	}
 
-	private static ISchemaIDBindingClient startStoreServer(
-			OrchestraSystem system) throws Exception {
-		InetSocketAddress ias = system.getBdbStorePort();
-		if (ias == null) {
-			throw new Exception("System does not use a BerkeleyDB Store server");
-		}
-
-		ISchemaIDBindingClient schemaIDBindingClient = system._usf
-				.getSchemaIDBindingClient();
-		boolean connected = schemaIDBindingClient.reconnect();
-		if (!connected) {
-			Debug
-					.println("Cannot connect to update store. Checking to see if update store should live here.");
-			system._usf.startUpdateStoreServer();
-			int tries = 20;
-			for (int i = 1; i <= tries && !connected; i++) {
-				connected = schemaIDBindingClient.reconnect();
-				if (_logger.isDebugEnabled() && !connected) {
-					_logger
-							.debug(
-									"Failed to connect to update store on try {} of {}.",
-									Integer.valueOf(i), Integer.valueOf(tries));
-				}
-			}
-			if (!connected) {
-				throw new USException("Cannot connect to the update store");
-			}
-		}
-		return schemaIDBindingClient;
-
-	}
-
 	private ISchemaIDBindingClient startUpdateStoreServer() throws Exception {
 		ISchemaIDBindingClient schemaIDBindingClient = _usf
 				.getSchemaIDBindingClient();
@@ -1488,9 +1392,10 @@ public class OrchestraSystem {
 			Debug
 					.println("Cannot connect to update store. Checking to see if update store should live here.");
 			_usf.startUpdateStoreServer();
-			long stopTime = System.currentTimeMillis() + 5000;
-			for (long currentTime = System.currentTimeMillis(); currentTime < stopTime
-					&& !connected; currentTime = System.currentTimeMillis()) {
+			long currentTime = System.currentTimeMillis();
+			long stopTime = currentTime + 10000;
+			for (; currentTime < stopTime && !connected; currentTime = System
+					.currentTimeMillis()) {
 				_logger
 						.debug("Failed to connect to update store. Trying again.");
 				connected = schemaIDBindingClient.reconnect();
@@ -1643,14 +1548,6 @@ public class OrchestraSystem {
 	 */
 	public boolean isBidirectional() {
 		return _bidirectional;
-	}
-
-	private void setLocalPeer(Peer peer) throws NoLocalPeerException {
-		if (_localPeer != null) {
-			throw new NoLocalPeerException(_localPeer, peer);
-		}
-		_localPeer = peer;
-
 	}
 
 	/**
