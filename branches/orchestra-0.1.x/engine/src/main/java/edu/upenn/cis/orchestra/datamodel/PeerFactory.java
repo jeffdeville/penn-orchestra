@@ -18,7 +18,6 @@ package edu.upenn.cis.orchestra.datamodel;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.util.DomUtils.addChild;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
-import static edu.upenn.cis.orchestra.util.DomUtils.getChildElementsByName;
 
 import java.util.List;
 import java.util.Map;
