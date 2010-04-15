@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.dbunit.Assertion;
@@ -35,6 +36,7 @@ import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.FilteredDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITableMetaData;
+import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.SortedDataSet;
 import org.dbunit.dataset.datatype.DataType;
 import org.dbunit.dataset.datatype.IDataTypeFactory;
@@ -49,8 +51,6 @@ import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 
 import edu.upenn.cis.orchestra.reconciliation.bdbstore.BdbDataSetFactory;
-
-
 
 /**
  * Utility methods for using DbUnit.
@@ -199,7 +199,9 @@ public class DbUnitUtil {
 			BdbDataSetFactory factory) throws IOException, DataSetException,
 			Exception, SQLException, DatabaseUnitException {
 		IDataSet actual = null;
-		IDataSet expected = new FlatXmlDataSet(expectedDataSetFile);
+		ReplacementDataSet expected = new ReplacementDataSet(
+				new FlatXmlDataSet(expectedDataSetFile), Collections
+						.singletonMap("[NULL]", null), Collections.emptyMap());
 		// It appears to be necessary to get a new connection for each
 		// assertion, otherwise DbUnit reports a mismatch in the expected and
 		// actual number of tables. The _tableMap in DatabaseDataSet looks to be
@@ -258,7 +260,8 @@ public class DbUnitUtil {
 						@Override
 						public boolean accept(String tableName, Column column) {
 							return true;
-						}});
+						}
+					});
 		}
 
 		return c;

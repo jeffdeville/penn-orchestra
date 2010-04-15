@@ -48,4 +48,8 @@
   <reconAcceptedTxns/>
   <reconRejectedTxns/>
   <txns/>
+  <pPODPeer2.stateDb/>
+  <pPODPeer2.updatesDb/>
+  <pPODPeer1.stateDb/>
+  <pPODPeer1.updatesDb/>
 </dataset>
