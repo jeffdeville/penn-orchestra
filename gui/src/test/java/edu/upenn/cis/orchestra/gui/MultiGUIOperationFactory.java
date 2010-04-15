@@ -22,6 +22,7 @@ import static org.fest.swing.timing.Pause.pause;
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import org.fest.swing.finder.JFileChooserFinder;
 import org.fest.swing.fixture.DialogFixture;
@@ -42,7 +43,6 @@ import edu.upenn.cis.orchestra.OrchestraSchema;
 import edu.upenn.cis.orchestra.gui.peers.PeerCommands;
 import edu.upenn.cis.orchestra.gui.peers.PeersMgtPanel;
 import edu.upenn.cis.orchestra.reconciliation.bdbstore.BdbDataSetFactory;
-
 
 /**
  * Creates {@code IOrchestraOperation}s which carry out operations via the GUI.
@@ -383,7 +383,8 @@ public final class MultiGUIOperationFactory extends
 					.tabbedPane(PeersMgtPanel.PEERS_MGT_TABBED_PANE);
 			tabPane.selectTab("Peer " + peerName);
 
-			window.button(withText("Publish and Reconcile").andShowing()).click();
+			window.button(withText("Publish and Reconcile").andShowing())
+					.click();
 
 			// Click OK
 			JOptionPaneFixture result = window.optionPane(
@@ -393,6 +394,48 @@ public final class MultiGUIOperationFactory extends
 
 			DbUnitUtil.dumpOrCheck(datasetFile, orchestraSchema, dumpDatasets,
 					testFrame.getTestFrame().getDbTester(), bdbDataSetFactory);
+		}
+	}
+	
+	private static final Pattern clickPattern = Pattern.compile("click");
+	
+	/**
+	 * An Orchestra ClickPeerTab operation.
+	 * 
+	 */
+	private class ClickPeerTabOperation implements IOrchestraOperation {
+
+		/** The peer whos tab we will be clicking. */
+		private final String peerToClick;
+
+		/** The publishing peer. */
+		private final String peerName;
+		
+		
+		/**
+		 * Creates a new publish operation.
+		 * @param operationName 
+		 * @param peerName
+		 */
+		public ClickPeerTabOperation(String operationName,
+				@SuppressWarnings("hiding") final String peerName) {
+			peerToClick = clickPattern.matcher(operationName).replaceFirst("");
+			this.peerName = peerName;
+		}
+
+		/**
+		 * @see edu.upenn.cis.orchestra.IOrchestraOperation#execute()
+		 */
+		@Override
+		public void execute() throws Exception {
+			ITestFrameWrapper<OrchestraGUIController> testFrame = peerToTestFrameWrapper
+					.get(peerName);
+			FrameFixture window = testFrame.getOrchestraController()
+					.getFrameFixture();
+			window.component().toFront();
+			JTabbedPaneFixture tabPane = window
+					.tabbedPane(PeersMgtPanel.PEERS_MGT_TABBED_PANE);
+			tabPane.selectTab("Peer " + peerToClick);
 		}
 	}
 
@@ -448,6 +491,8 @@ public final class MultiGUIOperationFactory extends
 			return new StartOperation(datasetFile, peerName);
 		} else if (operationName.equalsIgnoreCase("stop")) {
 			return new StopOperation(datasetFile, peerName);
+		} else if (operationName.startsWith("click")) {
+			return new ClickPeerTabOperation(operationName, peerName);
 		} else {
 			throw new IllegalStateException("Unrecognized operation: ["
 					+ operationName

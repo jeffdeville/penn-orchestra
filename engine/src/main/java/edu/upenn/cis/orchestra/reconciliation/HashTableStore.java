@@ -54,6 +54,12 @@ public class HashTableStore extends DiffStore {
 		static public Factory deserialize(Element store) {
 			return new Factory();
 		}
+
+		/**  {@inheritDoc}
+		 * @see edu.upenn.cis.orchestra.reconciliation.StateStore.Factory#shutdown()
+		 */
+		@Override
+		public void shutdown() {}
 	}
 	// The current state of the database, one element for each relation
 	// Mapping from key to StoreEntry
