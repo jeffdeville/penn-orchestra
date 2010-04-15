@@ -101,6 +101,25 @@ public class BerkeleyDBStore extends DiffStore {
 			Environment e = new Environment(envHome, config);
 			return new Factory(e, stateName, updatesName);
 		}
+
+		/**
+		 * {@inheritDoc}
+		 * 
+		 * Assumes that the any open databases have already been closed by
+		 * calling the state store's {@code close()} method.
+		 * 
+		 * @throws SSException
+		 * @see edu.upenn.cis.orchestra.reconciliation.StateStore.Factory#shutdown()
+		 */
+		@Override
+		public void shutdown() throws SSException {
+			try {
+				e.close();
+			} catch (DatabaseException dbe) {
+				throw new SSException(
+						"Error shutting down state store environment.", dbe);
+			}
+		}
 	}
 
 	private Environment e;
@@ -113,8 +132,6 @@ public class BerkeleyDBStore extends DiffStore {
 	// updatesDb is a mapping from tuple key column bytes, recno to two updates
 	// (relationId, primary key subtuple, recno) --> (Update, Update)
 	private Database updatesDb;
-	private final File envHome;
-	private final EnvironmentConfig envConfig;
 
 	public BerkeleyDBStore(Environment e, String stateName, String updatesName,
 			AbstractPeerID pid, ISchemaIDBinding schema, int lastTid)
@@ -126,8 +143,6 @@ public class BerkeleyDBStore extends DiffStore {
 		this.updatesName = updatesName;
 		DatabaseConfig dbc = new DatabaseConfig();
 		dbc.setAllowCreate(true);
-		envHome = this.e.getHome();
-		envConfig = this.e.getConfig();
 		stateDb = e.openDatabase(null, stateName, dbc);
 		updatesDb = e.openDatabase(null, updatesName, dbc);
 	}
@@ -136,20 +151,15 @@ public class BerkeleyDBStore extends DiffStore {
 		try {
 			stateDb.close();
 			updatesDb.close();
-			e.close();
 		} catch (DatabaseException de) {
 			throw new BDBStateStoreException(de);
 		}
 		stateDb = null;
 		updatesDb = null;
-		e = null;
 	}
 
 	public void reopen() throws BDBStateStoreException {
 		try {
-			if (e == null) {
-				e = new Environment(envHome, envConfig);
-			}
 			stateDb = e.openDatabase(null, stateName, null);
 			updatesDb = e.openDatabase(null, updatesName, null);
 		} catch (DatabaseException de) {
@@ -490,9 +500,6 @@ public class BerkeleyDBStore extends DiffStore {
 	protected void resetDiffStore() throws SSException {
 		close();
 		try {
-			if (e == null) {
-				e = new Environment(envHome, envConfig);
-			}
 			e.truncateDatabase(null, stateName, false);
 			e.truncateDatabase(null, updatesName, false);
 		} catch (DatabaseException dbe) {

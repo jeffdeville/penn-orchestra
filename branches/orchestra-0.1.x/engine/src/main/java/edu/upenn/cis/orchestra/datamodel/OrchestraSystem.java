@@ -462,6 +462,9 @@ public class OrchestraSystem {
 			throw new IllegalArgumentException("Peer " + name
 					+ " is not in the Orchestra system");
 		}
+		if (!p.isLocalPeer()) {
+			throw new DbException("May not access non-local peer's " + name + " database.");
+		}
 		/*
 		 * if (_schemas.get(name) == null || _schemas.get(name).size() != 1) {
 		 * throw new
@@ -544,6 +547,7 @@ public class OrchestraSystem {
 				db.disconnect();
 			}
 		}
+		_ssf.shutdown();
 	}
 
 	public synchronized USDump dump(Peer p) throws DbException {

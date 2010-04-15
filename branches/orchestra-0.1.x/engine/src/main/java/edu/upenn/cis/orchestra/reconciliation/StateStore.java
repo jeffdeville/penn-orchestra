@@ -43,6 +43,15 @@ public abstract class StateStore {
 	public interface Factory {
 		public StateStore getStateStore(AbstractPeerID pid, ISchemaIDBinding s, int lastTid) throws SSException;
 		public void serialize(Document doc, Element store);
+
+		/**
+		 * Shuts down the state store factory. This factory's
+		 * {@getStateStore(...)} method should not be
+		 * called once this method is called.
+		 * 
+		 * @throws SSException
+		 */
+		public void shutdown() throws SSException;
 	}
 	public static class SSException extends DbException {
 		private static final long serialVersionUID = 1L;
