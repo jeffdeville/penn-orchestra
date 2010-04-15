@@ -126,15 +126,15 @@ PeerTransactionsIntf
 			addPane(_tabbedPane, new ProvenanceViewer(_p, _sys, fact), null, TAB_PROVVIEW_TITLE, VTextIcon.ROTATE_DEFAULT);
 //		else
 //		{
-			try
-			{
-				addPane(_tabbedPane, new TransactionViewer(_p, _sys), null, TAB_TRANSVIEWER_TITLE, VTextIcon.ROTATE_DEFAULT);
-			} catch (DbException ex)
-			{
-				ex.printStackTrace();
-				JOptionPane.showMessageDialog(this, "Error while loading the transactions viewer: " + ex.getMessage(), "Transaction viewer", JOptionPane.ERROR_MESSAGE);
+			if (_p.isLocalPeer()){
+				try {
+					addPane(_tabbedPane, new TransactionViewer(_p, _sys), null, TAB_TRANSVIEWER_TITLE, VTextIcon.ROTATE_DEFAULT);
+				} catch (DbException ex) {
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(this, "Error while loading the transactions viewer: " + ex.getMessage(), "Transaction viewer", JOptionPane.ERROR_MESSAGE);
+				}
 			}
-//		}
+//			}
 
 		// When a schema is selected, check that it has already been 
 		// loaded, otherwise load it
