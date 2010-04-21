@@ -41,8 +41,8 @@ import java.util.Vector;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -116,7 +116,7 @@ public class SqlDb implements IDb {
 		resultSetIsClosed = temp;
 	}
 
-	private Log _log = LogFactory.getLog(getClass());
+	private static final Logger _log = LoggerFactory.getLogger(SqlDb.class);
 
 	/**
 	 * Queueing and SQL application class for updates
@@ -1627,7 +1627,7 @@ public class SqlDb implements IDb {
 			ISqlSelect q = gen.toQuery();
 			String str = q.toString();
 			ResultSet rs = evaluateQuery(str);
-			Debug.println("evalQueryRule: " + str);
+			_log.debug("evalQueryRule: {} -> {}", rule, str);
 			return new Result(rs, rule.getHead().getRelation());
 		}
 		return null;
@@ -2044,17 +2044,22 @@ public class SqlDb implements IDb {
 					continue;
 
 				Relation rl = s.getRelation(r.getName() + Relation.LOCAL);
+				Relation rr = s.getRelation(r.getName() + Relation.REJECT);
 
 				// Read each tuple.
 				// Convert into update. Add transaction to Db object.
 
-				RelationContext rc = new RelationContext(rl, s, p, false);
+				RelationContext rlc = new RelationContext(rl, s, p, false);
+				RelationContext rrc = new RelationContext(rr, s, p, false);
 
-				totalCount += convert(r, rc, AtomType.DEL, store);
-				totalCount += convert(r, rc, AtomType.INS, store);
-
+				totalCount += convert(r, rlc, AtomType.DEL, store);
+				//totalCount += convert(r, rrc, AtomType.DEL, store);
+				totalCount += convert(r, rlc, AtomType.INS, store);
+				//totalCount += convert(r, rrc, AtomType.INS, store);
 				dropExistingData(rl.getFullQualifiedDbId() + Relation.DELETE);
 				dropExistingData(rl.getFullQualifiedDbId() + Relation.INSERT);
+				//dropExistingData(rr.getFullQualifiedDbId() + Relation.DELETE);
+				//dropExistingData(rr.getFullQualifiedDbId() + Relation.INSERT);
 			}
 		}
 		return totalCount;
@@ -2146,12 +2151,9 @@ public class SqlDb implements IDb {
 				store.addTransaction(updates);
 				count++;
 			}
-			Debug.println("Added "
-					+ count
-					+ " updates from "
-					+ rc.toString()
+			_log.debug("Added {} updates from {}"
 					+ ((typ == AtomType.DEL) ? " deletions" : " insertions"
-						+ " with target relation " + log.getName()));
+						+ " with target relation {}"), new Object[] { count, rc, log.getName()} );
 			return count;
 
 		} catch (ValueMismatchException e) {
@@ -2343,7 +2345,7 @@ public class SqlDb implements IDb {
 		ISqlInsert insert = _sqlFactory.newInsert(targetTable);
 		insert.addValueSpec(_sqlFactory.newSelect(_sqlFactory
 				.newSelectItem("*"), _sqlFactory.newFromItem(sourceTable)));
-		_log.debug(insert);
+		_log.debug("Insert statement: {}", insert);
 		Statement insertStatement = _con.createStatement();
 		insertStatement.executeUpdate(insert.toString());
 	}

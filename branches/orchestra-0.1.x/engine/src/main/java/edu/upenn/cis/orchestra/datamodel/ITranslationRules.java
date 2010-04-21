@@ -46,6 +46,14 @@ public interface ITranslationRules {
 	public List<RelationContext> getIdbs(Map<String, Schema> builtInSchemas);
 
 	/**
+	 * Returns the rejection relations.
+	 * @param system 
+	 * @return the rejection relations
+	 * 
+	 */
+	List<RelationContext> getRej(OrchestraSystem system);
+	
+	/**
 	 * Returns the outer union relations.
 	 * 
 	 * @return the outer union relations
@@ -96,16 +104,17 @@ public interface ITranslationRules {
 	
 	/**
 	 * Returns an XML {@code Document} which represents this {@code ITranslationRules}.
-	 * @param builtInSchemas TODO
+	 * @param system
+	 * @param builtInSchemas
 	 * 
 	 * @return an XML {@code Document} which represents this {@code ITranslationRules}
 	 */
-	Document serialize(Map<String, Schema> builtInSchemas);
+	Document serialize(OrchestraSystem system, Map<String, Schema> builtInSchemas);
 
 	/**
-	 * DOCUMENT ME
+	 * Returns the inner join relations.
 	 * 
-	 * @return
+	 * @return the inner join relations
 	 */
 	List<RelationContext> getInnerJoinRelations();
 
@@ -122,5 +131,7 @@ public interface ITranslationRules {
 	 * @return the simulated outer join relations
 	 */
 	List<RelationContext> getSimulatedOuterJoinRelations();
+
+	
 
 }

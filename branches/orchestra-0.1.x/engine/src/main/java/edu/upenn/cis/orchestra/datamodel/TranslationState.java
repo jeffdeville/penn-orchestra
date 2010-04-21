@@ -95,6 +95,7 @@ public class TranslationState implements ITranslationState, Serializable {
 	 * 
 	 * @param edbs
 	 * @param idbs
+	 * @param rej
 	 * @param localToPeerRules
 	 * @param originalMappings
 	 * @param realOuterJoinRels
@@ -110,6 +111,7 @@ public class TranslationState implements ITranslationState, Serializable {
 	private TranslationState(
 			 List<RelationContext> edbs,
 			 List<RelationContext> idbs,
+			 List<RelationContext> rej,
 			 List<Rule> localToPeerRules,
 			 List<Mapping> originalMappings,
 			 List<RelationContext> realOuterJoinRels,
@@ -121,6 +123,7 @@ public class TranslationState implements ITranslationState, Serializable {
 			 List<Rule> sourceToProvRules, List<Rule> sourceToTargetRules, List<RelationContext> rels) {
 		_edbs = edbs;
 		_idbs = idbs;
+		_rej = rej;
 		_local2PeerRules = localToPeerRules;
 		_originalMappings = originalMappings;
 		_realOuterJoinRels = realOuterJoinRels;
@@ -371,10 +374,10 @@ public class TranslationState implements ITranslationState, Serializable {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see edu.upenn.cis.orchestra.datamodel.ITranslationRules#serialize(Map<String, Schema>)
+	 * @see edu.upenn.cis.orchestra.datamodel.ITranslationRules#serialize(OrchestraSystem, Map<String, Schema>)
 	 */
 	@Override
-	public Document serialize(Map<String, Schema> builtInSchemas) {
+	public Document serialize(OrchestraSystem system, Map<String, Schema> builtInSchemas) {
 		Document doc = DomUtils.createDocument();
 		Element state = doc.createElement("translationState");
 		state.appendChild(Mapping.serializeVerbose(doc,getOriginalMappings(),
@@ -392,6 +395,7 @@ public class TranslationState implements ITranslationState, Serializable {
 			getRealMappingRelations(), "realMappingRelations"));
 		state.appendChild(RelationContext.serialize(doc, getEdbs(builtInSchemas), "edbs"));
 		state.appendChild(RelationContext.serialize(doc, getIdbs(builtInSchemas), "idbs"));
+		state.appendChild(RelationContext.serialize(doc, getRej(system), "rej"));
 		state.appendChild(RelationContext.serialize(doc,
 			getRealOuterJoinRelations(), "realOuterJoinRelations"));
 		state.appendChild(RelationContext.serialize(doc,
@@ -434,6 +438,8 @@ public class TranslationState implements ITranslationState, Serializable {
 				root, "edbs"), system);
 		List<RelationContext> idbs = deserializeRelationContexts(getChildElementByName(
 				root, "idbs"), system);
+		List<RelationContext> rej = deserializeRelationContexts(getChildElementByName(
+				root, "rej"), system);
 		List<RelationContext> realOuterJoinRelations = deserializeRelationContexts(getChildElementByName(
 				root, "realOuterJoinRelations"), system);
 		List<RelationContext> simulatedOuterJoinRelations = deserializeRelationContexts(getChildElementByName(
@@ -444,7 +450,7 @@ public class TranslationState implements ITranslationState, Serializable {
 				root, "outerUnionRelations"), system);
 		List<RelationContext> rels = deserializeRelationContexts(getChildElementByName(root, "rels"), system);
 		ITranslationState newTranslationStates = new TranslationState(edbs,
-				idbs, localToPeerRules, originalMappings,
+				idbs, rej, localToPeerRules, originalMappings,
 				realOuterJoinRelations, innerJoinRelations,
 				simulatedOuterJoinRelations, outerUnionRelations,
 				provToTargetMappings, realMappingRelations, sourceToProvRules, sourceToTargetRules, rels);
