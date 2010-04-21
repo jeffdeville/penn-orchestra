@@ -60,6 +60,9 @@ public class MultiSystemOrchestraOperationExecutor implements
 
 	/** The factory that makes our {@code IOrchestraOperation}s. */
 	private final IOrchestraOperationFactory opFactory;
+	
+	/** For use in conditional breakpoints. */
+	public static int operationNumber;
 
 
 	/**
@@ -108,8 +111,9 @@ public class MultiSystemOrchestraOperationExecutor implements
 			String operation = parsedName[1];
 			String peer = parsedName[2];
 			OrchestraTestFrame testFrame = opFactory.getOrchestraTestFrame(peer);
-
-			logger.debug("Operation {} is {}", parsedName[0], operation);
+			String opNumberString = parsedName[0];
+			operationNumber = Integer.parseInt(opNumberString);
+			logger.debug("Operation {} is {}", opNumberString, operation);
 			if (operation.equalsIgnoreCase("insert")) {
 				DbUnitUtil.executeDbUnitOperation(DatabaseOperation.INSERT,
 						datasetFile, testFrame.getDbTester());

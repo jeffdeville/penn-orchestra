@@ -44,9 +44,9 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
  *
  */
 public class InsertionDeltaRuleGen extends DeltaRuleGen {
-	public InsertionDeltaRuleGen (ITranslationRules translationRules, Map<String, Schema> builtInSchemas)
+	public InsertionDeltaRuleGen (OrchestraSystem system, ITranslationRules translationRules, Map<String, Schema> builtInSchemas)
 	{
-		super(translationRules, builtInSchemas);
+		super(system, translationRules, builtInSchemas);
 	}
 
 	/**
@@ -68,6 +68,7 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
         List<Rule> init = new ArrayList<Rule>();
         
         init.addAll(copyRelationList(getEdbs(), AtomType.NEW, AtomType.NONE, builtInSchemas));
+        init.addAll(copyRelationList(getRej(), AtomType.NEW, AtomType.NONE, builtInSchemas));
 //        init.addAll(copyRelationList(getEdbs(), AtomType.NEW, AtomType.INS));
         init.addAll(copyRelationList(getIdbs(), AtomType.NEW, AtomType.NONE, builtInSchemas));
         init.addAll(copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.NONE, builtInSchemas));
@@ -85,6 +86,7 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
 		
 		
 		ret.add(applyDeltasToBase(getMappingRelations(), getEdbs(), getIdbs(), builtInSchemas));
+		ret.add(applyDeltasToBase(getRej(), emptyList, emptyList, builtInSchemas));
 		ret.add(applyDeltasToBase(getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, builtInSchemas));
 		ret.add(applyDeltasToBase(getOuterUnionRelations(), emptyList, emptyList, builtInSchemas));
 
@@ -94,6 +96,7 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
 		
 		
         ret.add(cleanupRelations(AtomType.INS, getMappingRelations(), getEdbs(), getIdbs(), builtInSchemas));
+        ret.add(cleanupRelations(AtomType.INS, getRej(), emptyList, emptyList, builtInSchemas));
         ret.add(cleanupRelations(AtomType.INS, getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, builtInSchemas));
         ret.add(cleanupRelations(AtomType.INS, getOuterUnionRelations(), emptyList, emptyList, builtInSchemas));
         
@@ -111,6 +114,7 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
         DatalogSequence ret = new DatalogSequence(false, true);
 
        	ret.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.NEW, AtomType.INS, builtInSchemas), true));
+       	ret.add(new NonRecursiveDatalogProgram(copyRelationList(getRej(), AtomType.NEW, AtomType.INS, builtInSchemas), true));
        	List<Rule> l2p = new ArrayList<Rule>();
        	for(Rule r : getLocal2PeerRules()) {
        		l2p.addAll(insertionRules(r, false, builtInSchemas));

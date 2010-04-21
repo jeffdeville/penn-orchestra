@@ -89,8 +89,8 @@ public class DeltaRuleGenTest {
 		IDeltaRules delRules = delRuleGen.getDeltaRules();
 		Document actualRules = delRules.serialize();
 
-		// DomUtils.write(actualRules, new
-		// FileWriter("actualDeletionRules.xml"));
+		 //DomUtils.write(actualRules, new
+		 //FileWriter("actualDeletionRules.xml"));
 		// Document doc = toSqlDoc(delRules.getCode());
 		// write(doc, new FileWriter("deletionSql.xml"));
 
@@ -112,8 +112,8 @@ public class DeltaRuleGenTest {
 		IDeltaRules insRules = insRuleGen.getDeltaRules();
 		Document actualRules = insRules.serialize();
 
-		// DomUtils.write(actualRules, new
-		// FileWriter("actualInsertionRules.xml"));
+		 //DomUtils.write(actualRules, new
+		 //FileWriter("actualInsertionRules.xml"));
 		// Document doc = insRules.serializeAsCode();
 		// DomUtils.write(doc, new FileWriter("insertionSql.xml"));
 

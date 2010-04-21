@@ -90,7 +90,7 @@ public class TranslationRuleGenTest {
 		assertNotNull(sourceToTarget);
 		assertFalse(sourceToTarget.isEmpty());
 		// ruleGen.getState();
-		Document actualTranslationRulesDoc = ruleGen.getState().serialize(
+		Document actualTranslationRulesDoc = ruleGen.getState().serialize(system,
 				OrchestraSystem.deserializeBuiltInFunctions(builtInSchemas));
 		//DomUtils.write(actualTranslationRulesDoc, new FileWriter(
 		//"actualTranslationRules.xml"));

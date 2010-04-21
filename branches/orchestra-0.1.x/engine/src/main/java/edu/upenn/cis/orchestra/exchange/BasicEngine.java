@@ -165,10 +165,10 @@ public abstract class BasicEngine implements IEngine {
 		if (_provenancePrep == null)
 			_provenancePrep = createProvenanceStorage();
 
-		IDeltaRuleGen insRuleGen = new InsertionDeltaRuleGen(getState(), getMappingDb().getBuiltInSchemas());
+		IDeltaRuleGen insRuleGen = new InsertionDeltaRuleGen(_system, getState(), getMappingDb().getBuiltInSchemas());
 		_insertionRules = insRuleGen.getDeltaRules();
 
-		IDeltaRuleGen delRuleGen = new DeletionDeltaRuleGen(getState(), getMappingDb().getBuiltInSchemas(), _system.isBidirectional());
+		IDeltaRuleGen delRuleGen = new DeletionDeltaRuleGen(_system, getState(), getMappingDb().getBuiltInSchemas(), _system.isBidirectional());
 		_deletionRules = delRuleGen.getDeltaRules();
 
 	}
@@ -180,10 +180,10 @@ public abstract class BasicEngine implements IEngine {
 		if (_provenancePrep == null)
 			_provenancePrep = createProvenanceStorage();
 
-		IDeltaRuleGen insRuleGen = new InsertionDeltaRuleGen(translationRules, getMappingDb().getBuiltInSchemas());
+		IDeltaRuleGen insRuleGen = new InsertionDeltaRuleGen(_system, translationRules, getMappingDb().getBuiltInSchemas());
 		_insertionRules = insRuleGen.getDeltaRules();
 
-		IDeltaRuleGen delRuleGen = new DeletionDeltaRuleGen(translationRules, getMappingDb().getBuiltInSchemas(), _system.isBidirectional());
+		IDeltaRuleGen delRuleGen = new DeletionDeltaRuleGen(_system, translationRules, getMappingDb().getBuiltInSchemas(), _system.isBidirectional());
 		_deletionRules = delRuleGen.getDeltaRules();
 
 	}
