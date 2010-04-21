@@ -31,12 +31,36 @@
 			<class name="edu.upenn.cis.orchestra.MultiOrchestraSystemTest" />
 		</classes>
 	</test>
-	<test name="local-reject">
-		<parameter name="test-data-dir" value="local-reject" />
+	<test name="local-delete">
+		<parameter name="test-data-dir" value="local-delete" />
 		<groups>
 			<run>
 				<exclude name="broken" />
-				<exclude name="development" />
+				<!-- <exclude name="development" /> -->
+			</run>
+		</groups>
+		<classes>
+			<class name="edu.upenn.cis.orchestra.MultiOrchestraSystemTest" />
+		</classes>
+	</test>
+	<test name="local-delete-reinstate">
+		<parameter name="test-data-dir" value="local-delete-reinstate" />
+		<groups>
+			<run>
+				<exclude name="broken" />
+				<!-- <exclude name="development" /> -->
+			</run>
+		</groups>
+		<classes>
+			<class name="edu.upenn.cis.orchestra.MultiOrchestraSystemTest" />
+		</classes>
+	</test>
+	<test name="mapped-reject">
+		<parameter name="test-data-dir" value="mapped-reject" />
+		<groups>
+			<run>
+				<exclude name="broken" />
+				<!-- <exclude name="development" /> -->
 			</run>
 		</groups>
 		<classes>

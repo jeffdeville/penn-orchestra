@@ -51,23 +51,24 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
 public abstract class DeltaRuleGen implements IDeltaRuleGen {
 	private final ITranslationRules _translationRules;
 	private final Map<String, Schema> _builtInSchemas;
-
+	private final OrchestraSystem _system;
 	
 	/** The generated rules. */
 	protected IDeltaRules _deltaRules;
 	
 	/**
 	 * Base abstract class for delta rule generation
+	 * @param system 
 	 * @param translationRules 
 	 * @param builtInSchemas
 	 * 
 	 */
-	public DeltaRuleGen (ITranslationRules translationRules, Map<String, Schema> builtInSchemas) 
+	public DeltaRuleGen (OrchestraSystem system, ITranslationRules translationRules, Map<String, Schema> builtInSchemas) 
 	{
 		_translationRules = translationRules;
 		_builtInSchemas = builtInSchemas;
 		//_provenancePrep = _dr.getProvenancePrepInfo();
-
+		_system = system;
 		createRules(_builtInSchemas);
 	}
 
@@ -81,7 +82,7 @@ public abstract class DeltaRuleGen implements IDeltaRuleGen {
 	 */
 	protected DeltaRuleGen(Document translationRulesDoc,
 			Document builtInSchemasDoc, OrchestraSystem system) throws XMLParseException {
-		this(deserializeTranslationState(translationRulesDoc, system), OrchestraSystem
+		this(system, deserializeTranslationState(translationRulesDoc, system), OrchestraSystem
 				.deserializeBuiltInFunctions(builtInSchemasDoc));
 	}
 	
@@ -138,6 +139,14 @@ public abstract class DeltaRuleGen implements IDeltaRuleGen {
 		return getTranslationRules().getEdbs(getBuiltInSchemas());
 	}
 
+	/**
+	 * Get the rejection relations.
+	 * 
+	 * @return the rejection relations
+	 */
+	protected List<RelationContext> getRej() {
+		return getTranslationRules().getRej(_system);
+	}
 	/**
 	 * Get the IDB relations
 	 * @return IDB relations

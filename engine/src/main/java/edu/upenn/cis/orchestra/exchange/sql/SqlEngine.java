@@ -578,8 +578,7 @@ public class SqlEngine extends BasicEngine {
 	public long mapUpdates(int lastrec, int recno, Peer reconciler, 
 			boolean insFirst) throws Exception {
 
-		final DatalogEngine de = new DatalogEngine(
-_mappingDb);
+		final DatalogEngine de = new DatalogEngine(_mappingDb);
 		final Calendar before = Calendar.getInstance();
 
 		commit();

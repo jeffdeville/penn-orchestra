@@ -54,9 +54,9 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 	 */
 	private boolean bidirectional;
 	
-	public DeletionDeltaRuleGen (ITranslationRules translationRules, Map<String, Schema> builtInSchemas, boolean containsBidirectionalMappings)
+	public DeletionDeltaRuleGen (OrchestraSystem system, ITranslationRules translationRules, Map<String, Schema> builtInSchemas, boolean containsBidirectionalMappings)
 	{
-		super(translationRules, builtInSchemas);
+		super(system, translationRules, builtInSchemas);
 		bidirectional = containsBidirectionalMappings;
 	}
 
@@ -253,6 +253,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 		rules.addAll(copyRelationList(getEdbs(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
 		rules.addAll(copyRelationList(getIdbs(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
+		rules.addAll(copyRelationList(getRej(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
 		rules.addAll(copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
 		rules.addAll(copyRelationList(getIncrementallyMaintenableJoinRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
 		rules.addAll(copyRelationList(getOuterUnionRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
@@ -267,6 +268,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		ret = new DatalogSequence(false, true);
 
 		ret.add(edbDeltaApplicationRules(false));
+		ret.add(rejDeltaApplicationRules(false));
 
 		DatalogSequence mainLoop = new DatalogSequence(true, true);
 
@@ -347,6 +349,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		if(clearEdbIdbDels){
 			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.DEL, getBuiltInSchemas())));
 			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas())));
+			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getRej(), AtomType.DEL, getBuiltInSchemas())));
 		}
 
 //		ret.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.DEL, getBuiltInSchemas()), true));
@@ -359,6 +362,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 //		apply deltas if this is a real run, otherwise just discard NEW
 		if(applyDeltas){
 			ret.add(applyDeltasToBase(getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas()));
+			ret.add(applyDeltasToBase(getRej(), emptyList, emptyList, getBuiltInSchemas()));
 			ret.add(applyDeltasToBase(getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, getBuiltInSchemas()));
 			ret.add(applyDeltasToBase(getOuterUnionRelations(), emptyList, emptyList, getBuiltInSchemas()));
 			
@@ -719,7 +723,11 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 	}
 
 	private DatalogProgram edbDeltaApplicationRules(boolean ins) {
-		return edbDeltaApplicationRules(ins, getEdbs(), getBuiltInSchemas());
+		return deltaApplicationRules(ins, getEdbs(), getBuiltInSchemas());
+	}
+	
+	private DatalogProgram rejDeltaApplicationRules(boolean ins) {
+		return deltaApplicationRules(ins, getRej(), getBuiltInSchemas());
 	}
 
 	private List<Rule> mappingDeltaApplicationRules(boolean ins, boolean includeKeysOnly) {
@@ -968,17 +976,17 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		return vr;
 	}
 	
-	private static DatalogProgram edbDeltaApplicationRules(boolean ins, 
-			List<RelationContext> edbs, Map<String, Schema> builtInSchemas){
+	private static DatalogProgram deltaApplicationRules(boolean ins, 
+			List<RelationContext> relations, Map<String, Schema> builtInSchemas){
 		//List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
 		List<Rule> vr = new ArrayList<Rule>();
 
-		for(RelationContext edb : edbs) { //getEdbs()){
+		for(RelationContext relation : relations) { //getEdbs()){
 			List<Rule> v;
 			if(ins)
-				v = deltaApplicationRule(edb, ins, AtomType.INS, false, builtInSchemas);
+				v = deltaApplicationRule(relation, ins, AtomType.INS, false, builtInSchemas);
 			else
-				v = deltaApplicationRule(edb, ins, AtomType.DEL, false, builtInSchemas);
+				v = deltaApplicationRule(relation, ins, AtomType.DEL, false, builtInSchemas);
 
 			for(Rule r : v){ 
 				vr.add(r);
