@@ -54,11 +54,11 @@
   <reconAcceptedTxns peerID="@pPODPeer1" recno="2" txnPeerID="1@pPODPeer1"/>
   <reconAcceptedTxns peerID="@pPODPeer1" recno="3" txnPeerID="2@pPODPeer1"/>
   <reconRejectedTxns/>
-  <txns txnPeerID="0@pPODPeer1" update_0="+OTU(1,Primates,3,4) [0@pPODPeer1]"/>
-  <txns txnPeerID="1@pPODPeer1" update_0="-OTU(1,Primates,3,4) [1@pPODPeer1] /[0@pPODPeer1]"/>
-  <txns txnPeerID="2@pPODPeer1" update_0="+OTU(1,Primates,3,4) [2@pPODPeer1]"/>
-  <pPODPeer1.stateDb key="OTU(1, )" storeEntry="OTU(1,Primates,3,4) {2@pPODPeer1, }"/>
-  <pPODPeer1.updatesDb key="OTU(1, )" recno="1" update1="+OTU(1,Primates,3,4)" update2="+OTU(1,Primates,3,4)"/>
-  <pPODPeer1.updatesDb key="OTU(1, )" recno="2" update1="-OTU(1,Primates,3,4)" update2="null"/>
-  <pPODPeer1.updatesDb key="OTU(1, )" recno="3" update1="+OTU(1,Primates,3,4)" update2="+OTU(1,Primates,3,4)"/>
+  <txns txnPeerID="0@pPODPeer1" update_0="+OTU_L(1,Primates,3,4) [0@pPODPeer1]"/>
+  <txns txnPeerID="1@pPODPeer1" update_0="-OTU_L(1,Primates,3,4) [1@pPODPeer1] /[0@pPODPeer1]"/>
+  <txns txnPeerID="2@pPODPeer1" update_0="+OTU_L(1,Primates,3,4) [2@pPODPeer1]"/>
+  <pPODPeer1.stateDb key="OTU_L(1, )" storeEntry="OTU_L(1,Primates,3,4) {2@pPODPeer1, }"/>
+  <pPODPeer1.updatesDb key="OTU_L(1, )" recno="1" update1="+OTU_L(1,Primates,3,4)" update2="+OTU_L(1,Primates,3,4)"/>
+  <pPODPeer1.updatesDb key="OTU_L(1, )" recno="2" update1="-OTU_L(1,Primates,3,4)" update2="null"/>
+  <pPODPeer1.updatesDb key="OTU_L(1, )" recno="3" update1="+OTU_L(1,Primates,3,4)" update2="+OTU_L(1,Primates,3,4)"/>
 </dataset>

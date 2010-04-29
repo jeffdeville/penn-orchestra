@@ -93,10 +93,10 @@ public class ApplierSqlTest {
 		schema.addRelation(relationLocal);
 		relationReject = createRelation(Relation.REJECT);
 		schema.addRelation(relationReject);
+		schema.markFinished();
 		localPeer = new Peer("ApplyUpdateTestPeer", "",
 				"Apply Update Test Peer");
 		localPeer.addSchema(schema);
-
 	}
 
 	private Relation createRelation(String suffix) {
@@ -104,7 +104,7 @@ public class ApplierSqlTest {
 		fields.add(new RelationField("RID", "The R ID", new IntType(false,
 				false)));
 		fields.add(new RelationField("RSTR", "The labeled nullable R STR",
-				new StringType(false, true, true, 10)));
+				new StringType(false, true, true, 50)));
 		String relationName = dbtable + suffix;
 		Relation newRelation = new Relation(null, dbschema, relationName,
 				relationName, "The description", true, true, fields);
@@ -151,15 +151,16 @@ public class ApplierSqlTest {
 			String dbUser, String dbPassword) throws Exception {
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
 		TestUtil.clearDb(tester.getConnection().getConnection(), newArrayList(
-				dbtablefqn, dbtablefqn + Relation.LOCAL,
-				dbtablefqn + Relation.REJECT, dbtablefqn
-						+ Relation.LOCAL + "_" + AtomType.INS, dbtablefqn
-						+ Relation.LOCAL + "_" + AtomType.DEL, dbtablefqn
-						+ Relation.REJECT + "_" + AtomType.INS, dbtablefqn
-						+ Relation.REJECT + "_" + AtomType.DEL), Collections
-				.singletonList(dbschema));
-		File sqlScript = new File(getClass().getResource("applyschema.sql").getPath());
-		TestUtil.executeSqlScript(tester.getConnection().getConnection(), sqlScript);
+				dbtablefqn, dbtablefqn + Relation.LOCAL, dbtablefqn
+						+ Relation.REJECT, dbtablefqn + Relation.LOCAL + "_"
+						+ AtomType.INS, dbtablefqn + Relation.LOCAL + "_"
+						+ AtomType.DEL, dbtablefqn + Relation.REJECT + "_"
+						+ AtomType.INS, dbtablefqn + Relation.REJECT + "_"
+						+ AtomType.DEL), Collections.singletonList(dbschema));
+		File sqlScript = new File(getClass().getResource("applyschema.sql")
+				.getPath());
+		TestUtil.executeSqlScript(tester.getConnection().getConnection(),
+				sqlScript);
 		URL initalStateURL = getClass().getResource("initialState.xml");
 		File initalStateFile = new File(initalStateURL.getPath());
 		DbUnitUtil.executeDbUnitOperation(DatabaseOperation.CLEAN_INSERT,
@@ -179,22 +180,27 @@ public class ApplierSqlTest {
 
 		Tuple inserted = new Tuple(relation);
 		inserted.set("RID", Integer.valueOf(1));
-		inserted.set("RSTR", "Mitchell");
+		inserted.set("RSTR", "newlyInserted");
 		builder.addUpdate(schema, relation, new Update(null, inserted));
 
 		inserted = new Tuple(relation);
-		inserted.set("RID", Integer.valueOf(3));
-		inserted.set("RSTR", "Mark");
+		inserted.set("RID", Integer.valueOf(2));
+		inserted.set("RSTR", "newlyInsertedPrevRejected");
 		builder.addUpdate(schema, relation, new Update(null, inserted));
 
 		Tuple deleted = new Tuple(relation);
-		deleted.set("RID", Integer.valueOf(2));
-		deleted.set("RSTR", "Webb");
+		deleted.set("RID", Integer.valueOf(3));
+		deleted.set("RSTR", "newlyDeletedPrevLocal");
 		builder.addUpdate(schema, relation, new Update(deleted, null));
 
 		deleted = new Tuple(relation);
 		deleted.set("RID", Integer.valueOf(4));
-		deleted.set("RSTR", "Jeremy");
+		deleted.set("RSTR", "newlyDeletedPrevDerived");
+		builder.addUpdate(schema, relation, new Update(deleted, null));
+		
+		deleted = new Tuple(relation);
+		deleted.set("RID", Integer.valueOf(5));
+		deleted.set("RSTR", "newlyDeletedPrevLocalAndDerived");
 		builder.addUpdate(schema, relation, new Update(deleted, null));
 
 		localUpdates = builder.buildLocalUpdates();
@@ -212,7 +218,10 @@ public class ApplierSqlTest {
 	 */
 	public void testApplyUpdatesSql() throws DataSetException, IOException,
 			DatabaseUnitException, Exception {
-		IApplier<Connection> apply = new ApplierSql();
+		List<String> derivable = newArrayList("newlyDeletedPrevDerived",
+				"newlyDeletedPrevLocalAndDerived");
+		IApplier<Connection> apply = new ApplierSql(
+				new DerivabilityCheckFieldCheck("RSTR", derivable));
 
 		apply.applyUpdates(localUpdates, connection);
 		// In real life the connection is committed and closed by the applier's

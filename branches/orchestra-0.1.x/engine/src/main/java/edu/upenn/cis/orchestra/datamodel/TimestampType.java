@@ -34,6 +34,7 @@ import org.w3c.dom.Element;
 import edu.upenn.cis.orchestra.datamodel.exceptions.CompareMismatch;
 import edu.upenn.cis.orchestra.datamodel.exceptions.NotNumericalException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
+import edu.upenn.cis.orchestra.sql.ISqlConstant;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
 public class TimestampType extends Type {
@@ -240,6 +241,14 @@ public class TimestampType extends Type {
 	@Override
 	public int bytesLength() {
 		return LongType.bytesPerLong;
+	}
+	
+	/**  {@inheritDoc}
+	 * @see edu.upenn.cis.orchestra.datamodel.Type#getSqlConstantType()
+	 */
+	@Override
+	public edu.upenn.cis.orchestra.sql.ISqlConstant.Type getSqlConstantType() {
+		return ISqlConstant.Type.UNKNOWN;
 	}
 }
 

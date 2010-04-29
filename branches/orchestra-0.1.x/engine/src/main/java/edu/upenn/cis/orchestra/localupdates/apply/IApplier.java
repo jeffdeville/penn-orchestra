@@ -29,11 +29,12 @@ import edu.upenn.cis.orchestra.localupdates.apply.exceptions.UpdatesNotAppliedEx
 public interface IApplier<T> {
 
 	/**
-	 * Apply the given updates.
+	 * Apply the given updates and return their count.
 	 * @param updates
 	 * @param connection
+	 * @return the number of updates applied
 	 * @throws UpdatesNotAppliedException
 	 */
-	public void applyUpdates(ILocalUpdates updates, T connection)
+	public int applyUpdates(ILocalUpdates updates, T connection)
 			throws UpdatesNotAppliedException;
 }

@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import edu.upenn.cis.orchestra.Config;
+import edu.upenn.cis.orchestra.localupdates.apply.sql.IDerivabilityCheck;
 import edu.upenn.cis.orchestra.localupdates.exceptions.NoLocalUpdaterClassException;
 import edu.upenn.cis.orchestra.localupdates.extract.exceptions.NoExtractorClassException;
 import edu.upenn.cis.orchestra.localupdates.sql.LocalUpdaterJdbc;
@@ -40,6 +41,7 @@ public class LocalUpdaterFactory {
 	 * @param user
 	 * @param password
 	 * @param server
+	 * @param derivabilityChecker 
 	 * 
 	 * @return a new {@code ILocalUpdater}
 	 * @throws NoLocalUpdaterClassException if the value of the {@code
@@ -48,12 +50,12 @@ public class LocalUpdaterFactory {
 	 * @throws NoExtractorClassException
 	 */
 	public static ILocalUpdater newInstance(String user, String password,
-			String server) throws NoLocalUpdaterClassException,
-			NoExtractorClassException {
+			String server, IDerivabilityCheck derivabilityChecker)
+			throws NoLocalUpdaterClassException, NoExtractorClassException {
 		String className = Config.getProperty("localupdates.localUpdaterClass");
 		ILocalUpdater updater = null;
 		if (className == null) {
-			updater = new LocalUpdaterJdbc(user, password, server);
+			updater = new LocalUpdaterJdbc(user, password, server, derivabilityChecker);
 		} else {
 			try {
 				@SuppressWarnings("unchecked")

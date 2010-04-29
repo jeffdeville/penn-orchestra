@@ -1876,7 +1876,7 @@ public class ProvenanceRelation extends Relation {
 
 	private static final long serialVersionUID = 1L;
 
-	protected List<ProvenanceRelationColumn> _columns;
+	private List<ProvenanceRelationColumn> _columns;
 
 	protected List<Mapping> _mappings;
 

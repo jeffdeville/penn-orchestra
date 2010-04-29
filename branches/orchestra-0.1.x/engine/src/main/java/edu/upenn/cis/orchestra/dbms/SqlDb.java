@@ -215,7 +215,7 @@ public class SqlDb implements IDb {
 			List<Update> ul = _tList.get(r);
 
 			String prepIns = "INSERT INTO " + r.getFullQualifiedDbId()
-			+ Relation.LOCAL + "_INS (";
+			+ Relation.INSERT + " (";
 
 			boolean first = true;
 			for (int i = 0; i < r.getNumCols(); i++) {
@@ -251,7 +251,7 @@ public class SqlDb implements IDb {
 				 * ?"; first = false; }
 				 */
 				String prepDel = "INSERT INTO " + r.getFullQualifiedDbId()
-				+ Relation.LOCAL + "_DEL (";
+				 + Relation.DELETE + " (";
 
 				first = true;
 				for (int i = 0; i < r.getNumCols(); i++) {
@@ -1349,13 +1349,13 @@ public class SqlDb implements IDb {
 
 		//		updateTableStatistics(baseTable.getFullQualifiedDbId());
 
-		int count = this.convert(logicalTable, new RelationContext(baseTable,
+		int count = this.convert(baseTable, new RelationContext(baseTable,
 				s, p, false), AtomType.INS, pubDb);
 		pubDb.publish();
 		_system.translate();
 		Debug.println("Converted " + count + " tuples from import of "
-				+ imported + " into " + logicalTable.getName() + " ("
-				+ logicalTable.getRelationID() + ")");
+				+ imported + " into " + baseTable.getName() + " ("
+				+ baseTable.getRelationID() + ")");
 
 		// Now clear out the _INS table, since we've already copied from it and
 		// will
@@ -2052,14 +2052,15 @@ public class SqlDb implements IDb {
 				RelationContext rlc = new RelationContext(rl, s, p, false);
 				RelationContext rrc = new RelationContext(rr, s, p, false);
 
-				totalCount += convert(r, rlc, AtomType.DEL, store);
-				//totalCount += convert(r, rrc, AtomType.DEL, store);
-				totalCount += convert(r, rlc, AtomType.INS, store);
-				//totalCount += convert(r, rrc, AtomType.INS, store);
+				totalCount += convert(rr, rrc, AtomType.DEL, store);
+				totalCount += convert(rr, rrc, AtomType.INS, store);
+				totalCount += convert(rl, rlc, AtomType.DEL, store);
+				totalCount += convert(rl, rlc, AtomType.INS, store);
+
 				dropExistingData(rl.getFullQualifiedDbId() + Relation.DELETE);
 				dropExistingData(rl.getFullQualifiedDbId() + Relation.INSERT);
-				//dropExistingData(rr.getFullQualifiedDbId() + Relation.DELETE);
-				//dropExistingData(rr.getFullQualifiedDbId() + Relation.INSERT);
+				dropExistingData(rr.getFullQualifiedDbId() + Relation.DELETE);
+				dropExistingData(rr.getFullQualifiedDbId() + Relation.INSERT);
 			}
 		}
 		return totalCount;
