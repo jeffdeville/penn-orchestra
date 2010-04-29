@@ -248,6 +248,9 @@ public abstract class AbstractRelation implements Serializable {
 
 		setFieldsRelRef();
 		initFieldsByNamesMap ();
+		
+		initKeyColumnList(relation._keyColumnList);
+		initAllColsArray();
 	}   
 
 	/**
@@ -356,12 +359,7 @@ public abstract class AbstractRelation implements Serializable {
 		}
 		finished = true;
 
-		ImmutableSortedSet.Builder<Integer> keyColumnBuilder = ImmutableSortedSet.naturalOrder();
-
-		for (RelationField f : (_pk == null ? _fields : _pk.getFields())) {
-			keyColumnBuilder.add(_columnNum.get(f.getName()));
-		}
-		_keyColumnList = keyColumnBuilder.build();
+		initKeyColumnList();
 		_publicFields = Collections.unmodifiableList(_fields);
 
 		_columnTypes = new Type[_fields.size()];
@@ -372,10 +370,8 @@ public abstract class AbstractRelation implements Serializable {
 		}
 
 		keyColsArray = new int[_keyColumnList.size()];
-		allColsArray = new int[_fields.size()];
-		for (int i = 0; i < allColsArray.length; ++i) {
-			allColsArray[i] = i;
-		}
+		
+		initAllColsArray();
 		int pos = 0;
 		for (int col : _keyColumnList) {
 			keyColsArray[pos++] = col;
@@ -478,6 +474,36 @@ public abstract class AbstractRelation implements Serializable {
 		}
 
 		identityMapping = new RelationMapping(this);
+	}
+
+	/**
+	 * DOCUMENT ME
+	 * 
+	 */
+	private void initAllColsArray() {
+		allColsArray = new int[_fields.size()];
+		for (int i = 0; i < allColsArray.length; ++i) {
+			allColsArray[i] = i;
+		}
+	}
+
+	
+	private void initKeyColumnList() {
+		ImmutableSortedSet.Builder<Integer> keyColumnBuilder = ImmutableSortedSet.naturalOrder();
+
+		for (RelationField f : (_pk == null ? _fields : _pk.getFields())) {
+			keyColumnBuilder.add(_columnNum.get(f.getName()));
+		}
+		_keyColumnList = keyColumnBuilder.build();
+	}
+	
+	private void initKeyColumnList(SortedSet<Integer> keyColumnList) {
+		ImmutableSortedSet.Builder<Integer> keyColumnBuilder = ImmutableSortedSet.naturalOrder();
+
+		for (Integer column : keyColumnList) {
+			keyColumnBuilder.add(column);
+		}
+		_keyColumnList = keyColumnBuilder.build();
 	}
 
 	/**

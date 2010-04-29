@@ -128,6 +128,8 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 		case DIVSIGN:
 		case PIPESSIGN:
 			return new ValueExpressionCombinedExpression(code);
+		case IS_NULL:
+			return new PredicateIsNullSqlExpression();
 		default:
 			throw new IllegalArgumentException(code + " not supported.");
 		}

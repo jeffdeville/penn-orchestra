@@ -28,6 +28,7 @@ import edu.upenn.cis.orchestra.datamodel.exceptions.CompareMismatch;
 import edu.upenn.cis.orchestra.datamodel.exceptions.NotNumericalException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
+import edu.upenn.cis.orchestra.sql.ISqlConstant;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
 
@@ -274,6 +275,15 @@ public abstract class Type implements Serializable {
 	 * @return
 	 */
 	public abstract int getSqlTypeCode();
+	
+	/**
+	 * Gets the {@code edu.upenn.cis.orchestra.sql.ISqlConstant.Type} associated with
+	 * this type.
+	 * 
+	 * @return the {@code edu.upenn.cis.orchestra.sql.ISqlConstant.Type} associated with
+	 * this type
+	 */
+	public abstract ISqlConstant.Type getSqlConstantType();
 	
 	/**
 	 * Get a value out of a <code>ResultSet</code> into an <code>Object</code> compatible

@@ -15,19 +15,24 @@
  */
 package edu.upenn.cis.orchestra.localupdates.apply;
 
+import edu.upenn.cis.orchestra.localupdates.apply.sql.IDerivabilityCheck;
 
 /**
  * A factory for obtaining {@code IApplier<T>} instances.
+ * 
  * @author John Frommeyer
- * @param <T> Intended to represent an object used for a connection to the underlying database.
- *
+ * @param <T> Intended to represent an object used for a connection to the
+ *            underlying database.
+ * 
  */
 public interface IApplierFactory<T> {
 
 	/**
 	 * Returns an appropriate {@code IApplier<T>} instance.
+	 * 
+	 * @param derivabilityChecker
 	 * @return an appropriate {@code IApplier<T>} instance
 	 */
-	public IApplier<T> getApplyUpdateInst();
+	public IApplier<T> getApplyUpdateInst(IDerivabilityCheck derivabilityChecker);
 
 }

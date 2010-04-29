@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 
 import edu.upenn.cis.orchestra.datamodel.exceptions.CompareMismatch;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
+import edu.upenn.cis.orchestra.sql.ISqlConstant;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
 
@@ -178,6 +179,14 @@ public class DateType extends Type {
 		byte day = data[offset + 3];
 		
 		return year + 37 * month + 1201 * day;
+	}
+
+	/**  {@inheritDoc}
+	 * @see edu.upenn.cis.orchestra.datamodel.Type#getSqlConstantType()
+	 */
+	@Override
+	public edu.upenn.cis.orchestra.sql.ISqlConstant.Type getSqlConstantType() {
+		return ISqlConstant.Type.DATE;
 	}
 }
 

@@ -31,6 +31,7 @@ import edu.upenn.cis.orchestra.localupdates.ILocalUpdates;
 import edu.upenn.cis.orchestra.localupdates.apply.IApplier;
 import edu.upenn.cis.orchestra.localupdates.apply.IApplierFactory;
 import edu.upenn.cis.orchestra.localupdates.apply.sql.ApplierFactoryJdbc;
+import edu.upenn.cis.orchestra.localupdates.apply.sql.IDerivabilityCheck;
 import edu.upenn.cis.orchestra.localupdates.exceptions.LocalUpdatesException;
 import edu.upenn.cis.orchestra.localupdates.extract.IExtractor;
 import edu.upenn.cis.orchestra.localupdates.extract.IExtractorFactory;
@@ -61,12 +62,13 @@ public class LocalUpdaterJdbc implements ILocalUpdater {
 	 * @param user
 	 * @param password
 	 * @param server
+	 * @param derivabilityChecker 
 	 * 
 	 * @throws NoExtractorClassException
 	 */
 	public LocalUpdaterJdbc(@SuppressWarnings("hiding") final String user,
 			@SuppressWarnings("hiding") final String password,
-			@SuppressWarnings("hiding") final String server)
+			@SuppressWarnings("hiding") final String server, IDerivabilityCheck derivabilityChecker)
 			throws NoExtractorClassException {
 		this.user = user;
 		this.password = password;
@@ -74,7 +76,7 @@ public class LocalUpdaterJdbc implements ILocalUpdater {
 		IExtractorFactory<Connection> factory = new ExtractorFactoryJdbc();
 		this.extractor = factory.getExtractUpdateInst();
 		IApplierFactory<Connection> appFactory = new ApplierFactoryJdbc();
-		this.applier = appFactory.getApplyUpdateInst();
+		this.applier = appFactory.getApplyUpdateInst(derivabilityChecker);
 	}
 
 	private void rollbackConnection(Exception exception, Connection connection)
