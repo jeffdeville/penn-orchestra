@@ -24,6 +24,6 @@ In some cases Reconcile is used as a synonym for _Update Exchange_.
 
 *_Schema_* a definition, written in XML, of an Orchestra system. Sometimes called an "Orchestra schema" to differentiate from a database schema.
 
-*_Update Exchange_* when a peer asks for all deltas that have occurred in all peers since since its last update exchange and runs those deltas through its mappings, applying the results to its tables. After a peer publishes that peer does an update exchange. 
+*_Update Exchange_* when a peer asks the update store for all deltas that have occurred in all peers since since its last update exchange and runs those deltas through its mappings, applying the results to its tables. After a peer publishes that peer does an update exchange. 
 
 *_Update Store_* the hub of an Orchestra system. Primarily, the repository for each peer's epoch deltas. It is also used to store each peer's decisions about which non-local transactions it has accepted or rejected. Composed of several Berkley DB instances.
