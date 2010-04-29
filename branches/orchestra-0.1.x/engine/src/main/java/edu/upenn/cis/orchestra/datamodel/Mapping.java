@@ -84,7 +84,7 @@ public class Mapping {
 	
 	private static int _nextAutogenVarFreshId=1;
 	
-	RelationContext _provRel = null;
+	private RelationContext _provRel = null;
 	
 	protected boolean _fakeMapping = false;
 	

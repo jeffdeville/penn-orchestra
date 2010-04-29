@@ -31,6 +31,7 @@ import edu.upenn.cis.orchestra.datamodel.exceptions.CompareMismatch;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
 import edu.upenn.cis.orchestra.logicaltypes.CharType;
 import edu.upenn.cis.orchestra.logicaltypes.VarCharType;
+import edu.upenn.cis.orchestra.sql.ISqlConstant;
 
 /**
  * @author Nick Taylor
@@ -366,5 +367,13 @@ public class StringType extends Type {
 		} else {
 			return this.length == st.length;
 		}
+	}
+	
+	/**  {@inheritDoc}
+	 * @see edu.upenn.cis.orchestra.datamodel.Type#getSqlConstantType()
+	 */
+	@Override
+	public edu.upenn.cis.orchestra.sql.ISqlConstant.Type getSqlConstantType() {
+		return ISqlConstant.Type.STRING;
 	}
 }

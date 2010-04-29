@@ -28,6 +28,7 @@ import org.w3c.dom.Element;
 
 import edu.upenn.cis.orchestra.datamodel.exceptions.CompareMismatch;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
+import edu.upenn.cis.orchestra.sql.ISqlConstant;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
 
@@ -293,5 +294,13 @@ public class LongType extends Type {
 	@Override
 	public Comparator<byte[]> getSerializedComparator() {
 		return comp;
+	}
+	
+	/**  {@inheritDoc}
+	 * @see edu.upenn.cis.orchestra.datamodel.Type#getSqlConstantType()
+	 */
+	@Override
+	public edu.upenn.cis.orchestra.sql.ISqlConstant.Type getSqlConstantType() {
+		return ISqlConstant.Type.NUMBER;
 	}
 }

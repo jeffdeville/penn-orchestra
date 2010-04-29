@@ -45,6 +45,7 @@ import edu.upenn.cis.orchestra.datamodel.StringType;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateRelationIdException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateSchemaIdException;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdater;
+import edu.upenn.cis.orchestra.localupdates.apply.sql.DerivabilityCheckAlways;
 import edu.upenn.cis.orchestra.localupdates.extract.sql.ExtractorDefault;
 
 /**
@@ -158,7 +159,7 @@ public class LocalUpdaterJdbcTest {
 	 */
 	public final void updateExtractionAndApplicationTest() throws Exception {
 		ILocalUpdater updater = new LocalUpdaterJdbc(Config.getUser(), Config
-				.getPassword(), Config.getSQLServer());
+				.getPassword(), Config.getSQLServer(), new DerivabilityCheckAlways());
 		updater.extractAndApplyLocalUpdates(localPeer);
 		File expected = new File(getClass().getResource("finalState.xml")
 				.toURI());

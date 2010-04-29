@@ -72,6 +72,8 @@ import edu.upenn.cis.orchestra.dbms.IDb;
 import edu.upenn.cis.orchestra.exchange.BasicEngine;
 import edu.upenn.cis.orchestra.localupdates.ILocalUpdater;
 import edu.upenn.cis.orchestra.localupdates.LocalUpdaterFactory;
+import edu.upenn.cis.orchestra.localupdates.apply.sql.DerivabilityCheck;
+import edu.upenn.cis.orchestra.localupdates.apply.sql.IDerivabilityCheck;
 import edu.upenn.cis.orchestra.localupdates.exceptions.NoLocalUpdaterClassException;
 import edu.upenn.cis.orchestra.localupdates.extract.exceptions.NoExtractorClassException;
 import edu.upenn.cis.orchestra.mappings.Rule;
@@ -126,6 +128,8 @@ public class OrchestraSystem {
 	private Map<String, Db> _recDbs;
 	private ISchemaIDBinding _mapStore;
 	private Map<String, Map<String, TrustConditions>> _tcs;
+	private IDerivabilityCheck _derivabilityChecker;
+	
 	// protected
 	// Map<String,Map<String,edu.upenn.cis.orchestra.datamodel.Schema>> _schemas
 	// = new
@@ -930,9 +934,8 @@ public class OrchestraSystem {
 	 * @throws NoLocalUpdaterClassException
 	 * @throws NoExtractorClassException
 	 */
-	private void createEngine(Element engineElement)
-			throws XMLParseException, Exception, NoLocalUpdaterClassException,
-			NoExtractorClassException {
+	private void createEngine(Element engineElement) throws XMLParseException,
+			Exception, NoLocalUpdaterClassException, NoExtractorClassException {
 		InputStream inFile = Config.class
 				.getResourceAsStream("functions.schema");
 		if (inFile == null) {
@@ -942,9 +945,10 @@ public class OrchestraSystem {
 		BasicEngine engine = BasicEngine.deserialize(this, builtInSchemas,
 				engineElement);
 		setMappingEngine(engine);
+		_derivabilityChecker = new DerivabilityCheck(engine.getState());
 		_localUpdater = LocalUpdaterFactory.newInstance(engine.getMappingDb()
 				.getUsername(), engine.getMappingDb().getPassword(), engine
-				.getMappingDb().getServer());
+				.getMappingDb().getServer(), _derivabilityChecker);
 	}
 
 	/**
@@ -1588,4 +1592,8 @@ public class OrchestraSystem {
 		return relations;
 	}
 
+	public IDerivabilityCheck getDerivabilityCheck() {
+		return _derivabilityChecker;
+		
+	}
 }

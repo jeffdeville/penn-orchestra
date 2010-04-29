@@ -21,18 +21,24 @@ import edu.upenn.cis.orchestra.localupdates.apply.IApplier;
 import edu.upenn.cis.orchestra.localupdates.apply.IApplierFactory;
 
 /**
- * A Factory which creates {@code IApplierFactory<java.sql.Connection>} instances.
+ * A Factory which creates {@code IApplierFactory<java.sql.Connection>}
+ * instances.
+ * 
  * @author John Frommeyer
- *
+ * 
  */
 public class ApplierFactoryJdbc implements IApplierFactory<Connection> {
 
-	/* (non-Javadoc)
-	 * @see edu.upenn.cis.orchestra.localupdates.apply.IApplierFactory#getApplyUpdateInst(Peer)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.upenn.cis.orchestra.localupdates.apply.IApplierFactory#getApplyUpdateInst
+	 * (IDerivabilityCheck)
 	 */
 	@Override
-	public IApplier<Connection> getApplyUpdateInst() {
-		return new ApplierSql();
+	public IApplier<Connection> getApplyUpdateInst(IDerivabilityCheck derivabilityChecker) {
+		return new ApplierSql(derivabilityChecker);
 	}
 
 }
