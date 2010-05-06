@@ -6,6 +6,8 @@
 
 *_Labeled Null_* different form SQL null - we can join on labeled nulls. They can be used when inferring new values though mappings. _1_ indicates there is no labeled null. All other values than _1_ are Skolem values. 
 
+*_Migration_* a one time setup operation where a peer's existing database schema is modified to add in columns and [MigratedTables tables] for Orchestra's use.
+
 *_Peer_* a participant in an Orchestra system.
 
 *_Publish_* when a peer publishes it notifies the _Update Store_ of local deltas to its instance since the peer's last publish. Publish is currently always followed by Update Exchange.
