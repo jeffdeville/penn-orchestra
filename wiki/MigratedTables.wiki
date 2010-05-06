@@ -26,4 +26,4 @@ During migration Orchestra creates a number of tables for each base relation _Re
   Then, another datalog program starts from the `_`INV relations, and computes a subset of the universal solution based on them. This subset is stored in the `_`RCH version of each relation. Finally, we compare the set of affected tuples with the corresponding `_`RCH relations, and their difference is the set of tuples that need to be deleted. We place those tuples in `_`DEL relations, and iterate the algorithm again, to propagate these "new" deletions further.
 
 *_Rel_`_`PREV*
-  After a peer performs an update exchange, the contents of _Rel_ are copied into this table, so that the next time the peer publishes a diff can be done between _Rel_ and Rel_`_`PREV so that any any local modifications captured.
+  After a peer performs an update exchange, the contents of _Rel_ are copied into this table, so that the next time the peer publishes a diff can be done between _Rel_ and _Rel_`_`PREV so that any any local modifications captured.
