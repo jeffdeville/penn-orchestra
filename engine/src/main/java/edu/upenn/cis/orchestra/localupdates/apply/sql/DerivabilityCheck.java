@@ -16,7 +16,6 @@
 
 package edu.upenn.cis.orchestra.localupdates.apply.sql;
 
-import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newHashMap;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newHashSet;
 
@@ -51,7 +50,6 @@ import edu.upenn.cis.orchestra.sql.ISqlSelect;
  * 
  */
 public class DerivabilityCheck implements IDerivabilityCheck {
-	private final List<Mapping> mappings = newArrayList();
 	private final List<RelationContext> provenanceRelations;
 	private final Map<Relation, Set<ProvenanceRelation>> relationToProvenanceRelations = newHashMap();
 	private final CountSqlSelect countSqlSelect = new CountSqlSelect();
@@ -68,14 +66,7 @@ public class DerivabilityCheck implements IDerivabilityCheck {
 	 * @param rules
 	 */
 	public DerivabilityCheck(ITranslationRules rules) {
-		// We only care about non-fake mappings.
-		List<Mapping> allMappings = rules.getOriginalMappings();
-		for (Mapping mapping : allMappings) {
-			if (!mapping.isFakeMapping()) {
-				mappings.add(mapping);
-				logger.debug("Added {}", mapping);
-			}
-		}
+
 		this.provenanceRelations = rules.getRealMappingRelations();
 
 		for (RelationContext context : provenanceRelations) {
@@ -104,19 +95,23 @@ public class DerivabilityCheck implements IDerivabilityCheck {
 			// Map base rel to associated prov rels.
 			List<Mapping> candidateMappings = provRelation.getMappings();
 			for (Mapping mapping : candidateMappings) {
-				List<Atom> head = mapping.getMappingHead();
-				for (Atom headAtom : head) {
-					Relation headRelation = headAtom.getRelation();
-					Set<ProvenanceRelation> provRelSet = relationToProvenanceRelations
-							.get(headRelation);
-					if (provRelSet == null) {
-						provRelSet = newHashSet();
-						relationToProvenanceRelations.put(headRelation,
-								provRelSet);
-					}
-					provRelSet.add(provRelation);
-					logger.debug("Adding {} -> {}", headRelation, provRelation);
+				// We only care about non-fake mappings.
+				if (!mapping.isFakeMapping()) {
+					List<Atom> head = mapping.getMappingHead();
+					for (Atom headAtom : head) {
+						Relation headRelation = headAtom.getRelation();
+						Set<ProvenanceRelation> provRelSet = relationToProvenanceRelations
+								.get(headRelation);
+						if (provRelSet == null) {
+							provRelSet = newHashSet();
+							relationToProvenanceRelations.put(headRelation,
+									provRelSet);
+						}
+						provRelSet.add(provRelation);
+						logger.debug("Adding {} -> {}", headRelation,
+								provRelation);
 
+					}
 				}
 			}
 		}
