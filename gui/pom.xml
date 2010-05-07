@@ -98,6 +98,27 @@
 					<mainClass>edu.upenn.cis.orchestra.gui.MainFrm</mainClass>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<version>1.0</version>
+				<configuration>
+					<assembleDirectory>${project.build.directory}/orchestra</assembleDirectory>
+					<repositoryName>lib</repositoryName>
+					<repositoryLayout>flat</repositoryLayout>
+					<includeConfigurationDirectoryInClasspath>false</includeConfigurationDirectoryInClasspath>
+					<programs>
+						<program>
+							<mainClass>edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreServer</mainClass>
+							<name>updateStore</name>
+						</program>
+						<program>
+							<mainClass>edu.upenn.cis.orchestra.gui.MainFrm</mainClass>
+							<name>orchestraGui</name>
+						</program>
+					</programs>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<profiles>
