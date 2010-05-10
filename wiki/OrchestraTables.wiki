@@ -17,13 +17,14 @@ Orchestra uses a number of tables. These tables are created during migration. Fo
 *_Rel_`_`NEW, _Rel_`_`L`_`NEW, _Rel_`_`L`_`NEW*
   The goal of update exchange is to essentially compute new "versions" of all relations (_Rel_, _Rel_`_`L, _Rel_`_`R), by propagating the data found in the `_`INS and `_`DEL relations. `_`NEW relations represent these new versions. We added these in order to be able to compute the new versions without necessarily replacing the old ones. Typically, at the end of the propagation, we replace all relations with their `_`NEW version.
 
-  For the incremental deletion propagation, the algorithm involves a step where we perform a derivation test, to determine if some tuples need to be deleted (because there is no way to derive them from base tuples). The `_`INV and `_`RCH relations are used by that test. 
+*_Rel_`_`PREV*
+  After a peer performs an update exchange, the contents of _Rel_ are copied into this table, so that the next time the peer publishes a diff can be done between _Rel_ and _Rel_`_`PREV so that any any local modifications captured.
+
+
+For the incremental deletion propagation, the algorithm involves a step where we perform a derivation test, to determine if some tuples need to be deleted (because there is no way to derive them from base tuples). The `_`INV and `_`RCH relations are used by that test. 
 
 *_Rel_`_`INV, _Rel_`_`L`_`INV, _Rel_`_`R`_`INV*
   Initially all tuples to be tested (called "affected" tuples) are put in the `_`INV relations. Orchestra generates a datalog program that inserts all tuples involved in derivations of the affected tuples into `_`INV relations with the goal of finding the ones that are base tuples (which end up in `_`L`_`INV relations).
 
 *_Rel_`_`RCH* (No `_`L or `_`R versions here?)
   Then, another datalog program starts from the `_`INV relations, and computes a subset of the universal solution based on them. This subset is stored in the `_`RCH version of each relation. Finally, we compare the set of affected tuples with the corresponding `_`RCH relations, and their difference is the set of tuples that need to be deleted. We place those tuples in `_`DEL relations, and iterate the algorithm again, to propagate these "new" deletions further.
-
-*_Rel_`_`PREV*
-  After a peer performs an update exchange, the contents of _Rel_ are copied into this table, so that the next time the peer publishes a diff can be done between _Rel_ and _Rel_`_`PREV so that any any local modifications captured.
