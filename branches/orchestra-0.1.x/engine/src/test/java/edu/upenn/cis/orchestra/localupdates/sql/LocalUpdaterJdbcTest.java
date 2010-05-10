@@ -16,6 +16,7 @@
 package edu.upenn.cis.orchestra.localupdates.sql;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashSet;
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 
@@ -100,14 +101,14 @@ public class LocalUpdaterJdbcTest {
 		System.setProperty("jdbc.drivers", jdbcDriver);
 
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
-		TestUtil.clearDb(tester.getConnection().getConnection(), newArrayList(
+		TestUtil.clearDb(tester.getConnection().getConnection(), newHashSet(
 				baseTableFqn, baseTableFqn + ExtractorDefault.TABLE_SUFFIX,
 				baseTableFqn + Relation.LOCAL, baseTableFqn + Relation.REJECT,
 				baseTableFqn + Relation.LOCAL + "_" + AtomType.INS,
 				baseTableFqn + Relation.LOCAL + "_" + AtomType.DEL,
 				baseTableFqn + Relation.REJECT + "_" + AtomType.INS,
 				baseTableFqn + Relation.REJECT + "_" + AtomType.DEL),
-				Collections.singletonList(testSchema));
+				Collections.singleton(testSchema));
 		File sqlScript = new File(getClass().getResource("extractschema.sql")
 				.getPath());
 		TestUtil.executeSqlScript(tester.getConnection().getConnection(),

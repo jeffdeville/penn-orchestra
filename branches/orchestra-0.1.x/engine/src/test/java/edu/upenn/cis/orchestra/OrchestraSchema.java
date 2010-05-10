@@ -21,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,15 +53,15 @@ public class OrchestraSchema {
 	/** The name of this Orchestra schema. */
 	private String orchestraSchemaName;
 
-	/** A list of database schema names from {@code orchestraSchema}. */
-	private final List<String> dbSchemaNames = OrchestraUtil.newArrayList();
+	/** The set of database schema names from {@code orchestraSchema}. */
+	private final Set<String> dbSchemaNames = OrchestraUtil.newHashSet();
 
 	/**
-	 * An list of database schema name regular expressions from {@code
+	 * The set of database schema name regular expressions from {@code
 	 * orchestraSchema}.
 	 */
-	private final List<String> dbSchemaNameRegexps = OrchestraUtil
-			.newArrayList();
+	private final Set<String> dbSchemaNameRegexps = OrchestraUtil
+			.newHashSet();
 
 	/**
 	 * Maps qualified table name to the corresponding relation element from
@@ -89,16 +88,16 @@ public class OrchestraSchema {
 	}
 
 	/**
-	 * Returns the list of schema names in this Orchestra schema. The names are
+	 * Returns the set of schema names in this Orchestra schema. The names are
 	 * the actual database names as found in the {@code dbinfo} element. If
 	 * {@code regexp == true} then each name is appended with ".*".
 	 * 
 	 * @param regexp indicates that regular expressions are desired.
 	 * 
-	 * @return the list of schema names in this Orchestra schema.
+	 * @return the set of schema names in this Orchestra schema.
 	 */
-	public List<String> getDbSchemaNames(boolean regexp) {
-		return Collections.unmodifiableList(regexp ? dbSchemaNameRegexps
+	public Set<String> getDbSchemaNames(boolean regexp) {
+		return Collections.unmodifiableSet(regexp ? dbSchemaNameRegexps
 				: dbSchemaNames);
 	}
 

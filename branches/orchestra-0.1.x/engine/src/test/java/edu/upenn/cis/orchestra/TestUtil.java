@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -108,7 +109,7 @@ public class TestUtil {
 	 * @throws Exception
 	 */
 	public static void clearDb(Connection jdbcConnection,
-			List<String> tablesToDrop, List<String> schemasToDrop)
+			Set<String> tablesToDrop, Set<String> schemasToDrop)
 			throws Exception {
 		logger
 				.debug(

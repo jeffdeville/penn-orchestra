@@ -16,6 +16,7 @@
 package edu.upenn.cis.orchestra.localupdates.extract.sql;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashSet;
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static org.testng.Assert.assertEquals;
@@ -116,14 +117,14 @@ public class ExtractorDefaultTest {
 	public final void initDBUnit(String jdbcDriver, String dbURL,
 			String dbUser, String dbPassword) throws Exception {
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
-		TestUtil.clearDb(tester.getConnection().getConnection(), newArrayList(
+		TestUtil.clearDb(tester.getConnection().getConnection(), newHashSet(
 				baseTableFqn, baseTableFqn + ExtractorDefault.TABLE_SUFFIX,
 				baseTableFqn + Relation.LOCAL, baseTableFqn + Relation.REJECT,
 				baseTableFqn + Relation.LOCAL + "_" + AtomType.INS,
 				baseTableFqn + Relation.LOCAL + "_" + AtomType.DEL,
 				baseTableFqn + Relation.REJECT + "_" + AtomType.INS,
 				baseTableFqn + Relation.REJECT + "_" + AtomType.DEL),
-				Collections.singletonList(testSchema));
+				Collections.singleton(testSchema));
 		File sqlScript = new File(getClass().getResource("extractschema.sql")
 				.getPath());
 		TestUtil.executeSqlScript(tester.getConnection().getConnection(),

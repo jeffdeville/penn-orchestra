@@ -21,7 +21,7 @@ import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import java.io.File;
 import java.net.URL;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import org.dbunit.Assertion;
 import org.dbunit.JdbcDatabaseTester;
@@ -79,9 +79,9 @@ public class PrepareDbForLocalUpdaterJdbcTest {
 		// Class.forName(jdbcDriver);
 		IDatabaseConnection connection = DbUnitUtil
 				.getConfiguredDbUnitConnection(tester);
-		List<String> empty = Collections.emptyList();
+		Set<String> empty = Collections.emptySet();
 		TestUtil.clearDb(connection.getConnection(), Collections
-				.singletonList("PPOD2.OTU" + ExtractorDefault.TABLE_SUFFIX),
+				.singleton("PPOD2.OTU" + ExtractorDefault.TABLE_SUFFIX),
 				empty);
 		expected = new FlatDtdDataSet(getClass().getResourceAsStream(
 				"expectedPrevTableMetaData.dtd"));

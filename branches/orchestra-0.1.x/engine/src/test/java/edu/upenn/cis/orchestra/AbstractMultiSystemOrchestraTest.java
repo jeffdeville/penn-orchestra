@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -121,7 +122,7 @@ public abstract class AbstractMultiSystemOrchestraTest {
 	protected List<String> peersToStart = newArrayList();
 
 	/** A list of database schema names from {@code orchestraSchemaName}. */
-	private List<String> dbSchemaNames;
+	private Set<String> dbSchemaNames;
 
 	/**
 	 * An array of database schema name regular expressions from {@code

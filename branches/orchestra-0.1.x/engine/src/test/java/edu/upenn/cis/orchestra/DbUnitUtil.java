@@ -15,6 +15,8 @@
  */
 package edu.upenn.cis.orchestra;
 
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashSet;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.dbunit.Assertion;
 import org.dbunit.DatabaseUnitException;
@@ -326,7 +329,7 @@ public class DbUnitUtil {
 	}
 
 	/**
-	 * Returns a list of table names found in the database used for the test. It
+	 * Returns a set of table names found in the database used for the test. It
 	 * only returns those tables with names matching {@code tableFilter}.
 	 * 
 	 * @param tableFilter the filter to apply to the returned table names.
@@ -335,14 +338,14 @@ public class DbUnitUtil {
 	 * 
 	 * @throws Exception
 	 */
-	public static List<String> getFilteredTableNames(ITableFilter tableFilter,
+	public static Set<String> getFilteredTableNames(ITableFilter tableFilter,
 			JdbcDatabaseTester dbTester) throws Exception {
 		IDatabaseConnection dbUnitConnection = getConfiguredDbUnitConnection(dbTester);
 		try {
 			IDataSet output = dbUnitConnection.createDataSet();
 			IDataSet filteredOutput = new FilteredDataSet(tableFilter, output);
 			String[] tableNames = filteredOutput.getTableNames();
-			return Arrays.asList(tableNames);
+			return newHashSet(Arrays.asList(tableNames));
 		} finally {
 			dbUnitConnection.close();
 		}

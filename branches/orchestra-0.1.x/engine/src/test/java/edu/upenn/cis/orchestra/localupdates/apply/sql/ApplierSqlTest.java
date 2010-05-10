@@ -16,6 +16,7 @@
 package edu.upenn.cis.orchestra.localupdates.apply.sql;
 
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
+import static edu.upenn.cis.orchestra.OrchestraUtil.newHashSet;
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static org.testng.Assert.assertTrue;
@@ -150,13 +151,13 @@ public class ApplierSqlTest {
 	public final void initDBUnit(String jdbcDriver, String dbURL,
 			String dbUser, String dbPassword) throws Exception {
 		tester = new JdbcDatabaseTester(jdbcDriver, dbURL, dbUser, dbPassword);
-		TestUtil.clearDb(tester.getConnection().getConnection(), newArrayList(
+		TestUtil.clearDb(tester.getConnection().getConnection(), newHashSet(
 				dbtablefqn, dbtablefqn + Relation.LOCAL, dbtablefqn
 						+ Relation.REJECT, dbtablefqn + Relation.LOCAL + "_"
 						+ AtomType.INS, dbtablefqn + Relation.LOCAL + "_"
 						+ AtomType.DEL, dbtablefqn + Relation.REJECT + "_"
 						+ AtomType.INS, dbtablefqn + Relation.REJECT + "_"
-						+ AtomType.DEL), Collections.singletonList(dbschema));
+						+ AtomType.DEL), Collections.singleton(dbschema));
 		File sqlScript = new File(getClass().getResource("applyschema.sql")
 				.getPath());
 		TestUtil.executeSqlScript(tester.getConnection().getConnection(),
