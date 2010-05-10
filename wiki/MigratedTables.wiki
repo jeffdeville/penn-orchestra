@@ -2,7 +2,7 @@
 
 During migration Orchestra creates a number of tables for each base relation _Rel_:
 
-*_Rel_`_`L
+*_Rel_`_`L*
   For *L*ocally added data.
 
 *_Rel_`_`R*
