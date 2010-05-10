@@ -137,6 +137,27 @@ public class OrchestraUtil {
 	}
 
 	/**
+	 * Convenience {@link HashSet} maker.
+	 * <p>
+	 * So we can write
+	 * <p>
+	 * {@code Set<Integer> integers = newHashSet(4, 5, 3)}
+	 * <p>
+	 * instead of
+	 * <p>
+	 * {@code Set<Integer> integers = new HashSet<Integer>(Arrays.asList(4,
+	 * 5, 3))}.
+	 * 
+	 * @param <T> the parameter of {@code new HashSet<T>()}.
+	 * @param objects objects that should go into the returned {@code HashSet}
+	 *            .
+	 * @return the new {@code HashSet<T>}
+	 */
+	public static <T> HashSet<T> newHashSet(T... objects) {
+		return new HashSet<T>(Arrays.asList(objects));
+	}
+	
+	/**
 	 * Convenience {@code HashMap} creator equivalent to {@code new HashMap<K,
 	 * V>()}.
 	 * 
