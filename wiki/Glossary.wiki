@@ -6,7 +6,7 @@
 
 *_Labeled Null_* different form SQL null - we can join on labeled nulls. They can be used when inferring new values though mappings. _1_ indicates there is no labeled null. All other values than _1_ are Skolem values. 
 
-*_Migration_* a one time setup operation where a peer's existing database schema is modified to add in columns and [MigratedTables tables] for Orchestra's use.
+*_Migration_* a one time setup operation where a peer's existing database schema is modified to add in columns and [OrchestraTables tables] for Orchestra's use.
 
 *_Peer_* a participant in an Orchestra system.
 
