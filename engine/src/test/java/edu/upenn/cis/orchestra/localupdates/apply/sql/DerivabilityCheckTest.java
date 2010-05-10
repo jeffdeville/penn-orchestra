@@ -16,7 +16,6 @@
 
 package edu.upenn.cis.orchestra.localupdates.apply.sql;
 
-import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.TestUtil.FAST_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.createDocument;
@@ -95,8 +94,8 @@ public class DerivabilityCheckTest {
 		System.setProperty("jdbc.drivers", jdbcDriver);
 
 		connection = DriverManager.getConnection(dbURL, connectionProperties);
-		TestUtil.clearDb(connection, newArrayList("DERIVABILITY2.PM0"),
-				Collections.singletonList("DERIVABILITY2"));
+		TestUtil.clearDb(connection, Collections.singleton("DERIVABILITY2.PM0"),
+				Collections.singleton("DERIVABILITY2"));
 		File sqlScript = new File(getClass().getResource(
 				"derivabilityschema.sql").getPath());
 		TestUtil.executeSqlScript(connection, sqlScript);

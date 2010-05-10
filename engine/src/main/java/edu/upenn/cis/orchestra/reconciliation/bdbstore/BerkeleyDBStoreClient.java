@@ -76,7 +76,6 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 
 	public static class Factory implements UpdateStore.Factory {
 		public final InetSocketAddress host;
-		private BerkeleyDBStoreServer storeServer;
 
 		public Factory(InetSocketAddress host) {
 			this.host = host;

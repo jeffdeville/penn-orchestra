@@ -19,7 +19,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Set;
 
 import org.dbunit.JdbcDatabaseTester;
 import org.dbunit.dataset.filter.IncludeTableFilter;
@@ -108,10 +108,10 @@ public class OrchestraTestFrame {
 	 * @throws Exception
 	 */
 	void prepare(String orchestraSchemaName, File testDataDirectory,
-			List<String> dbSchemaNames, String[] dbSchemaNameRegexps)
+			Set<String> dbSchemaNames, String[] dbSchemaNameRegexps)
 			throws Exception {
 		// Drop all tables and schemas.
-		List<String> tablesToDrop = DbUnitUtil.getFilteredTableNames(
+		Set<String> tablesToDrop = DbUnitUtil.getFilteredTableNames(
 				new IncludeTableFilter(dbSchemaNameRegexps), dbTester);
 		TestUtil.clearDb(jdbcConnection, tablesToDrop, dbSchemaNames);
 
