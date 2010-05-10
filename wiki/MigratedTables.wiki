@@ -3,10 +3,10 @@
 During migration Orchestra creates a number of tables for each base relation _Rel_:
 
 *_Rel_`_`L*
-  For locally added data.
+  For *L*ocally added data.
 
 *_Rel_`_`R*
-  For local rejections. These are tuples the peer has decided that it does not want. Their presence here prevents update exchange from adding them to _Rel_.
+  For local *R*ejections. These are tuples the peer has decided that it does not want. Their presence here prevents update exchange from adding them to _Rel_.
 
 *_Rel_`_`DEL, _Rel_`_`L`_`DEL, _Rel_`_`R`_`DEL*
   Contain deletions that happen e.g., after a solution has been computed. The existence of data in this relation is essentially the first step of update exchange. As a result, both "local" and peer relations can have such updates (that's why we need, e.g., _Rel_`_`L`_`INS).
