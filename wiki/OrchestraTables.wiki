@@ -1,6 +1,6 @@
 #summary Description of tables created and used by Orchestra
 
-Orchestra uses a number of tables. These tables are created during migration and are automatically populated by Orchestra. The user would still only interact with his or her original tables. For each base relation _Rel_:
+Orchestra uses a number of tables. These tables are created during migration and are automatically populated by Orchestra. The user only interacts with his or her original tables. For each base relation _Rel_:
 
 *_Rel_`_`L*
   For Locally added data. At the beginning of a publish/update exchange operation Orchestra determines which tuples have been added to _Rel_ since the last publish/update exchange. These new tuples will be added to _Rel_`_`L by update exchange.
