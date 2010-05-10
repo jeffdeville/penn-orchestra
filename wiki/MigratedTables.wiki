@@ -1,6 +1,6 @@
 #summary Description of tables created during migration
 
-During migration Orchestra creates a number of tables for each base relation _Rel_:
+Orchestra uses a number of tables. These tables are created during migration. For each base relation _Rel_:
 
 *_Rel_`_`L*
   For Locally added data.
