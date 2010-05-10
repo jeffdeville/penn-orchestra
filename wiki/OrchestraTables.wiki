@@ -1,6 +1,6 @@
 #summary Description of tables created and used by Orchestra
 
-Orchestra uses a number of tables. These tables are created during migration and are automatically populated by Orchestra. The user only interacts with his or her original tables. For each base relation _Rel_ in the Orchestra system:
+Orchestra uses a number of tables. These tables are created during migration and are automatically populated by Orchestra. The user only interacts with his or her original tables. For each base relation _Rel_ in the Orchestra system the following tables are created.
 
 =Tables which constitute the state of an Orchestra peer=
 These tables, along with _Rel_, constitute the peer's Orchestra instance.
