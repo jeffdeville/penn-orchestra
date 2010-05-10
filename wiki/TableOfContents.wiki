@@ -1,4 +1,5 @@
 #summary documentation outline for docreader
   * [GettingStarted Getting Started]
+  * [MigratedTables Table Descriptions]
   * [Glossary Glossary]
  
