@@ -24,6 +24,7 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.fail;
 
 import java.io.StringReader;
+import java.util.Collections;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -157,4 +158,23 @@ public class TestSqlSelect {
 		select.addFromClause(newArrayList(_sqlFactory.newFromItem("dual")));
 		assertEquals(SqlUtil.normalizeSqlStatement(select.toString()), expected);
 	}
+	
+	/**
+	 * Numerals should be recognized as expressions and not column names.
+	 * 
+	 */
+	@Test
+	public void testNumeralAsSelectItem() {
+		final String expected = SqlUtil
+		.normalizeSqlStatement("select 1 as C0, 345 as C1 from A");
+		final ISqlSelect select = _sqlFactory.newSelect();
+		ISqlSelectItem selectItem1 = _sqlFactory
+		.newSelectItem("1").setAlias("C0");
+		ISqlSelectItem selectItem2 = _sqlFactory.newSelectItem("345").setAlias("C1");
+		ISqlFromItem fromItem = _sqlFactory.newFromItem("A");
+		select.addSelectClause(newArrayList(selectItem1, selectItem2));
+		select.addFromClause(Collections.singletonList(fromItem));
+		assertEquals(SqlUtil.normalizeSqlStatement(select.toString()), expected);
+	}
+	
 }

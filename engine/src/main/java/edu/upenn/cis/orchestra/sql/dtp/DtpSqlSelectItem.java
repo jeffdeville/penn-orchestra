@@ -17,6 +17,8 @@ package edu.upenn.cis.orchestra.sql.dtp;
 
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.datatools.modelbase.sql.query.QueryResultSpecification;
 import org.eclipse.datatools.modelbase.sql.query.QueryValueExpression;
 import org.eclipse.datatools.modelbase.sql.query.ResultColumn;
@@ -41,7 +43,10 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 
 	/** Wrapped DTP object. */
 	private QueryResultSpecification _queryResultSpecification;
+	
+	private static final Pattern numeralPattern = Pattern.compile("\\d+");
 
+	
 	/**
 	 * Create a new {@code SELECT} item from a {@code QueryResultSpecification}.
 	 * 
@@ -58,7 +63,7 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 	 * column} position.
 	 * <p>
 	 * For backwards compatibility with the ZQL {@code SqlSelectItem}, we allow
-	 * {@code skolemstr(...)} udf's, {@code cast} expressions, {@code 1}
+	 * {@code skolemstr(...)} udf's, {@code cast} expressions, numeral
 	 * expressions, (as in {@code SELECT 1}), and string constants ({@code '}
 	 * delimited strings) to be passed in through {@code fullname}.
 	 * 
@@ -78,7 +83,7 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 		if (fullnameTrimmedLowerCaseNoSpaces.startsWith("skolemstr(")
 				|| fullnameTrimmedLowerCaseNoSpaces.startsWith("cast(")
 				|| (fullnameTrimmed.startsWith("'") && fullnameTrimmed
-						.endsWith("'")) || fullnameTrimmed.equals("1")) {
+						.endsWith("'")) || numeralPattern.matcher(fullnameTrimmed).matches()) {
 			_queryResultSpecification = getSQLQueryParserFactory()
 					.createResultColumn(
 							getSQLQueryParserFactory().createSimpleExpression(
