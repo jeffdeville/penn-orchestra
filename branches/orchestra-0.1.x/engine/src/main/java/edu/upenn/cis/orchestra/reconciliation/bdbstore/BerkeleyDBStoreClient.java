@@ -76,11 +76,18 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 
 	public static class Factory implements UpdateStore.Factory {
 		public final InetSocketAddress host;
-
-		public Factory(InetSocketAddress host) {
+		public final String homePath;
+		public Factory(InetSocketAddress host, String homePath) {
 			this.host = host;
+			if (isLocal() && (homePath == null || "".equals(homePath))){
+				this.homePath = "updateStore_env";
+			} else if (isLocal()){
+				this.homePath = homePath;
+			} else {
+				this.homePath = null;
+			}
 		}
-
+		
 		// Is the factory creating a local update store?
 		public boolean isLocal() {
 			try {
@@ -106,13 +113,17 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 			update.setAttribute("type", "bdb");
 			update.setAttribute("hostname", host.getHostName());
 			update.setAttribute("port", Integer.toString(host.getPort()));
+			if (homePath != null){
+				update.setAttribute("home", homePath);
+			}
 		}
 
 		static public Factory deserialize(Element update) {
 			String hostname = update.getAttribute("hostname");
 			int port = Integer.parseInt(update.getAttribute("port"));
+			String homePath = update.getAttribute("home");
 			InetSocketAddress address = new InetSocketAddress(hostname, port);
-			return new Factory(address);
+			return new Factory(address, homePath);
 		}
 
 		public void resetStore(Schema s) throws USException {
@@ -239,8 +250,7 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 			Process process = null;
 			if (isLocal()) {
 				try {
-					String storeName = "updateStore";
-					File f = new File(storeName + "_env");
+					File f = new File(homePath);
 					if (!f.exists()) {
 						f.mkdir();
 					}

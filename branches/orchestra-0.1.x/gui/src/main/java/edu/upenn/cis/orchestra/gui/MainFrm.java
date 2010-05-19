@@ -66,6 +66,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -1267,6 +1268,36 @@ public class MainFrm extends JFrame
 		System.setProperty("sun.java2d.d3d", "false");
 		Config.parseCommandLine(args);
 		// Set System L&F
+		setSystemLookAndFeel();
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				JButton button = new JButton();
+				Font font1 = button.getFont();
+				UIDefaults defs = UIManager.getDefaults();
+				Font font2 = defs.getFont("Button.font");
+				assert (font1 == font2);
+
+				MainFrm frm = new MainFrm();
+				frm.startup();
+			}
+		});
+	}
+
+
+	/**
+	 * DOCUMENT ME
+	 * 
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws UnsupportedLookAndFeelException
+	 * @throws IOException
+	 * @throws Exception
+	 */
+	public static void setSystemLookAndFeel() throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException,
+			UnsupportedLookAndFeelException, IOException, Exception {
 		if (!"Ajax".equals(Config.getProperty("gui.mode"))){
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
@@ -1292,19 +1323,6 @@ public class MainFrm extends JFrame
 				UIManager.put(key, resource);
 			}
 		}
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				JButton button = new JButton();
-				Font font1 = button.getFont();
-				UIDefaults defs = UIManager.getDefaults();
-				Font font2 = defs.getFont("Button.font");
-				assert (font1 == font2);
-
-				MainFrm frm = new MainFrm();
-				frm.startup();
-			}
-		});
 	}
 
 	public void mappingWasSelected(PeersMgtPanel panel, Mapping m) 
