@@ -76,7 +76,7 @@ public class CreateWorkloadBDB {
 	static class BDBFactory implements CreateWorkload.DatabaseFactory {
 		UpdateStore.Factory usf;
 		BDBFactory() throws Exception {
-			usf = new BerkeleyDBStoreClient.Factory(new InetSocketAddress(InetAddress.getLocalHost(), BerkeleyDBStoreServer.DEFAULT_PORT));
+			usf = new BerkeleyDBStoreClient.Factory(new InetSocketAddress(InetAddress.getLocalHost(), BerkeleyDBStoreServer.DEFAULT_PORT), null);
 		}
 
 		public Db createDb(int id, Schema s, Environment env) throws Exception {
