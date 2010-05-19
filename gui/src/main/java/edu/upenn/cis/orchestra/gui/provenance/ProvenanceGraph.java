@@ -111,15 +111,15 @@ public class ProvenanceGraph extends BasicGraph {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	Peer _curPeer;
-	Schema _curSchema;
-	List<DefaultGraphCell> _cells;
-	OrchestraSystem _system;
-	Tuple _root;
-	DefaultGraphCell _rootNode;
+	private Peer _curPeer;
+	private Schema _curSchema;
+	private List<DefaultGraphCell> _cells;
+	private OrchestraSystem _system;
+	private Tuple _root;
+	private DefaultGraphCell _rootNode;
 	
-	Map<TupleContext,DefaultGraphCell> _tupleNodes;
-	Map<TupleContext,DefaultGraphCell> _oldTupleNodes;
+	private Map<TupleContext,DefaultGraphCell> _tupleNodes;
+	private Map<TupleContext,DefaultGraphCell> _oldTupleNodes;
 
 	public ProvenanceGraph(Peer p, Schema s, OrchestraSystem sys) {
 		super(true);
@@ -323,7 +323,7 @@ public class ProvenanceGraph extends BasicGraph {
 	 * @param t
 	 * @return
 	 */
-	public List<Rule> getMappingRelationRulesFor(Tuple t) {
+	private List<Rule> getMappingRelationRulesFor(Tuple t) {
 		Map<Atom,Rule> atomsFor = _system.getMappingEngine().getMappingAtomsFor(t.getOrigin());
 		
 		List<Rule> rules = new ArrayList<Rule>();

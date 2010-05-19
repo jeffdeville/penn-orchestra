@@ -74,7 +74,7 @@ public class TestBDBReconciliation extends TestReconciliation {
 	@Override
 	protected Factory getStoreFactory() {
 		try {
-			return new BerkeleyDBStoreClient.Factory(new InetSocketAddress(InetAddress.getLocalHost(), BerkeleyDBStoreServer.DEFAULT_PORT));
+			return new BerkeleyDBStoreClient.Factory(new InetSocketAddress(InetAddress.getLocalHost(), BerkeleyDBStoreServer.DEFAULT_PORT), null);
 		} catch (UnknownHostException e) {
 			throw new RuntimeException(e);
 		}
