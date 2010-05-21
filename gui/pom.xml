@@ -48,7 +48,9 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<excludedGroups>fullgui-tests</excludedGroups>
+					<suiteXmlFiles>
+						<suiteXmlFile>target/test-classes/testng.xml</suiteXmlFile>
+						</suiteXmlFiles>
 					<forkMode>once</forkMode>
 				</configuration>
 			</plugin>
@@ -65,7 +67,7 @@
 					</archive>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<descriptorRefs>
@@ -79,7 +81,7 @@
 						</manifest>
 					</archive>
 				</configuration>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
@@ -103,11 +105,29 @@
 				<artifactId>appassembler-maven-plugin</artifactId>
 				<version>1.0</version>
 				<configuration>
+ 					<target>${project.build.directory}/orchestra</target>
 					<assembleDirectory>${project.build.directory}/orchestra</assembleDirectory>
-					<repositoryName>lib</repositoryName>
+					<basedir>${project.build.directory}/orchestra</basedir>
 					<repositoryLayout>flat</repositoryLayout>
-					<includeConfigurationDirectoryInClasspath>false</includeConfigurationDirectoryInClasspath>
-					<programs>
+					<daemons>
+						<daemon>
+							<id>updateStore</id>
+							<mainClass>edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreServer</mainClass>
+							<platforms>
+								<platform>booter-unix</platform>
+								<platform>booter-windows</platform>
+							</platforms>
+						</daemon>
+						<daemon>
+							<id>orchestraGui</id>
+							<mainClass>edu.upenn.cis.orchestra.gui.MainFrm</mainClass>
+							<platforms>
+								<platform>booter-unix</platform>
+								<platform>booter-windows</platform>
+							</platforms>
+						</daemon>
+					</daemons>
+					<!-- <programs>
 						<program>
 							<mainClass>edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreServer</mainClass>
 							<name>updateStore</name>
@@ -116,7 +136,7 @@
 							<mainClass>edu.upenn.cis.orchestra.gui.MainFrm</mainClass>
 							<name>orchestraGui</name>
 						</program>
-					</programs>
+					</programs> -->
 				</configuration>
 			</plugin>
 		</plugins>
@@ -238,6 +258,11 @@
 					<artifactId>testng</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.mojo.appassembler</groupId>
+			<artifactId>appassembler-booter</artifactId>
+			<version>1.0</version>
 		</dependency>
 	</dependencies>
 
