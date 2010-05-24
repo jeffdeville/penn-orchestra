@@ -270,7 +270,7 @@ public class MainFrm extends JFrame
 		} else {
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		}
-		URL url = getClass().getClassLoader().getResource("images/OrchestraIcon.png");
+		URL url = getClass().getClassLoader().getResource("images/OrchestraIconSmall.png");
 		_icon = new ImageIcon(url, "Orchestra");
 		setIconImage(_icon.getImage());
 	}
