@@ -259,7 +259,7 @@ public final class MultiGUIOperationFactory extends
 			JTabbedPaneFixture tabPane = window
 					.tabbedPane(PeersMgtPanel.PEERS_MGT_TABBED_PANE);
 			tabPane.selectTab("Peer " + peerName);
-			window.menuItemWithPath("File", "Import CDSS Data...").click();
+			window.menuItemWithPath("Peer", "Import Data...").click();
 			JFileChooserFixture fileChooser = JFileChooserFinder
 					.findFileChooser().using(window.robot);
 			JTextComponentFixture fileNameBox = fileChooser.fileNameTextBox();
