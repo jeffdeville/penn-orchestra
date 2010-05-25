@@ -978,7 +978,7 @@ public class Console {
 						USDump dump = (USDump) ois.readObject();
 						ois.close();
 						fis.close();
-						getCatalog().restore(p, dump);
+						getCatalog().restore(dump);
 					} catch (IOException e) {
 						throw new CommandException(e);
 					} catch (DbException de) {

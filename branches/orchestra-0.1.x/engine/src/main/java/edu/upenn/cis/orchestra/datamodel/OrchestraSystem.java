@@ -568,7 +568,7 @@ public class OrchestraSystem {
 		return _usf.dumpUpdateStore(_mapStore, _schemas.get(p));
 	}
 
-	public synchronized void restore(Peer p, USDump dump) throws DbException {
+	public synchronized void restore(USDump dump) throws DbException {
 		_usf.restoreUpdateStore(dump);
 	}
 
@@ -1595,5 +1595,9 @@ public class OrchestraSystem {
 	public IDerivabilityCheck getDerivabilityCheck() {
 		return _derivabilityChecker;
 		
+	}
+
+	public Peer getLocalPeer() {
+		return _localPeer;
 	}
 }
