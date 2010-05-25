@@ -63,7 +63,7 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 	private final JPanel _peerPropertiesPanel = new JPanel (); 
 	
 	// Tabbed pane: will contain one tab for peers network and 
-	// one tab for each peer.
+	// one tab for the local peer.
 	final JTabbedPane _tabbedPane = new JTabbedPane ();
 	final static String TAB_PEERSNETW_TITLE = "All Peers";
 	final static String TAB_PEER_TITLE = "Peer ";
@@ -162,12 +162,9 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 		_tabbedPane.setName(PEERS_MGT_TABBED_PANE);
 		// Add a tab for the peers network
 		_tabbedPane.addTab(TAB_PEERSNETW_TITLE, createPeerNetworkPanel(_system));
-		
-		// Add a tab for each peer but don't fill it until the user 
-		// asks for it.
-		for (Peer p : _system.getPeers()) {
-			_tabbedPane.addTab(TAB_PEER_TITLE + p.getId(), new JPanel ());
-		}
+
+		_tabbedPane.addTab(TAB_PEER_TITLE + _system.getLocalPeer().getId(), new JPanel ());
+
 		
 		_console = new ConsolePanel(_system);
 		_tabbedPane.addTab(TAB_CONSOLE, _console);
@@ -275,7 +272,7 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 		return rightPanel;
 	}
 
-	private void createPeerGraph (OrchestraSystem system)
+	private void createPeerGraph (final OrchestraSystem system)
 	{
 		// Create the graph
 		_peerGraph = new PeerGraph (system);
@@ -332,14 +329,18 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
                     {
                     	PeerVertex cell = (PeerVertex) _peerGraph.getSelectionCell();
                     	setCurrentPeerAndSchema(cell.getPeer(), cell.getSchema());
-                    	showPeerSchema (cell.getPeer(), cell.getSchema());
+                    	if (system.isLocalPeer(cell.getPeer())){
+                    		showPeerSchema (cell.getPeer(), cell.getSchema());
+                    	}
                     }
 
                     if (obj != null 
                 		&& obj instanceof IPeerMapping) 
                     {
                     	IPeerMapping cell = (IPeerMapping) _peerGraph.getSelectionCell();
-                    	showPeerMapping(cell.getPeer (), cell.getMapping());
+                    	if (system.isLocalPeer(cell.getPeer())){
+                    		showPeerMapping(cell.getPeer (), cell.getMapping());
+                    	}
                     }
 				} else if (evt.getButton() == MouseEvent.BUTTON2 || evt.getButton() == MouseEvent.BUTTON3) {
                     Object obj = _peerGraph.getSelectionCell();
@@ -349,8 +350,10 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
                     	PeerVertex cell = (PeerVertex) _peerGraph.getSelectionCell();
                     	setCurrentPeerAndSchema(cell.getPeer(), cell.getSchema());
                     	
-						for (PeersMgtPanelObserver obs : _observers)
-							obs.peerContextMenu(PeersMgtPanel.this, cell.getPeer(), cell.getSchema(), getPeerDetailPanel(cell.getPeer()), PeersMgtPanel.this, evt.getX(), evt.getY());
+                    	if (system.isLocalPeer(cell.getPeer())){
+                    		for (PeersMgtPanelObserver obs : _observers)
+                    			obs.peerContextMenu(PeersMgtPanel.this, cell.getPeer(), cell.getSchema(), getPeerDetailPanel(cell.getPeer()), PeersMgtPanel.this, evt.getX(), evt.getY());
+                    	}
                     }
 				} 
 

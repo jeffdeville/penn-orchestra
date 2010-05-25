@@ -385,7 +385,7 @@ public class MainFrm extends JFrame
 	 * 
 	 * @param allPeers
 	 */
-	private void importPeerData(boolean allPeers)
+	private void importPeerData()
 	{
 		if (_importDirectoryChooser == null) {
 			_importDirectoryChooser = new JFileChooser(Config.getWorkDir());
@@ -408,7 +408,7 @@ public class MainFrm extends JFrame
 				ArrayList<String> succ = new ArrayList<String>();
 				ArrayList<String> fail = new ArrayList<String>();
 
-				getSelectedCatalog().getMappingEngine().importUpdates((allPeers) ? null : getSelectedPeer(),
+				getSelectedCatalog().getMappingEngine().importUpdates(getLocalPeerForSelectedCatalog(),
 						dir, succ, fail);
 				
 				ImportBox i = new ImportBox(this, succ, fail);
@@ -526,7 +526,7 @@ public class MainFrm extends JFrame
 					ois.close();
 					fis.close();
 
-					_catalog.restore(getSelectedPeer(), dump);
+					_catalog.restore(dump);
 					return null;
 				}
 
@@ -584,7 +584,7 @@ public class MainFrm extends JFrame
 				final OrchestraSystem _system = getSelectedCatalog();
 				@Override
 				protected Object doInBackground() throws Exception {
-					USDump dump = _system.dump(getSelectedPeer());
+					USDump dump = _system.dump(getLocalPeerForSelectedCatalog());
 					FileOutputStream fos = new FileOutputStream(file);
 					ObjectOutputStream oos = new ObjectOutputStream(fos);
 					oos.writeObject(dump);
@@ -674,16 +674,16 @@ public class MainFrm extends JFrame
 		mnuItmFileOpen.addActionListener(listener);
 		mnuFile.add(mnuItmFileOpen);
 
-		JMenuItem mnuItmPeerImport = new JMenuItem ("Import CDSS Data...");
-		mnuItmPeerImport.setMnemonic(KeyEvent.VK_I);
-		listener = new ActionListener() {
-			public void actionPerformed(@SuppressWarnings("unused")
-					ActionEvent e) {
-				importPeerData(false);
-			}
-		};
-		mnuItmPeerImport.addActionListener(listener);
-		mnuFile.add(mnuItmPeerImport);
+//		JMenuItem mnuItmPeerImport = new JMenuItem ("Import CDSS Data...");
+//		mnuItmPeerImport.setMnemonic(KeyEvent.VK_I);
+//		listener = new ActionListener() {
+//			public void actionPerformed(@SuppressWarnings("unused")
+//					ActionEvent e) {
+//				importPeerData(false);
+//			}
+//		};
+//		mnuItmPeerImport.addActionListener(listener);
+//		mnuFile.add(mnuItmPeerImport);
 
 		mnuFile.addSeparator();
 		
@@ -792,6 +792,14 @@ public class MainFrm extends JFrame
 		return null;
 	}
 	
+	private Peer getLocalPeerForSelectedCatalog() {
+		MainPanel mp = getSelectedMainPanel();
+		if (mp != null) {
+			return mp.getSystem().getLocalPeer(); //mp.getPeersMgtPanel().getCurrentPeer();
+		}
+		return null;
+	}
+	
 	private Peer getSelectedPeer() {
 		MainPanel mp = getSelectedMainPanel();
 		if (mp != null) {
@@ -847,7 +855,7 @@ public class MainFrm extends JFrame
 		listener = new ActionListener() {
 			public void actionPerformed(@SuppressWarnings("unused")
 					ActionEvent e) {
-				importPeerData(false);
+				importPeerData();
 			}
 		};
 		mnuItmPeerImport.addActionListener(listener);
@@ -859,7 +867,7 @@ public class MainFrm extends JFrame
 		trans.setMnemonic(KeyEvent.VK_T);
 		listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Peer peer = getSelectedPeer();
+				Peer peer = getLocalPeerForSelectedCatalog();
 				//OrchestraSystem catalog = getSelectedCatalog();
 				if (peer != null) {
 					
@@ -891,7 +899,7 @@ public class MainFrm extends JFrame
 		prov.setMnemonic(KeyEvent.VK_P);
 		listener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	Peer peer = getSelectedPeer();
+            	Peer peer = getLocalPeerForSelectedCatalog();
             	if (peer != null) 
             	{
             		getSelectedMIF().getPanel().showProvenanceViewer(peer);
@@ -927,7 +935,7 @@ public class MainFrm extends JFrame
 		listener = new ActionListener() {
 			public void actionPerformed(@SuppressWarnings("unused")
 					ActionEvent e) {
-				importPeerData(false);
+				importPeerData();
 			}
 		};
 		mnuItmPeerImport.addActionListener(listener);
@@ -938,7 +946,7 @@ public class MainFrm extends JFrame
 		trans.setMnemonic(KeyEvent.VK_T);
 		listener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	Peer peer = getSelectedPeer();
+            	Peer peer = getLocalPeerForSelectedCatalog();
             	if (peer != null) {
             		getSelectedMIF().getPanel().showTransactionViewer(peer);
 	            }
@@ -954,7 +962,7 @@ public class MainFrm extends JFrame
 		prov.setMnemonic(KeyEvent.VK_P);
 		listener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	Peer peer = getSelectedPeer();
+            	Peer peer = getLocalPeerForSelectedCatalog();
             	if (peer != null) {
             		getSelectedMIF().getPanel().showProvenanceViewer(peer);
 	            }
@@ -965,7 +973,7 @@ public class MainFrm extends JFrame
         _exchangeModeOnly.add(prov);
         
         // Default to disabled, since no peer is active
-        _menuPeer.setEnabled(false);
+        _menuPeer.setEnabled(true);
         
         mainMenu.add (_menuPeer);
 	}
