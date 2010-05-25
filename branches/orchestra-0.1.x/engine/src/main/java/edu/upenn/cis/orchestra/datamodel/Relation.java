@@ -311,7 +311,7 @@ public class Relation extends AbstractRelation {
 
 
 	public String getRelationName() throws IllegalStateException {
-		if (this._schema != null && !_schema.getNameForID(_relationID).equals(getName()))
+		if (this._schema != null && NO_ID != _relationID && !_schema.getNameForID(_relationID).equals(getName()) )
 			throw new IllegalStateException("Relation's internal name and schema name differ!  " +
 					_schema.getNameForID(_relationID) + " / " + getName());
 		return getName();//schema.getNameForID(relationID);
