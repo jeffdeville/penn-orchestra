@@ -284,11 +284,11 @@ public class ProvenanceGraph extends BasicGraph {
 				}
 				} catch (StringIndexOutOfBoundsException e) {
 					e.printStackTrace();
-				} catch (IllegalStateException se) {
+				}//} catch (IllegalStateException se) {
 					// Should trap end-of-relation exception
-					System.err.println(se);
-					se.printStackTrace();
-				}
+					//System.err.println(se);
+					//se.printStackTrace();
+				//}
 			}
 			
 			++dist;
@@ -346,6 +346,7 @@ public class ProvenanceGraph extends BasicGraph {
 				Relation outputRelation = new Relation(null, null, " " + sourceAtom.getRelation().getName(), " " + sourceAtom.getRelation().getName(), 
 						dispName, false, false, sourceAtom.getRelation().getFields());
 				outputRelation.setPrimaryKey(sourceAtom.getRelation().getPrimaryKey());
+				outputRelation.setSchema(sourceAtom.getSchema(), Relation.NO_ID);
 				outputRelation.markFinished();
 	
 				// Body should mirror the tuple, in terms of schema
