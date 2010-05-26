@@ -50,11 +50,7 @@ public class ProvenanceViewer extends JPanel {
 	ProvenanceGraph _provGraph;
 	JPopupMenu _viewMenu;
 	Tuple _selectedTuple;
-	
-	public ProvenanceViewer (OrchestraSystem sys, RelationDataEditorFactory fact)
-	{
-		this (sys.getPeers().iterator().next(), sys, fact);
-	}
+		
 	
 	public ProvenanceViewer (Peer p, OrchestraSystem sys, RelationDataEditorFactory fact)
 	{
