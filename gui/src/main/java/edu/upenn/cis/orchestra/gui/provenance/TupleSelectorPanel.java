@@ -43,6 +43,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datamodel.AbstractRelation;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
@@ -95,6 +98,8 @@ public class TupleSelectorPanel extends JPanel {
 	
 	private final RelationDataEditorFactory _dataEditFactory;
 	
+	private static final Logger logger = LoggerFactory.getLogger(TupleSelectorPanel.class);
+	
 	public TupleSelectorPanel(OrchestraSystem system, ProvenanceGraph g, ProvenanceViewer v, 
 								RelationDataEditorFactory fact) {
 		_workSchema = new edu.upenn.cis.orchestra.datamodel.Schema("");
@@ -102,8 +107,13 @@ public class TupleSelectorPanel extends JPanel {
 		_system = system;
 		_provGraph = g;
 		_dataEditFactory = fact;
+		
+		long start = System.currentTimeMillis(); 
 		init();
+		long elapsed = System.currentTimeMillis() - start;
+		logger.trace("init(): {} milliseconds", Long.valueOf(elapsed));
 
+		start = System.currentTimeMillis();
 		try {
 			for (Schema s : system.getAllSchemas())
 				for (AbstractRelation r : s.getRelations())
@@ -112,14 +122,22 @@ public class TupleSelectorPanel extends JPanel {
 		} catch (BadColumnName bcn) {
 			JOptionPane.showMessageDialog(this, bcn.getMessage(), "Error Initializing Schemas", JOptionPane.ERROR_MESSAGE);
 		}
+		elapsed = System.currentTimeMillis() - start;
+		logger.trace("Creating _workSchema: {} milliseconds", Long.valueOf(elapsed));
 		
+		start = System.currentTimeMillis();
 		populatePeers(system);
+		elapsed = System.currentTimeMillis() - start;
+		logger.trace("populatePeers(): {} milliseconds", Long.valueOf(elapsed));
 	}
 
 	public TupleSelectorPanel(OrchestraSystem system, ProvenanceGraph g, Peer p, Schema s, ProvenanceViewer v, RelationDataEditorFactory fact) {
 		this(system, g, v, fact);
 		
+		long start = System.currentTimeMillis();
 		setPeerAndSchema(p, s);
+		long elapsed = System.currentTimeMillis() - start;
+		logger.trace("setPeerAndSchema(): {} milliseconds", Long.valueOf(elapsed));
 	}
 	
 	public void disableBoxes() {
@@ -167,7 +185,7 @@ public class TupleSelectorPanel extends JPanel {
 	 * @param sc
 	 * @param t
 	 */
-	public synchronized void setContext(RelationContext sc, Tuple t) {
+	public void setContext(RelationContext sc, Tuple t) {
 		setPeerAndSchema(sc.getPeer(), sc.getSchema());
 
 		_currentRelation = sc.getRelation();
@@ -196,13 +214,14 @@ public class TupleSelectorPanel extends JPanel {
 	 * @param sys
 	 */
 	private void populatePeers(OrchestraSystem sys) {
-		synchronized (this) {
+			long start = System.currentTimeMillis();
 			_peers.removeAllElements();
 			_schemas.removeAllElements();
 			_relations.removeAllElements();
 			for (Peer p : sys.getPeers())
 				_peers.addElement(p.getId());
-		}
+			long elapsed = System.currentTimeMillis() - start;
+			logger.trace("Added {} peers in {} ms.", _peers.getSize(), elapsed);
 	}
 	
 	/**
@@ -211,15 +230,15 @@ public class TupleSelectorPanel extends JPanel {
 	 * @param p
 	 */
 	private void populateSchemas(Peer p) {
-		
-		synchronized (this){
+			long start = System.currentTimeMillis();
 			_schemas.removeAllElements();
 			_relations.removeAllElements();
 	
 			if (p != null)
 				for (Schema s : p.getSchemas())
 					_schemas.addElement(s.getSchemaId());
-		}
+			long elapsed = System.currentTimeMillis() - start;
+			logger.trace("Added {} schemas in {} ms.", _schemas.getSize(), elapsed);
 	}
 
 	/**
@@ -228,7 +247,7 @@ public class TupleSelectorPanel extends JPanel {
 	 * @param s
 	 */
 	private void populateRelations(Schema s) {
-		synchronized (this) {
+			long start = System.currentTimeMillis();
 			_relations.removeAllElements();
 			
 			if (s != null)
@@ -236,7 +255,8 @@ public class TupleSelectorPanel extends JPanel {
 					//if (!r.getName().endsWith("_L") && !r.getName().endsWith("_R"))
 					if (!r.isInternalRelation())
 						_relations.addElement(r.getName());
-		}
+			long elapsed = System.currentTimeMillis() - start;
+			logger.trace("Added {} relations in {} ms.", _relations.getSize(), elapsed);
 	}
 	
 	private void createRelationPanel(Peer p, Schema s, Relation r, RelationDataEditorFactory fact) {
@@ -261,13 +281,11 @@ public class TupleSelectorPanel extends JPanel {
 		final TableCellRenderer headerRenderer = header.getDefaultRenderer();
 		header.setDefaultRenderer( new TableCellRenderer() {
 			public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
-				synchronized (TupleSelectorPanel.this) {
 					Component comp = headerRenderer.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
 					if ( _model.isPrimaryKey(column) )
 						comp.setFont( boldFont );
 					return comp;
 				}
-			}
 		});		
 		
 		_relationTable.setFillsViewportHeight(true);
@@ -278,7 +296,6 @@ public class TupleSelectorPanel extends JPanel {
 			_relationTable.setAutoCreateRowSorter(true);
 		_relationTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				synchronized (TupleSelectorPanel.this) {
 				    if (e.getValueIsAdjusting() == false) {
 				        if (_relationTable.getSelectedRow() == -1) {
 				            _provGraph.clearGraph();
@@ -291,7 +308,6 @@ public class TupleSelectorPanel extends JPanel {
 								_parentPane.loadProvenance(cur);
 				        }
 				    }
-				}
 			}
 		});
 
@@ -310,7 +326,6 @@ public class TupleSelectorPanel extends JPanel {
 	 * @param r selected relation
 	 */
 	private void populateTuples(Peer p, Schema s, Relation r, RelationDataEditorFactory dataEditFactory) {
-		synchronized (this) {
 			// Update the model for the table, so it shows the right relation
 			if (_relationTable == null) {
 				createRelationPanel(p, s, r, dataEditFactory);
@@ -321,7 +336,6 @@ public class TupleSelectorPanel extends JPanel {
 	
 				_relationTable.setModel(_model);
 			}
-		}		
 	}
 	
 	/**
@@ -371,7 +385,9 @@ public class TupleSelectorPanel extends JPanel {
 		// Listen for selected peer
 		_peerList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				synchronized (TupleSelectorPanel.this) {
+					logger.trace("Peer list action: {}.", e.getActionCommand());
+					long start = System.currentTimeMillis();
+
 					JComboBox cb = (JComboBox)e.getSource();
 					
 					String sel = (String)cb.getSelectedItem();
@@ -379,7 +395,8 @@ public class TupleSelectorPanel extends JPanel {
 					_currentPeer = p;
 					
 					populateSchemas(p);
-				}
+					long elapsed = System.currentTimeMillis() - start;
+					logger.trace("Handled peer list action in {} ms.", elapsed);
 			}
 		});
 		r = addRow(r, _peerList);
@@ -389,6 +406,8 @@ public class TupleSelectorPanel extends JPanel {
 		// Listen for selected schema
 		_schemaList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				logger.trace("Schema list action: {}.", e.getActionCommand());
+				long start = System.currentTimeMillis();
 				JComboBox cb = (JComboBox)e.getSource();
 				
 				String sel = (String)cb.getSelectedItem();
@@ -398,6 +417,8 @@ public class TupleSelectorPanel extends JPanel {
 					_currentSchema = s;
 				
 					populateRelations(s);
+					long elapsed = System.currentTimeMillis() - start;
+					logger.trace("Handled schema list action in {} ms.", elapsed);
 				}
 			}
 		});
@@ -408,7 +429,8 @@ public class TupleSelectorPanel extends JPanel {
 		// Listen for selected relation
 		_relationList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				synchronized (TupleSelectorPanel.this) {
+				logger.trace("Relation list action: {}.", e.getActionCommand());
+				long start = System.currentTimeMillis();
 					JComboBox cb = (JComboBox)e.getSource();
 					
 					String sel = (String)cb.getSelectedItem();
@@ -423,7 +445,8 @@ public class TupleSelectorPanel extends JPanel {
 							rnf.printStackTrace();
 						}
 					}
-				}
+					long elapsed = System.currentTimeMillis() - start;
+					logger.trace("Handled relation list action in {} ms.", elapsed);
 			}
 		});
 		//_peerList.setBorder(BorderFactory.createEmptyBorder(10,0,2,0));

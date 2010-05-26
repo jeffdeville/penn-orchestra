@@ -96,22 +96,7 @@ public class MainPanel extends JPanel
 	{
 		_peersMgtPanel.showConsole();
 	}
-	
-	private void initProvenanceViewer ()
-	{
-		if (_provViewer == null)
-		{
-			_provViewer = new ProvenanceViewer (_system, new RelationDataEditorFactory(_system));
-			_rightPanel.add(_provViewer, CARD_LAYOUT_PROVVIEWER_INDEX);
-		}		
-	}
-	
-	public void showProvenanceViewer() 
-	{
-		initProvenanceViewer();
-		_cardLayout.show(_rightPanel, CARD_LAYOUT_PROVVIEWER_INDEX);
-	}
-	
+
 	public void showProvenanceViewer(Peer p, Schema s) 
 	{
 		_cardLayout.show(_rightPanel, CARD_LAYOUT_PEERSMGT_INDEX);
