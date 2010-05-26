@@ -1294,7 +1294,8 @@ public class MainFrm extends JFrame
 
 
 	/**
-	 * DOCUMENT ME
+	 * Sets the the Look & Feel as well as loading the {@code UIManager}
+	 * with the required resources as found in the file theme.properties from {@code edu.upenn.cis.orchestra.gui}.
 	 * 
 	 * @throws ClassNotFoundException
 	 * @throws InstantiationException
