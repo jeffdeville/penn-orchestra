@@ -109,9 +109,12 @@ public class TransactionVertex extends DefaultGraphCell
 	 * @param attrs
 	 */
 	public static void setInvisible(Map attrs) {
-		GraphConstants.setBackground(attrs, UIManager.getColor("TransactionVertex.invisible.background"));//Color.WHITE);
-		GraphConstants.setForeground(attrs, UIManager.getColor("TransactionVertex.invisible.foreground"));//Color.WHITE);
-		GraphConstants.setBorder(attrs, BorderFactory.createLineBorder(UIManager.getColor("TransactionVertex.invisible.border"), 1));//Color.WHITE, 1));
+		GraphConstants.setOpaque(attrs, false);
+		GraphConstants.setLabelEnabled(attrs, false);
+		GraphConstants.setBorder(attrs, BorderFactory.createEmptyBorder());
+		//GraphConstants.setBackground(attrs, UIManager.getColor("TransactionVertex.invisible.background"));//Color.WHITE);
+		//GraphConstants.setForeground(attrs, UIManager.getColor("TransactionVertex.invisible.foreground"));//Color.WHITE);
+		//GraphConstants.setBorder(attrs, BorderFactory.createLineBorder(UIManager.getColor("TransactionVertex.invisible.border"), 1));//Color.WHITE, 1));
 	}
 
 	/**
