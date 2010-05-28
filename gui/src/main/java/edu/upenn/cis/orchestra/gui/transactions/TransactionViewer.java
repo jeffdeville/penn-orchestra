@@ -45,17 +45,13 @@ public class TransactionViewer extends JPanel {
 
 	public static final long serialVersionUID = 1L;
 
-	// TransactionGraph _tg;
-	Peer _p;
-	JSplitPane _splitPane;
-	TransactionInfoPanel _transInfoPanel;
-	int _currentEpoch;
-	TransactionGraph _tg;
-	OrchestraSystem _system;
-	JSlider _slider = new JSlider(JSlider.HORIZONTAL, 0, 0, 0);
+	private JSplitPane _splitPane;
+	private TransactionInfoPanel _transInfoPanel;
+	private int _currentEpoch;
+	private TransactionGraph _tg;
+	private JSlider _slider = new JSlider(JSlider.HORIZONTAL, 0, 0, 0);
 
 	public TransactionViewer(Peer p, OrchestraSystem sys) throws DbException {
-		_p = p;
 
 		// dbs = new ArrayList<Db>(numPeers);
 		// dbs.add(sys.getRecDb(p.getId()));
