@@ -1,6 +1,6 @@
 #summary A description of the publish operation.
 
-As explained [OrchestraTables here], when Orchestra is first set up the peers' base schemas are expanded to include a number of auxiliary tables some of which are used during the publish operation.
+As explained [OrchestraTables here], when Orchestra is first set up the peers' base schemas are expanded to include a number of auxiliary tables some of which are used during the publish operation. These are the tables with '_' in their names below. 
 
 In this document we are treating publish as an operation separate from update exchange. However, in the current implementation an update exchange always follows a publish operation. This will change in later implementations, but for the time being it is useful to have a name for the combined publish/update-exchange operation. We will call this a sync operation below. An insertion into a table or relation _S_ will be written as +_S_(*x*) and a deletion as -_S_(*x*).
 
