@@ -98,7 +98,7 @@ import edu.upenn.cis.orchestra.repository.dao.flatfile.FlatFileRepositoryDAO;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
 public class MainFrm extends JFrame 
-			implements PeersMgtPanelObserver, InternalFrameListener
+			implements PeersMgtPanelObserver/*, InternalFrameListener */
 {
 	public static final long serialVersionUID = 1L;
 
@@ -106,26 +106,26 @@ public class MainFrm extends JFrame
 	private final JDesktopPane _desktop = new JDesktopPane ();
 
 	/** File dialog for schema files */ 
-	private JFileChooser _schemaFileChooser = null;//
+	//private JFileChooser _schemaFileChooser = null;//
 	
 	/** File dialog for directory import */
 	private JFileChooser _importDirectoryChooser = null;//
 	
 	/** File dialog for opening dump files */
-	private JFileChooser _openDumpChooser = null;
+	//private JFileChooser _openDumpChooser = null;
 	
 	/** File dialog for saving dump files */
-	private JFileChooser _saveDumpChooser = null;
+	//private JFileChooser _saveDumpChooser = null;
 
-	private JMenu _menuPeer = null;
+	//private JMenu menuPeer = null;
 	private JPopupMenu _cxMenuPeer = null;
 	private ImageIcon _icon = null;
 
 	private List<JMenuItem> _exchangeModeOnly = new ArrayList<JMenuItem>();
 	private List<JMenuItem> _recModeOnly = new ArrayList<JMenuItem>();
-	private JMenuItem _mnuItmFileClose;
+	//private JMenuItem _mnuItmFileClose;
 	
-	private JMenuItem _startUS = null, _stopUS = null, _clearUS = null;
+	//private JMenuItem _startUS = null, _stopUS = null, _clearUS = null;
 
 	/**
 	 * Orchestra about box
@@ -339,7 +339,7 @@ public class MainFrm extends JFrame
 		iframe.setSize(1000,750);
 		iframe.setVisible(true);
 		iframe.setFrameIcon(_icon);
-		iframe.addInternalFrameListener(this);
+		//iframe.addInternalFrameListener(this);
 		iframe.setClosable(true);
 		_desktop.add(iframe);
 		try {
@@ -373,9 +373,9 @@ public class MainFrm extends JFrame
 		} else {
 			iframe.getPanel().startStoreServer();
 		}
-		_startUS.setEnabled(false);
-		_stopUS.setEnabled(true);
-		_clearUS.setEnabled(true);
+		//_startUS.setEnabled(false);
+		//_stopUS.setEnabled(true);
+		//_clearUS.setEnabled(true);
 		return iframe;
 	}
 
@@ -460,168 +460,168 @@ public class MainFrm extends JFrame
 		cf.setVisible(true);
 	}
 	
-	private void openSchemaFile()
-	{
-		if (_schemaFileChooser == null) {
-			_schemaFileChooser = new JFileChooser(Config.getWorkDir());
-			_schemaFileChooser.setDialogTitle("Select a CDSS schema definition file");
+//	private void openSchemaFile()
+//	{
+//		if (_schemaFileChooser == null) {
+//			_schemaFileChooser = new JFileChooser(Config.getWorkDir());
+//			_schemaFileChooser.setDialogTitle("Select a CDSS schema definition file");
+//
+//			FileNameExtensionFilter filter = new FileNameExtensionFilter(
+//					"CDSS definitions", "schema");
+//			_schemaFileChooser.setFileFilter(filter);
+//		}
+//
+//		int returnVal = _schemaFileChooser.showOpenDialog(this);
+//
+//		try {
+//			if (returnVal == JFileChooser.APPROVE_OPTION) {
+//				File file = _schemaFileChooser.getSelectedFile();
+//
+//				String fPath = file.getCanonicalPath();
+//
+//				String fName = file.getName();
+//				//dinesh ++
+//				//Set the current Schema Name
+//				Config.setCurrSchemaName(fName);	
+//				//dinesh --
+//				loadNewP2PNetwork(fPath, fName);
+//			}
+//		} catch (IOException e) {
+//			JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error loading CDSS", JOptionPane.ERROR_MESSAGE);
+//			e.printStackTrace();
+//		} catch (XMLParseException e) {
+//			JOptionPane.showMessageDialog(this, e.getMessage(), "XML parse error loading CDSS", JOptionPane.ERROR_MESSAGE);
+//			e.printStackTrace();
+//
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(this, e.getMessage(), "Error loading CDSS", JOptionPane.ERROR_MESSAGE);
+//			e.printStackTrace();
+//
+//		}
+//	}
 
-			FileNameExtensionFilter filter = new FileNameExtensionFilter(
-					"CDSS definitions", "schema");
-			_schemaFileChooser.setFileFilter(filter);
-		}
+//	private void openDumpFile() {
+//		if (_openDumpChooser == null) {
+//			_openDumpChooser = new JFileChooser(Config.getWorkDir());
+//			_openDumpChooser.setDialogTitle("Select a data dump file");
+//
+//			FileNameExtensionFilter filter = new FileNameExtensionFilter(
+//					"Update store dumps", "dump");
+//			_openDumpChooser.setFileFilter(filter);
+//		}
+//
+//		int returnVal = _openDumpChooser.showOpenDialog(this);
+//
+//		if (returnVal == JFileChooser.APPROVE_OPTION) {
+//			final File file = _openDumpChooser.getSelectedFile();
+//
+//			PeerCommands.changeCursor(this, true);
+//			new SwingWorker<Object,Object>() {
+//				final OrchestraSystem _catalog = getSelectedCatalog();
+//				@Override
+//				protected Object doInBackground() throws Exception {
+//					FileInputStream fis = new FileInputStream(file);
+//					ObjectInputStream ois = new ObjectInputStream(fis);
+//					final USDump dump = (USDump) ois.readObject();
+//					ois.close();
+//					fis.close();
+//
+//					_catalog.restore(dump);
+//					return null;
+//				}
+//
+//				@Override
+//				protected void done() {
+//					PeerCommands.changeCursor(MainFrm.this, false);
+//					Throwable t = null;;
+//					try {
+//						// If doInBackground failed with an exception,
+//						// retrieve it
+//						get();
+//					} catch (InterruptedException ie) {
+//						t = ie;
+//					} catch (ExecutionException ee) {
+//						t = ee.getCause();
+//					}
+//					try {
+//						reset();
+//					} catch (Exception e) {
+//						t = e;
+//					}
+//					if (t == null) {
+//						JOptionPane.showMessageDialog(MainFrm.this, "Loading from " + file + " succeeded", "Load succeeded", JOptionPane.INFORMATION_MESSAGE);
+//					} else {
+//						JOptionPane.showMessageDialog(MainFrm.this, "Loading from " + file + " failed: " + t.getMessage(), "Load failed", JOptionPane.ERROR_MESSAGE);
+//					}
+//				}
+//
+//			}.execute();
+//		}
+//	}
 
-		int returnVal = _schemaFileChooser.showOpenDialog(this);
-
-		try {
-			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File file = _schemaFileChooser.getSelectedFile();
-
-				String fPath = file.getCanonicalPath();
-
-				String fName = file.getName();
-				//dinesh ++
-				//Set the current Schema Name
-				Config.setCurrSchemaName(fName);	
-				//dinesh --
-				loadNewP2PNetwork(fPath, fName);
-			}
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error loading CDSS", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-		} catch (XMLParseException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "XML parse error loading CDSS", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Error loading CDSS", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
-
-		}
-	}
-
-	private void openDumpFile() {
-		if (_openDumpChooser == null) {
-			_openDumpChooser = new JFileChooser(Config.getWorkDir());
-			_openDumpChooser.setDialogTitle("Select a data dump file");
-
-			FileNameExtensionFilter filter = new FileNameExtensionFilter(
-					"Update store dumps", "dump");
-			_openDumpChooser.setFileFilter(filter);
-		}
-
-		int returnVal = _openDumpChooser.showOpenDialog(this);
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			final File file = _openDumpChooser.getSelectedFile();
-
-			PeerCommands.changeCursor(this, true);
-			new SwingWorker<Object,Object>() {
-				final OrchestraSystem _catalog = getSelectedCatalog();
-				@Override
-				protected Object doInBackground() throws Exception {
-					FileInputStream fis = new FileInputStream(file);
-					ObjectInputStream ois = new ObjectInputStream(fis);
-					final USDump dump = (USDump) ois.readObject();
-					ois.close();
-					fis.close();
-
-					_catalog.restore(dump);
-					return null;
-				}
-
-				@Override
-				protected void done() {
-					PeerCommands.changeCursor(MainFrm.this, false);
-					Throwable t = null;;
-					try {
-						// If doInBackground failed with an exception,
-						// retrieve it
-						get();
-					} catch (InterruptedException ie) {
-						t = ie;
-					} catch (ExecutionException ee) {
-						t = ee.getCause();
-					}
-					try {
-						reset();
-					} catch (Exception e) {
-						t = e;
-					}
-					if (t == null) {
-						JOptionPane.showMessageDialog(MainFrm.this, "Loading from " + file + " succeeded", "Load succeeded", JOptionPane.INFORMATION_MESSAGE);
-					} else {
-						JOptionPane.showMessageDialog(MainFrm.this, "Loading from " + file + " failed: " + t.getMessage(), "Load failed", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-
-			}.execute();
-		}
-	}
-
-	private void saveDumpFile() {
-		if (_saveDumpChooser == null) {
-			_saveDumpChooser = new JFileChooser(Config.getWorkDir());
-			_saveDumpChooser.setDialogTitle("Specify a data dump filename and path");
-		}
-
-		int returnVal = _saveDumpChooser.showSaveDialog(this);
-
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File suggestedFile = _saveDumpChooser.getSelectedFile();
-			String filename = suggestedFile.getName();
-			final File file;
-			if (filename.endsWith(".dump")) {
-				file  = suggestedFile;
-			} else {
-				File newFile = new File(suggestedFile.getParent(), suggestedFile.getName() + ".dump");
-				file = newFile;
-			}
-
-			PeerCommands.changeCursor(this, true);
-			new SwingWorker<Object,Object>() {
-
-				final OrchestraSystem _system = getSelectedCatalog();
-				@Override
-				protected Object doInBackground() throws Exception {
-					USDump dump = _system.dump(getLocalPeerForSelectedCatalog());
-					FileOutputStream fos = new FileOutputStream(file);
-					ObjectOutputStream oos = new ObjectOutputStream(fos);
-					oos.writeObject(dump);
-					oos.close();
-					fos.close();
-					return null;
-				}
-
-				@Override
-				protected void done() {
-					PeerCommands.changeCursor(MainFrm.this, false);
-					Throwable t = null;
-					try {
-						get();
-					} catch (ExecutionException ee) {
-						t = ee.getCause();
-					} catch (InterruptedException e) {
-						t = e;
-					}
-					if (t == null) {
-						JOptionPane.showMessageDialog(MainFrm.this, "Saving to file " + file + " succeeded", "Saved update store state", JOptionPane.INFORMATION_MESSAGE);
-					} else {
-						String title = "Error";
-						if (t instanceof DbException) {
-							title = "Orchestra error saving update store state";
-						} else if (t instanceof FileNotFoundException) {
-							title = "File not found trying to save update store state";
-						} else if (t instanceof IOException) {
-							title = "I/O Error saving update store state";
-						}
-						JOptionPane.showMessageDialog(MainFrm.this, t.getMessage(), title, JOptionPane.ERROR_MESSAGE);
-					}
-				}
-
-			}.execute();
-		}
-	}
+//	private void saveDumpFile() {
+//		if (_saveDumpChooser == null) {
+//			_saveDumpChooser = new JFileChooser(Config.getWorkDir());
+//			_saveDumpChooser.setDialogTitle("Specify a data dump filename and path");
+//		}
+//
+//		int returnVal = _saveDumpChooser.showSaveDialog(this);
+//
+//		if (returnVal == JFileChooser.APPROVE_OPTION) {
+//			File suggestedFile = _saveDumpChooser.getSelectedFile();
+//			String filename = suggestedFile.getName();
+//			final File file;
+//			if (filename.endsWith(".dump")) {
+//				file  = suggestedFile;
+//			} else {
+//				File newFile = new File(suggestedFile.getParent(), suggestedFile.getName() + ".dump");
+//				file = newFile;
+//			}
+//
+//			PeerCommands.changeCursor(this, true);
+//			new SwingWorker<Object,Object>() {
+//
+//				final OrchestraSystem _system = getSelectedCatalog();
+//				@Override
+//				protected Object doInBackground() throws Exception {
+//					USDump dump = _system.dump(getLocalPeerForSelectedCatalog());
+//					FileOutputStream fos = new FileOutputStream(file);
+//					ObjectOutputStream oos = new ObjectOutputStream(fos);
+//					oos.writeObject(dump);
+//					oos.close();
+//					fos.close();
+//					return null;
+//				}
+//
+//				@Override
+//				protected void done() {
+//					PeerCommands.changeCursor(MainFrm.this, false);
+//					Throwable t = null;
+//					try {
+//						get();
+//					} catch (ExecutionException ee) {
+//						t = ee.getCause();
+//					} catch (InterruptedException e) {
+//						t = e;
+//					}
+//					if (t == null) {
+//						JOptionPane.showMessageDialog(MainFrm.this, "Saving to file " + file + " succeeded", "Saved update store state", JOptionPane.INFORMATION_MESSAGE);
+//					} else {
+//						String title = "Error";
+//						if (t instanceof DbException) {
+//							title = "Orchestra error saving update store state";
+//						} else if (t instanceof FileNotFoundException) {
+//							title = "File not found trying to save update store state";
+//						} else if (t instanceof IOException) {
+//							title = "I/O Error saving update store state";
+//						}
+//						JOptionPane.showMessageDialog(MainFrm.this, t.getMessage(), title, JOptionPane.ERROR_MESSAGE);
+//					}
+//				}
+//
+//			}.execute();
+//		}
+//	}
 
 	private void createMainMenu() 
 	{
@@ -641,38 +641,38 @@ public class MainFrm extends JFrame
 		JMenu mnuFile = new JMenu ("File");
 		mnuFile.setMnemonic(KeyEvent.VK_F);
 
-		JMenuItem mnuItmFileNew = new JMenuItem("New Window");
-		mnuItmFileNew.setMnemonic(KeyEvent.VK_N);
-		ActionListener listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				MainIFrame mif = getSelectedMIF();
-				if (mif != null) {
-					String cdss = mif.getCDSSName();
-					String file = mif.getFilename();
-					try {
-						MainIFrame mifNew = loadNewP2PNetwork(file, cdss + "'");
-						PeersMgtPanel pan = mif.getPanel().getPeersMgtPanel();
-						PeersMgtPanel panNew = mifNew.getPanel().getPeersMgtPanel();
-						panNew.mimic(pan);
-					} catch (Exception ex) {
-						JOptionPane.showMessageDialog(MainFrm.this, ex.getMessage(), "Error loading CDSS", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			}
-		};
-		mnuItmFileNew.addActionListener(listener);
-		mnuFile.add(mnuItmFileNew);
+//		JMenuItem mnuItmFileNew = new JMenuItem("New Window");
+//		mnuItmFileNew.setMnemonic(KeyEvent.VK_N);
+//		ActionListener listener = new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				MainIFrame mif = getSelectedMIF();
+//				if (mif != null) {
+//					String cdss = mif.getCDSSName();
+//					String file = mif.getFilename();
+//					try {
+//						MainIFrame mifNew = loadNewP2PNetwork(file, cdss + "'");
+//						PeersMgtPanel pan = mif.getPanel().getPeersMgtPanel();
+//						PeersMgtPanel panNew = mifNew.getPanel().getPeersMgtPanel();
+//						panNew.mimic(pan);
+//					} catch (Exception ex) {
+//						JOptionPane.showMessageDialog(MainFrm.this, ex.getMessage(), "Error loading CDSS", JOptionPane.ERROR_MESSAGE);
+//					}
+//				}
+//			}
+//		};
+//		mnuItmFileNew.addActionListener(listener);
+//		mnuFile.add(mnuItmFileNew);
 
-		JMenuItem mnuItmFileOpen = new JMenuItem ("Open Schema...");
-		mnuItmFileOpen.setMnemonic(KeyEvent.VK_O);
-		listener = new ActionListener() {
-			public void actionPerformed(@SuppressWarnings("unused")
-					ActionEvent e) {
-				openSchemaFile();
-			}
-		};
-		mnuItmFileOpen.addActionListener(listener);
-		mnuFile.add(mnuItmFileOpen);
+//		JMenuItem mnuItmFileOpen = new JMenuItem ("Open Schema...");
+//		mnuItmFileOpen.setMnemonic(KeyEvent.VK_O);
+//		listener = new ActionListener() {
+//			public void actionPerformed(@SuppressWarnings("unused")
+//					ActionEvent e) {
+//				openSchemaFile();
+//			}
+//		};
+//		mnuItmFileOpen.addActionListener(listener);
+//		mnuFile.add(mnuItmFileOpen);
 
 //		JMenuItem mnuItmPeerImport = new JMenuItem ("Import CDSS Data...");
 //		mnuItmPeerImport.setMnemonic(KeyEvent.VK_I);
@@ -685,28 +685,28 @@ public class MainFrm extends JFrame
 //		mnuItmPeerImport.addActionListener(listener);
 //		mnuFile.add(mnuItmPeerImport);
 
-		mnuFile.addSeparator();
+//		mnuFile.addSeparator();
+//		
+//		_mnuItmFileClose = new JMenuItem("Close");
+//		_mnuItmFileClose.setMnemonic(KeyEvent.VK_C);
+//		listener = new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				JInternalFrame f = _desktop.getSelectedFrame();
+//				if (f != null) {
+//					DesktopManager dm = _desktop.getDesktopManager();
+//					dm.closeFrame(f);
+//				}
+//			}
+//		};
+//		_mnuItmFileClose.addActionListener(listener);
+//		mnuFile.add(_mnuItmFileClose);
 		
-		_mnuItmFileClose = new JMenuItem("Close");
-		_mnuItmFileClose.setMnemonic(KeyEvent.VK_C);
-		listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JInternalFrame f = _desktop.getSelectedFrame();
-				if (f != null) {
-					DesktopManager dm = _desktop.getDesktopManager();
-					dm.closeFrame(f);
-				}
-			}
-		};
-		_mnuItmFileClose.addActionListener(listener);
-		mnuFile.add(_mnuItmFileClose);
-		
-		mnuFile.addSeparator();
+		//mnuFile.addSeparator();
 		JMenuItem mnuItmFileLocal = new JMenuItem ("Edit Local Config...");
 		mnuItmFileLocal.setMnemonic(KeyEvent.VK_L);
-		listener = new ActionListener() {
-			public void actionPerformed(@SuppressWarnings("unused")
-					ActionEvent e) {
+		ActionListener listener = new ActionListener() {
+			public void actionPerformed(
+					ActionEvent ae) {
 				openLocalProperties();
 			}
 		};
@@ -716,8 +716,8 @@ public class MainFrm extends JFrame
 		JMenuItem mnuItmFileGlobal = new JMenuItem ("Edit Global Config...");
 		mnuItmFileGlobal.setMnemonic(KeyEvent.VK_G);
 		listener = new ActionListener() {
-			public void actionPerformed(@SuppressWarnings("unused")
-					ActionEvent e) {
+			public void actionPerformed(
+					ActionEvent ae) {
 				openGlobalProperties();
 			}
 		};
@@ -730,8 +730,8 @@ public class MainFrm extends JFrame
 		JMenuItem mnuItmFileExit = new JMenuItem ("Exit");
 		mnuItmFileExit.setMnemonic(KeyEvent.VK_X);
 		listener = new ActionListener() {
-			public void actionPerformed(@SuppressWarnings("unused")
-					ActionEvent e) {
+			public void actionPerformed(
+					ActionEvent ae) {
 				closeDown();
 			}
 		};
@@ -863,36 +863,36 @@ public class MainFrm extends JFrame
 
 		_cxMenuPeer.addSeparator();
 		// Open transaction history for the peer
-		JMenuItem trans = new JMenuItem("View Transaction History...");
-		trans.setMnemonic(KeyEvent.VK_T);
-		listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Peer peer = getLocalPeerForSelectedCatalog();
-				//OrchestraSystem catalog = getSelectedCatalog();
-				if (peer != null) {
-					
-					/*
-					if (_transViewer == null || _transViewer.isClosed()) {
-						if (_transViewer != null && !_transViewer.isClosed())
-							_transViewer.close();
-
-						_transViewer = new TransactionIFrame(peer, catalog);
-						_desktop.add(_transViewer);
-					}
-					_transViewer.setSize(800,600);
-					_transViewer.setVisible(true);
-					try {
-						_transViewer.setMaximum(true);
-					} catch (PropertyVetoException ex) {
-						assert(false); // Won't happen, maximizable is set in the constructor
-					}*/
-					getSelectedMIF().getPanel().showTransactionViewer(peer);
-				}
-			}
-		};
-		trans.addActionListener(listener);
-		_cxMenuPeer.add(trans);
-		_recModeOnly.add(trans);
+//		JMenuItem trans = new JMenuItem("View Transaction History...");
+//		trans.setMnemonic(KeyEvent.VK_T);
+//		listener = new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				Peer peer = getLocalPeerForSelectedCatalog();
+//				//OrchestraSystem catalog = getSelectedCatalog();
+//				if (peer != null) {
+//					
+//					/*
+//					if (_transViewer == null || _transViewer.isClosed()) {
+//						if (_transViewer != null && !_transViewer.isClosed())
+//							_transViewer.close();
+//
+//						_transViewer = new TransactionIFrame(peer, catalog);
+//						_desktop.add(_transViewer);
+//					}
+//					_transViewer.setSize(800,600);
+//					_transViewer.setVisible(true);
+//					try {
+//						_transViewer.setMaximum(true);
+//					} catch (PropertyVetoException ex) {
+//						assert(false); // Won't happen, maximizable is set in the constructor
+//					}*/
+//					getSelectedMIF().getPanel().showTransactionViewer(peer);
+//				}
+//			}
+//		};
+//		trans.addActionListener(listener);
+//		_cxMenuPeer.add(trans);
+//		_recModeOnly.add(trans);
 
 		// Open provenance viewer for the peer
 		JMenuItem prov = new JMenuItem("View Provenance...");
@@ -913,13 +913,13 @@ public class MainFrm extends JFrame
 
 	private void createPeerMenu(JMenuBar mainMenu) 
 	{
-		_menuPeer = new JMenu ("Peer");
-		_menuPeer.setMnemonic(KeyEvent.VK_P);
+		JMenu menuPeer = new JMenu ("Peer");
+		menuPeer.setMnemonic(KeyEvent.VK_P);
 		
 		JMenuItem recon = new JMenuItem("Publish and Reconcile");
 		recon.setMnemonic(KeyEvent.VK_R);
 		//recon.setEnabled(false);
-		_menuPeer.add(recon);
+		menuPeer.add(recon);
 
 		final MainFrm frm = this;
 
@@ -939,22 +939,22 @@ public class MainFrm extends JFrame
 			}
 		};
 		mnuItmPeerImport.addActionListener(listener);
-		_menuPeer.add(mnuItmPeerImport);
+		menuPeer.add(mnuItmPeerImport);
 
 		// Open transaction history through main panel
-		JMenuItem trans = new JMenuItem("View Transaction History...");
-		trans.setMnemonic(KeyEvent.VK_T);
-		listener = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	Peer peer = getLocalPeerForSelectedCatalog();
-            	if (peer != null) {
-            		getSelectedMIF().getPanel().showTransactionViewer(peer);
-	            }
-            }
-        };
-        trans.addActionListener(listener);
-        _menuPeer.add(trans);
-        _recModeOnly.add(trans);
+//		JMenuItem trans = new JMenuItem("View Transaction History...");
+//		trans.setMnemonic(KeyEvent.VK_T);
+//		listener = new ActionListener() {
+//            public void actionPerformed(ActionEvent e) {
+//            	Peer peer = getLocalPeerForSelectedCatalog();
+//            	if (peer != null) {
+//            		getSelectedMIF().getPanel().showTransactionViewer(peer);
+//	            }
+//            }
+//        };
+//        trans.addActionListener(listener);
+//        _menuPeer.add(trans);
+//        _recModeOnly.add(trans);
 
 
 		// Open provenance viewer through main panel
@@ -969,13 +969,13 @@ public class MainFrm extends JFrame
             }
         };
         prov.addActionListener(listener);
-        _menuPeer.add(prov);
+        menuPeer.add(prov);
         _exchangeModeOnly.add(prov);
         
         // Default to disabled, since no peer is active
-        _menuPeer.setEnabled(true);
+        menuPeer.setEnabled(true);
         
-        mainMenu.add (_menuPeer);
+        mainMenu.add (menuPeer);
 	}
 
 	private void createServicesMenu(JMenuBar mainMenu) 
@@ -1043,143 +1043,143 @@ public class MainFrm extends JFrame
 		mnuServices.add(mnuItmServicesMigrate);
 		_exchangeModeOnly.add(mnuItmServicesMigrate);
 		
-		mnuServices.addSeparator();
-
-		JMenuItem mnuItmServicesReset = new JMenuItem ("Clear DB Contents");
-		listener = new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				OrchestraSystem system = getSelectedCatalog(); 
-				if (system != null) {
-					try {
-						PeerCommands.changeCursor(MainFrm.this, true);
-						system.reset();
-						reset();
-					} catch (Exception e) {
-						JOptionPane.showMessageDialog(null, e.getMessage(), "Error resetting state", JOptionPane.ERROR_MESSAGE);
-					} finally {
-						PeerCommands.changeCursor(MainFrm.this, false);
-					}
-				}
-			}
-		};
-		mnuItmServicesReset.addActionListener(listener);
-		mnuServices.add(mnuItmServicesReset);
-	
-		mnuServices.addSeparator();
-
-		JMenuItem load = new JMenuItem("Load Update Store");
-		load.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				openDumpFile();
-			}
-		});
-		mnuServices.add(load);
-
-		JMenuItem dump = new JMenuItem("Save Update Store");
-		dump.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				saveDumpFile();
-			}
-		});
-		mnuServices.add(dump);
-		
-		
-		_startUS = new JMenuItem("Start Update Store");
-		_startUS.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				startUpdateStore();
-			}
-			
-		});
-		_startUS.setEnabled(false);
-		_stopUS = new JMenuItem("Stop Update Store");
-		_stopUS.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					PeerCommands.changeCursor(MainFrm.this, true);
-					getSelectedMainPanel().stopStoreServer();
-					_stopUS.setEnabled(false);
-					_startUS.setEnabled(true);
-					_clearUS.setEnabled(true);
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Error stopping update store", JOptionPane.ERROR_MESSAGE);
-				} finally {
-					PeerCommands.changeCursor(MainFrm.this, false);
-				}
-			}
-		});
-		_stopUS.setEnabled(false);
-		
-		_clearUS = new JMenuItem("Clear Update Store");
-		_clearUS.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				try {
-					PeerCommands.changeCursor(MainFrm.this, true);
-					getSelectedMainPanel().clearStoreServer();
-				} catch (Exception e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Error stopping update store", JOptionPane.ERROR_MESSAGE);
-				} finally {
-					PeerCommands.changeCursor(MainFrm.this, false);
-				}
-			}
-		});
-		
-		//dinesh ++
-		//Menu to Commit Changes made to the Schema
-		JMenuItem mnuItmCommitChanges = new JMenuItem ("Commit Changes");
-		listener = new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				try 
-				{
-					//Overwrite existing Schema file with new Schema file that has been created
-					File fileTestSchema = new File (Config.getTempSchemaFile());
-					String currSchemaLoc = Config.getCurrSchemaFile().substring(Config.getCurrSchemaFile().indexOf("\\"));
-					File fileCurrSchema = new File (currSchemaLoc);
-					copyFile(fileTestSchema, fileCurrSchema);
-					
-					//Load the new Schema
-					loadNewP2PNetwork(Config.getCurrSchemaFile(), Config.getCurrSchemaName());
-					
-					//Commit changes to the DB
-					BasicEngine engine = getSelectedMIF().getPanel().getSystem().getMappingEngine();
-					engine.createBaseSchemaRelations();
-				} 
-				catch (Exception e) 
-				{
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Error creating DB", JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		};
-		mnuItmCommitChanges.addActionListener(listener);
-		mnuServices.add(mnuItmCommitChanges);
-		//dinesh --
-		
-		mnuServices.add(_startUS);
-		mnuServices.add(_stopUS);
-		mnuServices.add(_clearUS);
-		_recModeOnly.add(load);
-		_recModeOnly.add(dump);
-		_recModeOnly.add(_startUS);
-		_recModeOnly.add(_stopUS);
-		_recModeOnly.add(_clearUS);
+//		mnuServices.addSeparator();
+//
+//		JMenuItem mnuItmServicesReset = new JMenuItem ("Clear DB Contents");
+//		listener = new ActionListener() {
+//			public void actionPerformed(ActionEvent ev) {
+//				OrchestraSystem system = getSelectedCatalog(); 
+//				if (system != null) {
+//					try {
+//						PeerCommands.changeCursor(MainFrm.this, true);
+//						system.reset();
+//						reset();
+//					} catch (Exception e) {
+//						JOptionPane.showMessageDialog(null, e.getMessage(), "Error resetting state", JOptionPane.ERROR_MESSAGE);
+//					} finally {
+//						PeerCommands.changeCursor(MainFrm.this, false);
+//					}
+//				}
+//			}
+//		};
+//		mnuItmServicesReset.addActionListener(listener);
+//		mnuServices.add(mnuItmServicesReset);
+//	
+//		mnuServices.addSeparator();
+//
+//		JMenuItem load = new JMenuItem("Load Update Store");
+//		load.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				openDumpFile();
+//			}
+//		});
+//		mnuServices.add(load);
+//
+//		JMenuItem dump = new JMenuItem("Save Update Store");
+//		dump.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				saveDumpFile();
+//			}
+//		});
+//		mnuServices.add(dump);
+//		
+//		
+//		_startUS = new JMenuItem("Start Update Store");
+//		_startUS.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				startUpdateStore();
+//			}
+//			
+//		});
+//		_startUS.setEnabled(false);
+//		_stopUS = new JMenuItem("Stop Update Store");
+//		_stopUS.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				try {
+//					PeerCommands.changeCursor(MainFrm.this, true);
+//					getSelectedMainPanel().stopStoreServer();
+//					_stopUS.setEnabled(false);
+//					_startUS.setEnabled(true);
+//					_clearUS.setEnabled(true);
+//				} catch (Exception e) {
+//					JOptionPane.showMessageDialog(null, e.getMessage(), "Error stopping update store", JOptionPane.ERROR_MESSAGE);
+//				} finally {
+//					PeerCommands.changeCursor(MainFrm.this, false);
+//				}
+//			}
+//		});
+//		_stopUS.setEnabled(false);
+//		
+//		_clearUS = new JMenuItem("Clear Update Store");
+//		_clearUS.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				try {
+//					PeerCommands.changeCursor(MainFrm.this, true);
+//					getSelectedMainPanel().clearStoreServer();
+//				} catch (Exception e) {
+//					JOptionPane.showMessageDialog(null, e.getMessage(), "Error stopping update store", JOptionPane.ERROR_MESSAGE);
+//				} finally {
+//					PeerCommands.changeCursor(MainFrm.this, false);
+//				}
+//			}
+//		});
+//		
+//		//dinesh ++
+//		//Menu to Commit Changes made to the Schema
+//		JMenuItem mnuItmCommitChanges = new JMenuItem ("Commit Changes");
+//		listener = new ActionListener() {
+//			public void actionPerformed(ActionEvent ev) {
+//				try 
+//				{
+//					//Overwrite existing Schema file with new Schema file that has been created
+//					File fileTestSchema = new File (Config.getTempSchemaFile());
+//					String currSchemaLoc = Config.getCurrSchemaFile().substring(Config.getCurrSchemaFile().indexOf("\\"));
+//					File fileCurrSchema = new File (currSchemaLoc);
+//					copyFile(fileTestSchema, fileCurrSchema);
+//					
+//					//Load the new Schema
+//					loadNewP2PNetwork(Config.getCurrSchemaFile(), Config.getCurrSchemaName());
+//					
+//					//Commit changes to the DB
+//					BasicEngine engine = getSelectedMIF().getPanel().getSystem().getMappingEngine();
+//					engine.createBaseSchemaRelations();
+//				} 
+//				catch (Exception e) 
+//				{
+//					JOptionPane.showMessageDialog(null, e.getMessage(), "Error creating DB", JOptionPane.ERROR_MESSAGE);
+//				}
+//			}
+//		};
+//		mnuItmCommitChanges.addActionListener(listener);
+//		mnuServices.add(mnuItmCommitChanges);
+//		//dinesh --
+//		
+//		mnuServices.add(_startUS);
+//		mnuServices.add(_stopUS);
+//		mnuServices.add(_clearUS);
+//		_recModeOnly.add(load);
+//		_recModeOnly.add(dump);
+//		_recModeOnly.add(_startUS);
+//		_recModeOnly.add(_stopUS);
+//		_recModeOnly.add(_clearUS);
 		
 		
 		mainMenu.add (mnuServices);
 	}
 
-	private void startUpdateStore() {
-		try {
-			PeerCommands.changeCursor(MainFrm.this, true);
-			getSelectedMainPanel().startStoreServer();
-			_startUS.setEnabled(false);
-			_stopUS.setEnabled(true);
-			_clearUS.setEnabled(false);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Error starting update store", JOptionPane.ERROR_MESSAGE);
-		} finally {
-			PeerCommands.changeCursor(MainFrm.this, false);
-		}
-	}
+//	private void startUpdateStore() {
+//		try {
+//			PeerCommands.changeCursor(MainFrm.this, true);
+//			getSelectedMainPanel().startStoreServer();
+//			_startUS.setEnabled(false);
+//			_stopUS.setEnabled(true);
+//			_clearUS.setEnabled(false);
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, e.getMessage(), "Error starting update store", JOptionPane.ERROR_MESSAGE);
+//		} finally {
+//			PeerCommands.changeCursor(MainFrm.this, false);
+//		}
+//	}
 	
 	
 	private void createWindowsMenu(JMenuBar mainMenu) 
@@ -1341,7 +1341,7 @@ public class MainFrm extends JFrame
 
 	public void peerWasSelected(PeersMgtPanel panel, Peer p, Schema s, PeerTransactionsIntf peerTransIntf) 
 	{
-		_menuPeer.setEnabled(true);		
+		//menuPeer.setEnabled(true);		
 	}
 
 	public void peerContextMenu(PeersMgtPanel panel, Peer p, Schema s, PeerTransactionsIntf peerTransIntf, JComponent parent, int x, int y) 
@@ -1351,63 +1351,63 @@ public class MainFrm extends JFrame
 	}
 
 	public void selectionIsEmpty(PeersMgtPanel panel) {
-		_menuPeer.setEnabled(false);
+		//menuPeer.setEnabled(false);
 	}
 
-	private void reset() throws Exception {
-		MainIFrame mif = getSelectedMIF();
-		boolean startStore = mif.getPanel().storeServerRunning();
-		if (startStore) {
-			mif.getPanel().stopStoreServer();
-		}
-		if (mif != null) {
-			_desktop.remove(mif);
-			MainIFrame mifNew = loadNewP2PNetwork(mif.getFilename(), mif.getCDSSName());
-			PeersMgtPanel pan = mif.getPanel().getPeersMgtPanel();
-			PeersMgtPanel panNew = mifNew.getPanel().getPeersMgtPanel();
-			panNew.mimic(pan);
-			if (startStore) {
-				startUpdateStore();
-			}
-		}
-	}
+//	private void reset() throws Exception {
+//		MainIFrame mif = getSelectedMIF();
+//		boolean startStore = mif.getPanel().storeServerRunning();
+//		if (startStore) {
+//			mif.getPanel().stopStoreServer();
+//		}
+//		if (mif != null) {
+//			_desktop.remove(mif);
+//			MainIFrame mifNew = loadNewP2PNetwork(mif.getFilename(), mif.getCDSSName());
+//			PeersMgtPanel pan = mif.getPanel().getPeersMgtPanel();
+//			PeersMgtPanel panNew = mifNew.getPanel().getPeersMgtPanel();
+//			panNew.mimic(pan);
+//			if (startStore) {
+//				startUpdateStore();
+//			}
+//		}
+//	}
 
-	public void internalFrameActivated(InternalFrameEvent e) {
-		JInternalFrame f = e.getInternalFrame();
-		if (f instanceof MainIFrame) {
-			MainIFrame mif = (MainIFrame)f;
-			Peer p = mif.getPanel().getPeersMgtPanel().getCurrentPeer();
-			if (p != null) {
-				_menuPeer.setEnabled(true);
-			}
-			if (mif.getPanel().storeServerRunning()) {
-				_startUS.setEnabled(false);
-				_stopUS.setEnabled(true);
-			} else {
-				_startUS.setEnabled(true);
-				_stopUS.setEnabled(false);
-			}
-		}
-	}
-
-	public void internalFrameClosed(InternalFrameEvent e) {
-	}
-
-	public void internalFrameClosing(InternalFrameEvent e) {
-	}
-
-	public void internalFrameDeactivated(InternalFrameEvent e) {
-		_menuPeer.setEnabled(false);
-	}
-
-	public void internalFrameDeiconified(InternalFrameEvent e) {
-	}
-
-	public void internalFrameIconified(InternalFrameEvent e) {
-	}
-
-	public void internalFrameOpened(InternalFrameEvent e) {
-	}
+//	public void internalFrameActivated(InternalFrameEvent e) {
+//		JInternalFrame f = e.getInternalFrame();
+//		if (f instanceof MainIFrame) {
+//			MainIFrame mif = (MainIFrame)f;
+//			Peer p = mif.getPanel().getPeersMgtPanel().getCurrentPeer();
+//			if (p != null) {
+//				_menuPeer.setEnabled(true);
+//			}
+//			if (mif.getPanel().storeServerRunning()) {
+//				_startUS.setEnabled(false);
+//				_stopUS.setEnabled(true);
+//			} else {
+//				_startUS.setEnabled(true);
+//				_stopUS.setEnabled(false);
+//			}
+//		}
+//	}
+//
+//	public void internalFrameClosed(InternalFrameEvent e) {
+//	}
+//
+//	public void internalFrameClosing(InternalFrameEvent e) {
+//	}
+//
+//	public void internalFrameDeactivated(InternalFrameEvent e) {
+//		_menuPeer.setEnabled(false);
+//	}
+//
+//	public void internalFrameDeiconified(InternalFrameEvent e) {
+//	}
+//
+//	public void internalFrameIconified(InternalFrameEvent e) {
+//	}
+//
+//	public void internalFrameOpened(InternalFrameEvent e) {
+//	}
 	
 	//dinesh ++
 	public static void copyFile(File in, File out) throws Exception {

@@ -92,10 +92,10 @@ public class MainPanel extends JPanel
 		_peersMgtPanel.showPeerMappings(p);
 	}
 	
-	public void showConsole() 
-	{
-		_peersMgtPanel.showConsole();
-	}
+//	public void showConsole() 
+//	{
+//		_peersMgtPanel.showConsole();
+//	}
 
 	public void showProvenanceViewer(Peer p, Schema s) 
 	{
