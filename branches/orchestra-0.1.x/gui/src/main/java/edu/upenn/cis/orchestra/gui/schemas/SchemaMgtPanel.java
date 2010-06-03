@@ -142,12 +142,13 @@ public class SchemaMgtPanel extends JPanel
 		
 		JPanel bottomPanel = new JPanel (new BorderLayout());
 		
-		final JPanel transactPanel = createTransactionButtons ();
-		bottomPanel.add (transactPanel, BorderLayout.NORTH);
+		//final JPanel transactPanel = createTransactionButtons ();
+		//bottomPanel.add (transactPanel, BorderLayout.NORTH);
 		
+		if (_sys.getRecMode()) {
 		final JPanel peerOpPanel = createPeerOperationsButtons ();
 		bottomPanel.add (peerOpPanel, BorderLayout.SOUTH);
-		
+		}
 		optionsPanel.add (bottomPanel, BorderLayout.SOUTH);
 		
 		
@@ -163,21 +164,21 @@ public class SchemaMgtPanel extends JPanel
 		final DefaultMutableTreeNode relRootNode = new DefaultMutableTreeNode (TREE_SCHEMAOVERVIEW_LABEL);
 		rootNode.add(relRootNode);
 		
-		SchemaBrowserTransactionViewNode vn;
+		//SchemaBrowserTransactionViewNode vn;
 		
 //		if (_sys.getRecMode())
-			vn = new SchemaBrowserTransactionViewNode(SchemaBrowserTransactionViewNode.REC_MODE);
+			//vn = new SchemaBrowserTransactionViewNode(SchemaBrowserTransactionViewNode.REC_MODE);
 //		else
 //			vn = new SchemaBrowserTransactionViewNode(SchemaBrowserTransactionViewNode.EXCHANGE_MODE);
 		
-		rootNode.add(vn);
+		//rootNode.add(vn);
 		final JTree treeSchemaBrowser = new SchemaBrowserTree (rootNode);
 		treeSchemaBrowser.setRootVisible(false);
 		
 		// Create one node for each relation
 		for (Relation rel : _sc.getRelations())
 		{
-			if (!rel.getName().endsWith("_L") && !rel.getName().endsWith("_R"))
+			if (!rel.isInternalRelation())
 			{
 				MutableTreeNode relNode = new SchemaBrowserRelationNode (rel);
 				relRootNode.add(relNode);
@@ -390,27 +391,24 @@ public class SchemaMgtPanel extends JPanel
 		int currRow = 0;
 		
 		final SchemaMgtPanel scPanel = this;
-		if (_sys.getRecMode())
-		{
-			JButton btnCommit = new JButton ("Publish and Reconcile");
-			if (_sys.isLocalPeer(_p)) {
-			btnCommit.addActionListener(new ActionListener ()
-					{
-						public void actionPerformed(ActionEvent evt) 
-						{
-							_peerTransIntf.setRecomputeTransactions();
-							PeerCommands.publishAndReconcile(scPanel, _sys, _peerTransIntf);
-						}
-					});
-			} else {
-				btnCommit.setEnabled(false);
-			}
-			cst = new GridBagConstraints ();
-			cst.gridx=0;
-			cst.gridy=currRow++;
-			cst.anchor = GridBagConstraints.CENTER;
-			transactButtons.add (btnCommit, cst);
+
+		JButton btnCommit = new JButton("Publish and Reconcile");
+		if (_sys.isLocalPeer(_p)) {
+			btnCommit.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					_peerTransIntf.setRecomputeTransactions();
+					PeerCommands.publishAndReconcile(scPanel, _sys,
+							_peerTransIntf);
+				}
+			});
+		} else {
+			btnCommit.setEnabled(false);
 		}
+		cst = new GridBagConstraints();
+		cst.gridx = 0;
+		cst.gridy = currRow++;
+		cst.anchor = GridBagConstraints.CENTER;
+		transactButtons.add(btnCommit, cst);
 		
 		cst = new GridBagConstraints ();
 		cst.gridx=0;

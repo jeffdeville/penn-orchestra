@@ -127,7 +127,7 @@ public class Config {
 	}
 	
 	public static Object setProperty(String key, String value) {
-		Debug.println("SET: KEY=" + key + ", VALUE=" + s_props.getProperty(key));
+		Debug.println("SET: KEY=" + key + ", VALUE=" + value);
 		return s_props.setProperty(key, value);
 	}
 	

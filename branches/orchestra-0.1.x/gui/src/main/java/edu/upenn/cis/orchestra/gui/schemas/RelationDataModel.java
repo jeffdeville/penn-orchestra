@@ -54,7 +54,7 @@ public class RelationDataModel extends RelationDataModelAbs
 
 	private boolean _cacheCanBeExt=true;
 	
-	private boolean _isEditable = true;
+	private boolean _isEditable = false;
 
 	/**
 	 * Create a new model
