@@ -36,7 +36,7 @@ public class TransactionVertex extends DefaultGraphCell
 	private String _label;
 	private String _updates;
 	
-	public TransactionVertex (String label, int prio, boolean isAccepted, boolean isRejected)
+	TransactionVertex (String label, int prio, boolean isAccepted, boolean isRejected)
 	{
 		super(label);
 		
@@ -49,7 +49,7 @@ public class TransactionVertex extends DefaultGraphCell
 		setProperties(prio, isAccepted, isRejected, getAttributes());
 	}
 	
-	public TransactionVertex (TxnPeerID txn, String updates, int prio, boolean isAccepted, boolean isRejected)
+	TransactionVertex (TxnPeerID txn, String updates, int prio, boolean isAccepted, boolean isRejected)
 	{
 		super (txn);
 

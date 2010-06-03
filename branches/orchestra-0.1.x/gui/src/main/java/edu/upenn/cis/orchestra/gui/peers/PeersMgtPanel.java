@@ -64,12 +64,12 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 	
 	// Tabbed pane: will contain one tab for peers network and 
 	// one tab for the local peer.
-	final JTabbedPane _tabbedPane = new JTabbedPane ();
-	final static String TAB_PEERSNETW_TITLE = "All Peers";
-	final static String TAB_PEER_TITLE = "Peer ";
-	final static String TAB_CONSOLE = "Console";
+	private final JTabbedPane _tabbedPane = new JTabbedPane ();
+	private final static String TAB_PEERSNETW_TITLE = "All Peers";
+	private final static String TAB_PEER_TITLE = "Peer ";
+	private final static String TAB_CONSOLE = "Console";
 	
-	final static String TAB_QUERY = "Query";
+	private final static String TAB_QUERY = "Query";
 //	final static String TAB_PROQL = "Provenance";
 
 	
@@ -140,21 +140,21 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 		return _schemaInfoPanel;
 	}
 	
-	public ConsolePanel getConsole() {
-		return _console;
-	}
+//	public ConsolePanel getConsole() {
+//		return _console;
+//	}
+//	
+//	public QueryEditorPanel getQueryEditor() {
+//		return _query;
+//	}
 	
-	public QueryEditorPanel getQueryEditor() {
-		return _query;
-	}
+//	public void showConsole() {
+//		_tabbedPane.setSelectedComponent(_console);
+//	}
 	
-	public void showConsole() {
-		_tabbedPane.setSelectedComponent(_console);
-	}
-	
-	public void showQueryEditor() {
-		_tabbedPane.setSelectedComponent(_query);
-	}
+//	public void showQueryEditor() {
+//		_tabbedPane.setSelectedComponent(_query);
+//	}
 	
 	private void initFrame ()
 	{
@@ -166,11 +166,11 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 		_tabbedPane.addTab(TAB_PEER_TITLE + _system.getLocalPeer().getId(), new JPanel ());
 
 		
-		_console = new ConsolePanel(_system);
-		_tabbedPane.addTab(TAB_CONSOLE, _console);
+		//_console = new ConsolePanel(_system);
+		//_tabbedPane.addTab(TAB_CONSOLE, _console);
 		
-		_query = new QueryEditorPanel(_system);
-		_tabbedPane.addTab(TAB_QUERY, _query);
+		//_query = new QueryEditorPanel(_system);
+		//_tabbedPane.addTab(TAB_QUERY, _query);
 		
 //		_provquery = new ProQLEditorPanel(_system);
 //		_tabbedPane.addTab(TAB_PROQL, _provquery);

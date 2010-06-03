@@ -83,8 +83,8 @@ public class RelationDataPanel extends JPanel
 		add (mainTablePanel, BorderLayout.CENTER);
 		
 		// Create a panel which contains a one-row table for insertions.
-		final JPanel insertPanel = createInsertPanel(_model);
-		add (insertPanel, BorderLayout.SOUTH);
+		//final JPanel insertPanel = createInsertPanel(_model);
+		//add (insertPanel, BorderLayout.SOUTH);
 	}
 
 	/**
@@ -101,6 +101,7 @@ public class RelationDataPanel extends JPanel
 		
 		// Create the JTable
 		_dataTable = new JTable(_model)
+		
 		{
 			public static final long serialVersionUID = 1L;
 			@Override
@@ -144,34 +145,34 @@ public class RelationDataPanel extends JPanel
 		mainTablePanel.add (new JScrollPane(_dataTable), cst);
 		
 		// The button delete is used to delete the current selection
-		JButton btnDelete = new JButton ("Delete");
-		btnDelete.setToolTipText("Delete the current selection");
-		btnDelete.addActionListener(new ActionListener ()
-					{
-						public void actionPerformed(ActionEvent arg0) {
-							int[] selectedRows = _dataTable.getSelectedRows();
-							for (int i = selectedRows.length-1 ; i >=0 ; i--)
-								_model.delete(selectedRows[i]);
-						}
-					});
-		cst = new GridBagConstraints();
-		cst.gridx = 0;
-		cst.gridy = currRow;
-		cst.anchor = GridBagConstraints.WEST;
-		cst.weightx = 1;
-		mainTablePanel.add (btnDelete, cst);
+//		JButton btnDelete = new JButton ("Delete");
+//		btnDelete.setToolTipText("Delete the current selection");
+//		btnDelete.addActionListener(new ActionListener ()
+//					{
+//						public void actionPerformed(ActionEvent arg0) {
+//							int[] selectedRows = _dataTable.getSelectedRows();
+//							for (int i = selectedRows.length-1 ; i >=0 ; i--)
+//								_model.delete(selectedRows[i]);
+//						}
+//					});
+//		cst = new GridBagConstraints();
+//		cst.gridx = 0;
+//		cst.gridy = currRow;
+//		cst.anchor = GridBagConstraints.WEST;
+//		cst.weightx = 1;
+//		mainTablePanel.add (btnDelete, cst);
 
 		// This button (not enabled) should show provenance
-		JButton btnProv = new JButton ("Provenance");
-		btnDelete.setToolTipText("Show provenance for the current selection");
-
-		cst = new GridBagConstraints();
-		cst.gridx = 1;
-		cst.gridy = currRow;
-		cst.anchor = GridBagConstraints.WEST;
-		cst.weightx = 1;
-		mainTablePanel.add(btnProv, cst);
-		btnProv.setEnabled(false);
+//		JButton btnProv = new JButton ("Provenance");
+//		btnDelete.setToolTipText("Show provenance for the current selection");
+//
+//		cst = new GridBagConstraints();
+//		cst.gridx = 1;
+//		cst.gridy = currRow;
+//		cst.anchor = GridBagConstraints.WEST;
+//		cst.weightx = 1;
+//		mainTablePanel.add(btnProv, cst);
+//		btnProv.setEnabled(false);
 		
 		/*
 		// The button Commit is used to validate the changes made to the data
@@ -210,21 +211,21 @@ public class RelationDataPanel extends JPanel
 		
 		// The button reload is used to reload the data from the data source
 		// instead of using the current cache and cursor
-		JButton btnReload = new JButton ("Reload");
-		btnReload.setToolTipText("Reload data from the data source, uses local cache otherwise");
-		btnReload.addActionListener(new ActionListener ()
-				{
-					public void actionPerformed(ActionEvent evt) {
-						_model = new RelationDataModel (_relDataEdit, _relCtx);
-						_dataTable.setModel(_model);
-						_insertModel.setRelationDataModel (_model);
-					}
-				});
-		cst = new GridBagConstraints();
-		cst.gridx = 3;
-		cst.gridy = currRow++;
-		cst.anchor = GridBagConstraints.EAST;
-		mainTablePanel.add(btnReload, cst);
+//		JButton btnReload = new JButton ("Reload");
+//		btnReload.setToolTipText("Reload data from the data source, uses local cache otherwise");
+//		btnReload.addActionListener(new ActionListener ()
+//				{
+//					public void actionPerformed(ActionEvent evt) {
+//						_model = new RelationDataModel (_relDataEdit, _relCtx);
+//						_dataTable.setModel(_model);
+//						_insertModel.setRelationDataModel (_model);
+//					}
+//				});
+//		cst = new GridBagConstraints();
+//		cst.gridx = 3;
+//		cst.gridy = currRow++;
+//		cst.anchor = GridBagConstraints.EAST;
+//		mainTablePanel.add(btnReload, cst);
 		
 		
 
