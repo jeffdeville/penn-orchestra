@@ -213,12 +213,12 @@
 			<version>2.6.2</version>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xmlParserAPIs</artifactId>
 			<version>2.6.2</version>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
@@ -287,6 +287,11 @@
 					<!--  There's a much newer version than the one that this pulls in. -->
 					<groupId>xml-apis</groupId>
 					<artifactId>xml-apis</artifactId>
+				</exclusion>
+				<exclusion>
+					<!--  There's a much newer version than the one that this pulls in. -->
+					<groupId>xerces</groupId>
+					<artifactId>xmlParserAPIs</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
