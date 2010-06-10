@@ -834,25 +834,25 @@ public class MainFrm extends JFrame
 
 		_cxMenuPeer.setLabel("Peer");
 
-		JMenuItem recon = new JMenuItem("Publish and Reconcile");
-		recon.setMnemonic(KeyEvent.VK_R);
-		//recon.setEnabled(false);
-		_cxMenuPeer.add(recon);
-
-		final MainFrm frm = this;
-
-		ActionListener listener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				PeerCommands.publishAndReconcile(frm, getSelectedCatalog(), getSelectedTIF());
-			}
-		};
-		recon.addActionListener(listener);
-		
-		_cxMenuPeer.addSeparator();
+//		JMenuItem recon = new JMenuItem("Publish and Reconcile");
+//		recon.setMnemonic(KeyEvent.VK_R);
+//		//recon.setEnabled(false);
+//		_cxMenuPeer.add(recon);
+//
+//		final MainFrm frm = this;
+//
+//		ActionListener listener = new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				PeerCommands.publishAndReconcile(frm, getSelectedCatalog(), getSelectedTIF());
+//			}
+//		};
+//		recon.addActionListener(listener);
+//		
+//		_cxMenuPeer.addSeparator();
 
 		JMenuItem mnuItmPeerImport = new JMenuItem ("Import Data...");
 		mnuItmPeerImport.setMnemonic(KeyEvent.VK_I);
-		listener = new ActionListener() {
+		ActionListener listener = new ActionListener() {
 			public void actionPerformed(@SuppressWarnings("unused")
 					ActionEvent e) {
 				importPeerData();
