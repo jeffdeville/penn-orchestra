@@ -42,15 +42,15 @@ public class RelationDataModel extends RelationDataModelAbs
 	public static final long serialVersionUID = 1L;
 	
 	// Iterator over the data, used to fill the cache when more data is needed
-	ResultIterator<Tuple> _iterator = null;
+	private ResultIterator<Tuple> _iterator = null;
 	
 	// How many rows to add to the cache when more data is needed
 	//TODO: Temp to 10000 since the SqlDb closes the iterator... to be fixed
-	static final int CACHE_EXTENT_SIZE = 10000;
+	private static final int CACHE_EXTENT_SIZE = 10000;
 	// Data cache
-	final List<Tuple> _cache = new ArrayList<Tuple> (100);
+	private final List<Tuple> _cache = new ArrayList<Tuple> (100);
 	// Current transaction over the relation.
-	final List<Update> _transaction = new ArrayList<Update> ();
+	private final List<Update> _transaction = new ArrayList<Update> ();
 
 	private boolean _cacheCanBeExt=true;
 	
