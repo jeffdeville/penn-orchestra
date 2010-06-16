@@ -1,0 +1,27 @@
+This directory contains files which were created for the SUSE Linux
+virtual machine Orchestra Demo.
+
+The directory Desktop contains files which create desktop icons used
+to launch the demo components.
+
+The directory orchestra-demo contains the non-generated, non-jar files
+used by the three installations used in the demo (EBI, PCBI, and an
+update store).
+
+The directories
+orchestra-demo/{ebi_interpro,pcbi_plasmodb}/orchestra/data/outFiles
+contain the imports for their respective peers. These imports are
+intended to be applied during the intial setup of the demo for
+distribution, and not during the demo itelf.
+
+The directory orchestra-demo/ebi_interpro/updates contain the imports
+which are to be applied by the user during the demo.
+
+The directory orchestra-demo/instructions contains the user
+instructions for the demo.
+
+The directory orchestra-demo/updateStore/orchestra/updateStore_env
+contains a Berkeley database file for an update store which holds the
+published updates from the peers not on the vm, that is, it represents
+the state of the system after NCBI1, NCBI2, and GO have published
+updates, but before EBI and PCBI have published any updates.
