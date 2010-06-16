@@ -289,6 +289,11 @@ public class ProvenanceGraph extends BasicGraph {
 					//System.err.println(se);
 					//se.printStackTrace();
 				//}
+				finally {
+					if (neighborList != null) {
+						neighborList.close();
+					}
+				}
 			}
 			
 			++dist;

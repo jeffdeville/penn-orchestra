@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Orchestra VM Demo</title>
+  </head>
+  <body>
+    <h1>Instructions for the Orchestra demo</h1>
+    <p>
+    The purpose of this VM is to present an
+    installed and configured Orchestra client. The VM contains clients for 
+    two peers which are part of an Orchestra Collaborative Data Sharing System
+    (briefly, an Orchestra system or CDSS), consisting of five peers in
+    total. The installed CDSS is called bioSimpleZ and the peers on this VM
+    are called PCBI
+    and EBI. In a real system it is unlikely that two peers would share the
+    same machine. Note however, that they are not sharing the same database.
+    In our DB2 instance there are two databases, PCBI and EBI. A given peer
+    never connects to the other peer's database. Some data from all five peers
+    has been pre-loaded into the system. In the steps below we will insert new
+    data into one of the peers and publish it so that the other peers can see
+    and use this new data.
+    </p>
+
+    <p>
+    There are three Orchestra icons on the desktop. These are
+    <dl>
+    <dt><em>Orchestra Update Store</em></dt><dd>This will start the Orchestra
+    Update Store server. In a real system, this would be running as a daemon or
+    service on a machine which is accessible to all peers. This is the server
+    to which all peers publish their updates and from which all peers retrieve
+    the updates of the other peers. In this demonstration system we will be
+    starting it manually before launching an Orchestra client. It will just
+    open a terminal window and show debugging output.</dd>
+
+    <dt><em>Orchestra GUI (PCBI)</em></dt><dd>This will start the Orchestra
+    client for the peer PCBI.</dd>
+
+    <dt><em>Orchestra GUI (EBI)</em></dt><dd>This will start the Orchestra
+    client for the peer EBI.</dd>
+    </dl>
+    </p>
+
+    <p>
+    <ol>
+    <li>Double click on the 'Orchestra Update Store' icon. A terminal window
+    will open and start displaying a log trace.
+    <li>Double click on the 'Orchestra GUI (EBI)' icon. A second terminal window
+    will open and start displaying a log trace, and then the GUI will appear.
+    <li>Once the GUI appears you should see an internal frame which displays
+    the name of the CDSS on the title bar, in this case, bioSimpleZ. This
+    frame contains two
+    tabs:
+    <dl>
+    <dt><em>All Peers</em></dt><dd>In this tab we see a graph which represents
+    a global overview of the
+    system. In this case we see that there are five Peers (EBI, PCBI, GO,
+    NCBI1, and NCBI2) connected by six mappings (M0 through M5). If you click
+    on a peer node in the graph, the left-hand portion of the window will
+    display some information about the peer, such as the details of its
+    database schema. If you click on a mapping node you will see the
+    definition of that mapping in the left-hand portion of the window. In the
+    example below we will look a little more closely at mapping M4 which maps
+    tuples from a join of PCBI's DOMAIN_REF and EBI's ENTRY2METH back into DOMAIN_REF.</dd>
+    <dt><em>Peer EBI</em></dt><dd>This is the local peer tab. It provides
+    information about the local peer's view of the entire Orchestra system. In
+    this case the local peer is EBI.
+    It is divided
+    into four tabs:
+    <ul>
+    <li><em>Provenance</em>: Here we can view a provenance graph for each
+    tuple in the local peer's instance.</li>
+    <li><em>Relations</em>: Here we can view the contents of the local peer's
+    instance, restricted to that peer's schema.</li>
+    <li><em>Mappings</em>: This tab displays graphs representing each
+    mappings in the system for which the local peer is a target. In the case
+    of EBI this means that no mappings appear since it is only a source, and
+    never a target, in the mappings for this system. The PBMI peer is a
+    target, so we will see mappings displayed in its client.</li>
+    <li><em>Descriptions</em>: This tab displays the peer's description. It
+    also contains the 'Publish and Reconcile' button which we will use below.</li>
+    </ul>
+    </dl>
+    </li>
+    <li>Now we will insert new data into the EBI instance. This initial step only
+    involves DB2 and not Orchestra. Open a terminal window and type
+    <code>cd orchestra-demo/ebi_interpro/updates/</code>. This directory
+    contains the data which we  will insert. Type
+    <code>./importUpdates.bash</code> to run a script which will connect to DB2
+    and load the data.</li>   
+    <li>Now we would like to publish this data to the Update Store so that
+    other peers can see it. Return to the EBI GUI and if it is not already
+    selected, click on the 'Peer EBI' tab and then the 'Descriptions'
+    side-tab. There will be a button labeled 'Publish and Reconcile'. Push this
+    button. This
+    causes the client to check DB2 for any changes. When it discovers our newly
+    inserted tuples it will publish them to the Update Store, retrieve any
+    changes which other peers may have published (in this case none), and then
+    run the Orchestra mappings to propagate the changes inside its own
+    instance. When the operation has finished a window will appear with the
+    text: 'Reconciliation was successful'. Click OK. </li>
+    <li>One of the tuples we added in step 4 was
+    ENTRY2METH(IPR002205, SM00434, SMART). We will now see how this new
+    addition caused a new tuple to be added to PCBI's DOMAIN_REF. Click on
+    the Provenance tab, and then select PCBI from the Peer drop-down
+    list. Select DOMAIN_REF from the Relation drop-down and find the tuple
+    DOMAIN_REF(PC302596.00.0, SMART, SM00434) in the resulting table. (You can
+    click on the column headers to re-order the list by that value.) If you
+    select this tuple, its provenance graph will appear showing that its
+    presence in the table is the
+    result of the pre-existing tuple DOMAIN_REF(PC302596.00.0, Interpro,
+    IPR002205)
+    joining with our newly inserted ENTRY2METH tuple through the mapping M4
+    mentioned above. (The graph truncates the tuples. You can see the full
+    values by hovering over the graph node.)</li>
+    <li>Now close the EBI peer and double click on the 'Orchestra GUI (PCBI)'
+    icon. This will open a client where PCBI is the local peer. If you click
+    on 'Peer PCBI' and then Provenance and again select the relation
+    DOMAIN_REF under the PCBI peer, in this case the tuple
+    DOMAIN_REF(PC302596.00.0, SMART, SM00434) should not appear since we have
+    not yet received EBI's most recent updates.</li>
+    <li>Now, as the PCBI peer, we would like to retrieve new updates from the
+    other peers. Just as before we navigate to 'Peer PCBI' -> 'Description'
+    and push the 'Publish and Reconcile' button. Since there have not been any changes to PCBI's
+    instance since it last published, there is nothing new to publish. In this
+    case we are only retrieving the tuples just published by EBI and running
+    the Orchestra mappings.</li>
+    <li>Once you see the 'Reconciliation was successful' window and click OK,
+    go back to the Provenance tab and again select relation DOMAIN_REF from
+    the PCBI peer. Now that we have retrieved the new updates and run the
+    mappings, the tuple DOMAIN_REF(PC302596.00.0, SMART, SM00434) should
+    appear and display the same provenance graph we saw with the EBI client.</li>
+    <li>Now close the PCBI GUI and the Update Store terminal window.</li>
+    </ol>
+    </p>
+  </body>
+</html>
