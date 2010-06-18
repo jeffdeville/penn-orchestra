@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		These are the peers for which we will need OrchestraSystems during the
+		test.
+	-->
+<peers jdbcDriver="com.ibm.db2.jcc.DB2Driver">
+	<peer name="pPODPeer1" dbState="no-pre-existing">
+		<mappings password="${testng.db-password}" server="${testng.db-url.pPODPeer1}"
+			type="sql" username="${testng.db-user}" />
+	</peer>
+	<peer name="pPODPeer2" dbState="no-pre-existing">
+		<mappings password="${testng.db-password}" server="${testng.db-url.pPODPeer2}"
+			type="sql" username="${testng.db-user}" />
+	</peer>
+</peers>

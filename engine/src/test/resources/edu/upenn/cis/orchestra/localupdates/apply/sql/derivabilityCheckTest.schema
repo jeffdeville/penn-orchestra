@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+
+<!-- A two peer, one table each Orchestra system. -->
+<catalog name="derivabilityCheckTest" recmode="false">
+  <peer address="pPODPeer1AddressUNUSED" name="pPODPeer1">
+    <description>pPOD Peer1</description>
+    <schema name="pPODPeer1Schema1">
+      <description>pPOD Peer1 Schema1</description>
+      <relation description="pPOD Peer1 Schema1 Relation1" hasLocalData="true" materialized="true" name="OTU">
+        <dbinfo schema="derivability1" table="OTU"/>
+        <field description="pPOD Peer1 Schema1 Relation1 Field1" labeledNullable="true" name="OTU_ID" nullable="false" type="integer"/>
+        <field description="pPOD Peer1 Schema1 Relation1 Field2" labeledNullable="true" name="LABEL" nullable="false" type="varchar(255)"/>
+        <field description="pPOD Peer1 Schema1 Relation1 Field3" labeledNullable="true" name="OBJ_VERSION" nullable="true" type="integer"/>
+        <field description="pPOD Peer1 Schema1 Relation1 Field4" labeledNullable="true" name="PPOD_VERSION" nullable="true" type="integer"/>
+        <primaryKey name="PRIMARY">
+          <fieldName name="OTU_ID"/>
+        </primaryKey>
+      </relation>
+    </schema>
+  </peer>
+  <peer address="pPODPeer2AddressUNUSED" name="pPODPeer2">
+    <description>pPOD Peer2</description>
+    <schema name="pPODPeer2Schema1">
+      <description>pPOD Peer2 Schema1</description>
+      <relation description="pPOD Peer2 Schema1 Relation1" hasLocalData="true" materialized="true" name="OTU">
+        <dbinfo schema="derivability2" table="OTU"/>
+        <field description="pPOD Peer2 Schema1 Relation1 Field1" labeledNullable="true" name="OTU_ID" nullable="false" type="integer"/>
+        <field description="pPOD Peer2 Schema1 Relation1 Field2" labeledNullable="true" name="LABEL" nullable="false" type="varchar(255)"/>
+        <field description="pPOD Peer2 Schema1 Relation1 Field3" labeledNullable="true" name="OBJ_VERSION" nullable="true" type="integer"/>
+        <field description="pPOD Peer2 Schema1 Relation1 Field4" labeledNullable="true" name="PPOD_VERSION" nullable="true" type="integer"/>
+        <primaryKey name="PRIMARY">
+          <fieldName name="OTU_ID"/>
+        </primaryKey>
+      </relation>
+    </schema>
+  </peer>
+  <mapping materialized="true" name="pPODotu1otu2">
+    <head>
+      <atom>
+		pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID, LABEL, OBJ_VERSION, PPOD_VERSION)
+      </atom>
+    </head>
+    <body>
+      <atom>
+		pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID, LABEL, OBJ_VERSION, PPOD_VERSION)
+      </atom>
+    </body>
+  </mapping>
+  <engine type="sql">
+  </engine>
+  <store>
+    <update hostname="localhost" port="9999" type="bdb"/>
+    <state type="hash"/>
+  </store>
+</catalog>

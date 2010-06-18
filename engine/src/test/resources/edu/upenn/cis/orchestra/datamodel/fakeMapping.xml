@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><mapping type="mapping" bidirectional="false" description="INTERNAL RULE" isFakeMapping="true" materialized="true" name="-1" trustRank="1">
+          <head>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+              <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+            </atom>
+          </head>
+          <body>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+              <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU_L"/>
+            </atom>
+          </body>
+        </mapping>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="gui-functional-tests" verbose="1">
+	<!--
+		Maven's testResouce filtering is turned on in the POM so that you can
+		specify locally appropriate values for the
+		testng.db-{url,user,password} properties below.
+	-->
+	<parameter name="orchestra-schema-name" value="ppodLN" />
+	<parameter name="local-peer" value="pPODPeer2" />
+	<!-- <parameter name="run-mode" value="generate" /> -->
+	<test name="local-insert">
+		<parameter name="test-data-dir" value="local-insert" />
+		<groups>
+			<run>
+				<exclude name="broken" />
+			</run>
+		</groups>
+		<classes>
+			<class name="edu.upenn.cis.orchestra.gui.OrchestraTestGUI" />
+		</classes>
+	</test>
+</suite>
