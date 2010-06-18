@@ -2,7 +2,7 @@
 
 = Virtual Machine Demo =
 
-We have created a virtual machine with an Orchestra installation already configured and ready to go. It requires the free [http://www.vmware.com/products/player/ VMWare Player] (Windows, Linux).
+We have created a virtual machine with an Orchestra installation already configured and ready to go. It requires the free [http://www.vmware.com/products/player/ VMWare Player] (Windows, Linux) or [http://www.vmware.com/products/fusion/ VMWare Fusion] (Mac, not free).
 
 
 = Instructions =
