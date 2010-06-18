@@ -6,7 +6,7 @@ We have created a virtual machine with an Orchestra installation already configu
 
 
 = Instructions =
-  # Install VMWare Player.
+  # Install VMWare Player or VMWare Fusion.
   # Download the virtual machine: [https://dbappserv.cis.upenn.edu/orchestra-demo/orchestra-demo.zip orchestra-demo.zip] (about 2.5 GB).
   # Unzip orchestra-demo.zip and open orchestra-demo/orchestra-demo.vmx with VMWare Player.
   # Log on to the virtual machine:
