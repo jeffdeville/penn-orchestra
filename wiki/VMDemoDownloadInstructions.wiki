@@ -15,3 +15,4 @@ We have created a virtual machine with an Orchestra installation already configu
     * user: _db2inst1_
     * password: _orchestra_
   # Once logged on, you should see a README.html icon on the desktop. Double-click this for   further instructions on how to run the demo.
+    * If you chose to install VMWare Tools, VMWare may have overlayed the VMWare Tools disk image icon onto the README.html icon making it a little hard to see.
