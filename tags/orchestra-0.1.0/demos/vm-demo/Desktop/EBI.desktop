@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Orchestra GUI (EBI)
+Type=Application
+Exec=gnome-terminal --title "EBI INTERPRO" --working-directory /home/db2inst1/orchestra-demo/ebi_interpro/orchestra -e /home/db2inst1/orchestra-demo/ebi_interpro/orchestra/bin/orchestraGui
+TryExec=
+X-GNOME-DocPath=
+Terminal=false
+Name[en_US]=Orchestra GUI (EBI)
+GenericName[en_US]=Orchestra GUI for the EBI Peer
+Comment[en_US]=
+Icon=/home/db2inst1/orchestra-demo/OrchestraIcon.ico

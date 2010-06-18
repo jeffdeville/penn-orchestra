@@ -1,0 +1,77 @@
+1c1
+< 	public synchronized  List<RuleFieldMapping> getBodyFieldMapping(List<String> indexFields)
+---
+> 	public synchronized List<RuleFieldMapping> getRuleFieldMapping(List<String> indexFields)
+4a5
+> 		allVars.addAll(getAllHeadVariables());
+9c10
+< 	
+---
+> 
+14c15
+< 	
+---
+> 
+21a23
+> 		final List<String> checkedFields = new ArrayList<String>();
+22a25,26
+> 		int k = 0;
+> 		
+25,31c29,36
+< 			// Get the target columns from the head of the rule
+< 			findVarInAtoms(var, getMappingHead(), trgFields, trgColumns, trgRelations, 
+< 					indexes, true);
+< 	
+< 			// Get the source columns from the body of the rule
+< 			findVarInAtoms(var, getBody(), srcFields, srcColumns, srcRelations, 
+< 					indexes, true);
+---
+> 			if(!checkedFields.contains(var.getName())){
+> 				// Get the target columns from the head of the rule
+> 				boolean fndTrg = findVarInAtoms(var, getMappingHead(), trgFields, trgColumns, trgRelations, 
+> 						indexes, true);
+> 
+> 				// Get the source columns from the body of the rule
+> 				boolean fndSrc = findVarInAtoms(var, getBody(), srcFields, srcColumns, srcRelations, 
+> 						indexes, true);
+33,36c38,59
+< 			try {
+< 				RuleFieldMapping m = new RuleFieldMapping(new 
+< 						RelationField("C" + j, "C" + j, true, srcFields.get(j).getSQLTypeName()),
+< 							srcColumns, trgColumns, var, (indexes.size() != 0), this);
+---
+> 				try {
+> 					if(fndSrc){
+> 						RuleFieldMapping m = new RuleFieldMapping(new 
+> 								RelationField("C" + j, "C" + j, true, srcFields.get(j).getSQLTypeName()),
+> 								srcColumns, trgColumns, var, (indexes.size() != 0), this);
+> 						fields.add (m);
+> 						j++;
+> 					}else if(fndTrg){
+> 						RuleFieldMapping m = new RuleFieldMapping(new 
+> 								RelationField("CH" + k, "CH" + k, true, trgFields.get(k).getSQLTypeName()),
+> 								srcColumns, trgColumns, var, (indexes.size() != 0), this);
+> 						fields.add (m);
+> 						k++;
+> 					}
+> 				} catch (UnsupportedTypeException ute) {
+> 					// Should never happen
+> 					ute.printStackTrace();
+> 				}
+> 
+> 				srcColumns = new ArrayList<String>();
+> 				trgColumns = new ArrayList<String>();
+> 				indexes = new HashSet<Integer>();
+38,41c61
+< 				fields.add (m);
+< 			} catch (UnsupportedTypeException ute) {
+< 				// Should never happen
+< 				ute.printStackTrace();
+---
+> 				checkedFields.add(var.getName());
+43,47d62
+< 	
+< 			srcColumns = new ArrayList<String>();
+< 			trgColumns = new ArrayList<String>();
+< 			indexes = new HashSet<Integer>();
+< 			j++;

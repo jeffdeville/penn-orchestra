@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Fast GUI Suite" verbose="1">
+	<test name="Fast GUI Tests">
+		<groups>
+			<run>
+				<include name="fast" />
+				<exclude name="broken" />
+				<exclude name="development" />
+				<exclude name="requires-database" />
+			</run>
+		</groups>
+		<classes>
+			<!-- Not really a GUI test, but requires the update store script. -->
+			<class name="edu.upenn.cis.orchestra.SystemStartTest" />
+		</classes>
+	</test>
+</suite>		

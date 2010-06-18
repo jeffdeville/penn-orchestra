@@ -1,0 +1,287 @@
+<?xml version="1.0" ?>
+<!--11:49:52 05/21/07 EDT
+{'cutoff': 1024, 'help': False, 'skip': 0, 'fanout': 2, 'todd': False, 'schemas': 3, 'xmlformat': True, 'filename': 'bioSimple', 'maxcycles': None, 'deletions': 1, 'dbalias': 'BIOTB', 'coverage': 0.75, 'mincycles': None, 'password': '', 'integers': False, 'peers': 3, 'insertions': 1, 'tukwila': False, 'username': '', 'seed': 0, 'olivier': False, 'oracle': False, 'relsize': 4}-->
+<catalog recmode="false">
+  <migrated>true</migrated>
+  <peer address="localhost" name="pPOD">
+  	<description>This peer implements the pPOD core data model.</description>
+    <schema name="CDM">
+  		<description>The pPOD core data model.</description>
+      <relation materialized="true" name="TREE">
+        <dbinfo schema="CDM" table="TREE"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="TITLE" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="PROVENANCE">
+        <dbinfo schema="CDM" table="PROVENANCE"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="TREE_ID" type="integer"/>
+        <field name="MATRIX_ID" type="integer"/>
+        <field name="SOFTWARE" type="varchar(100)"/>
+        <field name="PARAMETERS" type="varchar(100)"/>
+        <field name="AUTHOR_ID" type="integer"/>
+        <field name="DATE" type="char(10)"/>
+      </relation>
+      <foreignkey name="CDM_FK1" source="PROVENANCE" target="TREE">
+      	<from>TREE_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="MATRIX">
+        <dbinfo schema="CDM" table="MATRIX"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="TITLE" type="varchar(100)"/>
+	  </relation>      
+      <foreignkey name="CDM_FK2" source="PROVENANCE" target="MATRIX">
+      	<from>MATRIX_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="OTU">
+        <dbinfo schema="CDM" table="OTU"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="LABEL" type="varchar(100)"/>
+	  </relation>      
+      <relation materialized="true" name="TREEOTU">
+        <dbinfo schema="CDM" table="TREEOTU"/>
+        <field key="true" name="TREE_ID" type="integer"/>
+        <field key="true" name="OTU_ID" type="integer"/>
+	  </relation>      
+      <foreignkey name="CDM_FK3" source="TREEOTU" target="OTU">
+      	<from>OTU_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <foreignkey name="CDM_FK4" source="TREEOTU" target="TREE">
+      	<from>TREE_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="MATRIXOTU">
+        <dbinfo schema="CDM" table="MATRIXOTU"/>
+        <field key="true" name="MATRIX_ID" type="integer"/>
+        <field key="true" name="OTU_ID" type="integer"/>
+        <field key="true" name="POS" type="integer"/>
+	  </relation>      
+      <foreignkey name="CDM_FK5" source="MATRIXOTU" target="MATRIX">
+      	<from>MATRIX_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <foreignkey name="CDM_FK6" source="MATRIXOTU" target="OTU">
+      	<from>OTU_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+    </schema>
+  </peer>
+  <peer address="localhost" name="TreeBaseII">
+  	<description>The TreeBase II repository.</description>
+    <schema name="TREEBASE">
+  		<description>The TreeBase-II schema.</description>
+      <relation materialized="true" name="STUDY">
+        <dbinfo schema="TREEBASE" table="STUDY"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="name" type="varchar(255)"/>
+        <field name="accessionNumber" type="varchar(255)"/>
+        <field name="notes" type="varchar(255)"/>
+      </relation>
+      <relation materialized="true" name="ANALYSIS">
+        <dbinfo schema="TREEBASE" table="ANALYSIS"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="STUDY_ID" type="integer"/>
+        <field name="name" type="varchar(255)"/>
+        <field name="notes" type="varchar(255)"/>
+      </relation>
+      <foreignkey name="TB_FK1" source="ANALYSIS" target="STUDY">
+      	<from>STUDY_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="ANALYSISSTEP">
+        <dbinfo schema="TREEBASE" table="ANALYSISSTEP"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="ANALYSIS_ID" type="integer"/>
+        <field name="DATA_ID" type="integer"/>
+        <field name="SOFTWARE_ID" type="integer"/>
+        <field name="name" type="varchar(255)"/>
+        <field name="notes" type="varchar(255)"/>
+        <field name="commands" type="varchar(255)"/>
+      </relation>
+      <foreignkey name="TB_FK2" source="ANALYSISSTEP" target="ANALYSIS">
+      	<from>ANALYSIS_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="SOFTWARE">
+        <dbinfo schema="TREEBASE" table="SOFTWARE"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="name" type="varchar(255)"/>
+        <field name="version" type="varchar(255)"/>
+        <field name="description" type="varchar(255)"/>
+        <field name="externalLink" type="varchar(255)"/>
+      </relation>
+      <foreignkey name="TB_FK3" source="ANALYSISSTEP" target="SOFTWARE">
+      	<from>SOFTWARE_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="ANALYZEDDATA">
+        <dbinfo schema="TREEBASE" table="ANALYZEDDATA"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="input" type="integer"/>
+        <field name="notes" type="varchar(255)"/>
+        <field name="treeLength" type="integer"/>
+      </relation>
+      <foreignkey name="TB_FK4" source="ANALYSISSTEP" target="ANALYZEDDATA">
+      	<from>DATA_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="MATRIX">
+        <dbinfo schema="TREEBASE" table="MATRIX"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="DATA_ID" type="integer"/>
+        <field name="title" type="varchar(255)"/>
+        <field name="gapSymbol" type="varchar(255)"/>
+        <field name="missingSymbol" type="varchar(255)"/>
+        <field name="description" type="varchar(255)"/>
+      </relation>
+      <foreignkey name="TB_FK4" source="MATRIX" target="ANALYZEDDATA">
+      	<from>DATA_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="PHYLOTREE">
+        <dbinfo schema="TREEBASE" table="PHYLOTREE"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="DATA_ID" type="integer"/>
+        <field name="title" type="varchar(255)"/>
+        <field name="rootedTree" type="integer"/>
+        <field name="bigTree" type="varchar(255)"/>
+        <field name="newickString" type="double"/>
+      </relation>
+      <foreignkey name="TB_FK5" source="PHYLOTREE" target="ANALYZEDDATA">
+      	<from>DATA_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="MATRIXROW">
+        <dbinfo schema="TREEBASE" table="MATRIXROW"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="MATRIX_ID" type="integer"/>
+       	<field name="LABEL_ID" type="integer"/>
+      </relation>
+      <foreignkey name="TB_FK6" source="MATRIXROW" target="MATRIX">
+      	<from>MATRIX_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="TAXONLABEL">
+        <dbinfo schema="TREEBASE" table="TAXONLABEL"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="taxonLabel" type="varchar(100)"/>
+      </relation>
+      <foreignkey name="TB_FK7" source="MATRIXROW" target="TAXONLABEL">
+      	<from>LABEL_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <relation materialized="true" name="TREENODE">
+        <dbinfo schema="TREEBASE" table="TREENODE"/>
+        <field key="true" name="OID" type="integer"/>
+        <field name="PHYLO_ID" type="integer"/>
+        <field name="LABEL_ID" type="integer"/>
+        <field name="nodeName" type="varchar(255)"/>
+        <field name="branchLength" type="varchar(10)"/>
+        <field name="nodeDepth" type="integer"/>
+      </relation>
+      <foreignkey name="TB_FK8" source="TREENODE" target="PHYLOTREE">
+      	<from>PHYLO_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+      <foreignkey name="TB_FK9" source="TREENODE" target="TAXONLABEL">
+      	<from>LABEL_ID</from>
+      	<to>OID</to>
+      </foreignkey>
+    </schema>
+  </peer>
+  <mapping materialized="true" name="M0">
+    <head>
+      <atom>
+        pPOD.CDM.TREE(TREE_ID, TREE_TITLE)
+      </atom>
+      <atom>
+        pPOD.CDM.PROVENANCE(PROV_ID, TREE_ID, MATRIX_ID, SOFT, PARMS,-,-)
+      </atom>
+      <atom>
+        pPOD.CDM.MATRIX(MATRIX_ID, MATRIX_TITLE)
+      </atom>
+      <atom>
+        pPOD.CDM.MATRIXOTU(MATRIX_ID,OTU_ID,-)
+      </atom>
+      <atom>
+        pPOD.CDM.OTU(OTU_ID, OTU_LABEL)
+      </atom>
+      <atom>
+        pPOD.CDM.TREEOTU(TREE_ID,IN_OTU_ID)
+      </atom>
+      <atom>
+        pPOD.CDM.OTU(IN_OTU_ID, IN_LABEL)
+      </atom>
+    </head>
+    <body>
+      <atom>
+        TreeBaseII.TREEBASE.STUDY(STUDY_ID, STUDY_NAME, STUDY_ACC, _)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.ANALYSIS(ANALYSIS_ID, STUDY_ID, ANAL_NAM, _)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.ANALYSISSTEP(STEP_ID, ANALYSIS_ID, DATA_ID, SOFT_ID, STEP_NAM, _, PARMS)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.SOFTWARE(SOFT_ID, SOFT, _, _, _)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.ANALYZEDDATA(MDATA_ID,0,_,LEN)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.MATRIX(MATRIX_ID, MDATA_ID, MATRIX_TITLE, _, _, _)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.MATRIXROW(ROW_ID, MATRIX_ID, MLABEL_ID)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.TAXONLABEL(MLABEL_ID, IN_LABEL)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.ANALYZEDDATA(TDATA_ID,1,_,LEN)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.PHYLOTREE(TREE_ID, TDATA_ID, TREE_TITLE, _, _, _)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.TREENODE(NODE_ID, TREE_ID, TLABEL_ID, NODE_LABEL, _, _)
+      </atom>
+      <atom>
+        TreeBaseII.TREEBASE.TAXONLABEL(NODE_ID, OTU_LABEL)
+      </atom>
+    </body>
+  </mapping>
+
+  <engine>
+    <mappings password="" server="" type="sql" username=""/>
+  </engine>
+  <store>
+    <update hostname="localhost" port="9999" type="bdb"/>
+    <state type="hash"/>
+  </store>
+  <trustConditions peer="TreeBaseII" schema="TREEBASE">
+	    <trusts pid="pPOD" pidType="STRING" priority="5" relation="TREE"/>
+	    <trusts pid="pPOD" pidType="STRING" priority="5" relation="MATRIX"/>
+	    <trusts pid="pPOD" pidType="STRING" priority="5" relation="PROVENANCE"/>
+	    <trusts pid="pPOD" pidType="STRING" priority="5" relation="OTU"/>
+	    <trusts pid="pPOD" pidType="STRING" priority="5" relation="TREEOTU"/>
+	    <trusts pid="pPOD" pidType="STRING" priority="5" relation="MATRIXOTU"/>
+  </trustConditions>
+  <trustConditions peer="pPOD" schema="CDM">
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="STUDY"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="ANALYSIS"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="ANALYSISSTEP"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="SOFTWARE"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="ANALYZEDDATA"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="MATRIX"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="PHYLOTREE"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="TREENODE"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="TAXONLABEL"/>
+	    <trusts pid="TreeBaseII" pidType="STRING" priority="5" relation="MATRIXROW"/>
+  </trustConditions>
+</catalog>
+

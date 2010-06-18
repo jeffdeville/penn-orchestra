@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Requires Database Fast Suite" verbose="1">
+	<!--
+		Maven's testResouce filtering is turned on in the POM so that you can
+		specify locally appropriate values for the
+		testng.db-{url,user,password} parameters below.
+	-->
+	<parameter name="db-url"
+		value="${testng.db-url}" />
+	<parameter name="db-user" value="${testng.db-user}" />
+	<parameter name="db-password" value="${testng.db-password}" />
+	<parameter name="jdbc-driver" value="com.ibm.db2.jcc.DB2Driver" />
+	<test name="Requires Database Fast Tests">
+		<groups>
+			<run>
+				<include name="requires-database" />
+				<exclude name="slow" />
+				<exclude name="broken" />
+				<exclude name="development" />
+			</run>
+		</groups>
+		<packages>
+			<package name="edu.upenn.cis.orchestra.*" />
+		</packages>
+	</test>
+</suite>		

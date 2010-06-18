@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="orchestraSchema">
+	
+	<typeAlias type="edu.upenn.cis.orchestra.repository.model.beans.ScMappingBean" alias="ScMappingBean"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerMapping" alias="EncapsPeerMapping"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerIdMappingId" alias="EncapsPeerIdMappingId"/>
+	
+	
+	<resultMap class="ScMappingBean" id="mapping">
+		<result property="id" column="mapp_mappingId"/>
+		<result property="description" column="mapp_description"/>
+		<result property="materialized" column="mapp_isMaterialized"/>		
+		<result property="trustRank" column="mapp_trustRank"/>
+		<result property="head" select="getMappingAtoms" column="{peerId=mapp_peerId,mappingId=mapp_mappingId,isHead=mapp_isHead}"/>
+		<result property="body" select="getMappingAtoms" column="{peerId=mapp_peerId,mappingId=mapp_mappingId,isHead=mapp_isBody}"/>
+	</resultMap>			
+
+	<resultMap class="java.lang.String" id="mappCnt">
+		<result property="value" column="nbMapp"/>
+	</resultMap>
+
+	<select id="getMappings" resultMap="mapping" parameterClass="java.lang.String">
+		SELECT peerId  				mapp_peerId,
+		       mappingId    		mapp_mappingId,
+		       description			mapp_description,
+		       isMaterialized		mapp_isMaterialized,
+		       trustRank			mapp_trustRank,
+		       1					mapp_isHead,
+		       0					mapp_isBody
+		  FROM mappings
+		  WHERE peerId=#value#
+	</select>
+
+	<insert id="insertMapping" parameterClass="EncapsPeerMapping">
+		INSERT INTO mappings
+		   (peerId, mappingId, description, isMaterialized, trustRank)
+		 VALUES 
+		   (#peer.id#, #mapping.id#, #mapping.description#, #mapping.materialized#, #mapping.trustRank#);
+	</insert>
+		
+
+	<select id="countMappingExistence" resultMap="mappCnt" parameterClass="EncapsPeerIdMappingId">
+		SELECT count(*) as nbMapp
+		  FROM mappings
+		  WHERE peerId=#peerId#
+		    AND mappingId=#mappingId#
+	</select>
+	
+	<delete id="deleteMapping" parameterClass="EncapsPeerIdMappingId">
+		DELETE FROM mappings
+		  WHERE peerId=#peerId#
+		    AND mappingId=#mappingId#
+	</delete>
+
+	<delete id="deleteMappingsForPeer" parameterClass="java.lang.String">
+		DELETE FROM mappings
+		  WHERE peerId=#value#
+	</delete>		
+		
+</sqlMap>

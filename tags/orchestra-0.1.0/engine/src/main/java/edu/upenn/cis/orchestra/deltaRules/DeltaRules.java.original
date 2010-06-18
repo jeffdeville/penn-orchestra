@@ -1,0 +1,1524 @@
+/*
+ * Copyright (C) 2010 Trustees of the University of Pennsylvania
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS of ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package edu.upenn.cis.orchestra.deltaRules;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+//import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import sun.management.counter.Variability;
+
+import com.ibm.db2.jcc.c.SqlException;
+import com.sun.org.apache.xpath.internal.operations.Variable;
+
+import edu.upenn.cis.orchestra.datalog.DatalogEngine;
+import edu.upenn.cis.orchestra.datalog.DatalogProgram;
+import edu.upenn.cis.orchestra.datalog.NonRecursiveDatalogProgram;
+import edu.upenn.cis.orchestra.datalog.RecursiveDatalogProgram;
+import edu.upenn.cis.orchestra.datalog.SingleRuleDatalogProgram;
+import edu.upenn.cis.orchestra.deltaRules.exceptions.RulesCycleException;
+import edu.upenn.cis.orchestra.mappings.Rule;
+import edu.upenn.cis.orchestra.mappings.RuleAtom;
+import edu.upenn.cis.orchestra.mappings.RuleAtom.AtomType;
+import edu.upenn.cis.orchestra.repository.model.OrchestraSystem;
+import edu.upenn.cis.orchestra.repository.model.Peer;
+import edu.upenn.cis.orchestra.repository.model.ScField;
+import edu.upenn.cis.orchestra.repository.model.ScMappingAtom;
+import edu.upenn.cis.orchestra.repository.model.ScMappingAtomValConst;
+import edu.upenn.cis.orchestra.repository.model.ScMappingAtomValSkolem;
+import edu.upenn.cis.orchestra.repository.model.ScMappingAtomValVariable;
+import edu.upenn.cis.orchestra.repository.model.ScMappingAtomValue;
+import edu.upenn.cis.orchestra.repository.model.ScRelation;
+import edu.upenn.cis.orchestra.repository.model.ScRelationContext;
+import edu.upenn.cis.orchestra.repository.model.Schema;
+import edu.upenn.cis.orchestra.repository.model.exceptions.DuplicateRelationIdException;
+
+
+
+/**
+ * Class used to generate the delta rules for a given set of rules.
+ * The method <code>getDeltaRules</code> gives those delta rules.
+ * The method <code>getEdbs</code> gives the EDB relations (computed from these rules). 
+ * @author Olivier Biton
+ *
+ */
+public class DeltaRules {
+	
+	/**
+	 * List of input rules
+	 */
+	private List<Rule> _rules;
+	
+	/**
+	 * Delta rules. For each rule / operation (insert/delete) a new array of delta rules will be 
+	 * added to this list. All insertions deltas first, then deletions.
+	 */
+	/* private List<Rule[]> _deltaRules;*/
+	
+	/**
+	 * List of the edbs relations in those rules
+	 */
+	private List<ScRelationContext> _edbs; 
+	private List<ScRelationContext> _idbs; 
+	private List<ScRelationContext> _mappingRels; 
+	
+	private List<Rule> _mappingRules;
+	private List<Rule> _unfoldedMappingRules;
+	private List<Rule> _mappingProjections;
+	//private List<Rule[]> _insertionRules;
+	//private List<Rule[]> _deletionRules;
+	private DatalogProgram _insertionRules;
+	private DatalogProgram _deletionRules;
+	
+
+	/** Peer/schema used to cache data */
+	private Peer _cachePeer;
+	private Schema _cacheSchema;
+	private String _dbCacheCatalog;
+	private String _dbCacheSchema;
+
+
+	private MappingsProvenancePrep _provenancePrep;
+	
+	public DeltaRules (List<Rule> rules, Peer cachePeer, Schema cacheSchema, String dbCacheCatalog, String dbCacheSchema, OrchestraSystem system, boolean DRed)
+				throws RulesCycleException
+	{
+		Debug.println("CHECK");
+		_rules = new ArrayList<Rule> ();
+		_rules.addAll(rules);
+		/*_deltaRules = new ArrayList<Rule[]> ();*/
+		_cachePeer = cachePeer;
+		_cacheSchema = cacheSchema;
+		_dbCacheCatalog = dbCacheCatalog;
+		_dbCacheSchema = dbCacheSchema;
+		
+		BasicDataSource ds = new BasicDataSource ();
+		ds.setDriverClassName(DatalogEngine.DRIVER);
+		ds.setUrl(DatalogEngine.SERVER);
+		ds.setUsername(DatalogEngine.DBUSER);
+		ds.setPassword(DatalogEngine.DBPWD);
+		
+		try{
+			Connection dbCn = ds.getConnection();
+			if(Debug.autocommitMode() == false){
+				dbCn.setAutoCommit(false);
+			}else{
+				dbCn.setAutoCommit(true);
+			}
+			_provenancePrep = new MappingsProvenancePrep (ds);
+//				 Sort the rules using a topological sort
+			//RulePrecedenceGraph.topologicalSort(_rules);
+			// Generate the insertion delta rules
+			//generateDeltaRules(_rules, _deltaRules, true);
+			// Generate the deletion delta rules
+			//generateDeltaRules(_rules, _deltaRules, false);
+	
+			// Extract the edbs and idbs relations
+			extractEdbsIdbs (_rules);
+			
+			// OBI: Added to integrate Greg's code for SIGMOD
+			calcMappingRules (true);
+
+			_insertionRules = insertionRules(DRed);
+			if (DRed) {
+				System.out.println("DRed Deletions");
+				_deletionRules = DRedRules();
+			} else {
+				System.out.println("Provenance Deletions");
+				_deletionRules = deletionRules();
+			}
+//			dbCn.commit();
+//			_provenancePrep.activateNotLoggedInitDB2(dbCn, system);
+					
+//				dbCn.commit();
+			//_provenancePrep.collectStatistics(dbCn, system);
+			
+			
+			// Map to each field it's database datatype. This is necessary 
+			// because DB2 needs to cast null values!!!
+			
+			DatalogEngine de = new DatalogEngine(dbCn, _provenancePrep, system);
+			System.out.println("=====================================================");
+			System.out.println("INSERTIONS");
+			System.out.println("=====================================================");
+			
+			if(Debug.autocommitMode() == false){
+//				dbCn.commit();
+//				_provenancePrep.collectStatistics(dbCn, system);
+				dbCn.commit();
+				_provenancePrep.activateNotLoggedInitDB2(dbCn, system);
+			}
+			
+			Map<ScField, String> typesMap;
+			{
+				List<Rule> rFull = new ArrayList<Rule>(_rules.size()+_mappingRules.size());
+				rFull.addAll(_rules); rFull.addAll(_mappingRules);
+				typesMap = _provenancePrep.getDBDatatypes (rFull);
+			}
+			Calendar before = Calendar.getInstance();
+			
+			if(!"yes".equals(System.getProperty("skipins"))){
+				de.evaluateProgram(_insertionRules, typesMap);
+			}else{
+				System.out.println("Skipping Insertions");
+			}
+			//dbCn.setAutoCommit(old);
+			Calendar after = Calendar.getInstance();
+			long time = after.getTimeInMillis() - before.getTimeInMillis();
+			Debug.println("INSERTION TIME (INCL COMMIT): " + time + "msec");
+			Debug.println("TIME SPENT FOR COMMIT AND LOGGING DEACTIVATION: " + de.time4CommitLogging + "msec");
+			System.out.println("TOTAL INSERTION TIME: " + (time - de.time4CommitLogging) + "msec");
+			long insertionTime = time - de.time4CommitLogging;
+			de.resetCounters();
+
+
+			
+
+			if(Debug.autocommitMode() == false){
+//				dbCn.commit();
+//				_provenancePrep.collectStatistics(dbCn, system);
+				dbCn.commit();
+				_provenancePrep.activateNotLoggedInitDB2(dbCn, system);
+			}
+			
+			System.out.println("\n=====================================================");
+			System.out.println("DELETIONS");
+			System.out.println("=====================================================");
+			
+			before = Calendar.getInstance();
+			
+			de.evaluateProgram(_deletionRules, typesMap);
+
+			after = Calendar.getInstance();
+			Debug.println("TOTAL INSERTION TIME: " + insertionTime + "msec");
+			time = after.getTimeInMillis() - before.getTimeInMillis();
+	        Debug.println("TOTAL DELETION TIME (INCL COMMIT): " + time + "msec");
+	        Debug.println("TIME SPENT FOR COMMIT AND LOGGING DEACTIVATION: " + de.time4CommitLogging + "msec");
+			System.out.println("TOTAL DELETION TIME: " + (time - de.time4CommitLogging) + "msec");
+			de.resetCounters();
+
+	        de.disconnect();
+			
+		} catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+
+	
+	/**
+	 * Generate the delta rules for a given list of rules
+	 * @param rules Rules for which to generate delta rules
+	 * @param deltaRules For each rule, this method will add an array of delta rules to this list
+	 * @param genForInsert If true, the delta rules are generated for insertion. Otherwise for deletion.
+	 */
+	/*
+	private static void generateDeltaRules (List<Rule> rules, 
+											List<Rule[]> deltaRules, 
+											boolean genForInsert)
+	{
+		List<Rule> currDeltas=new ArrayList<Rule> ();
+		for (int i = 0 ; i < rules.size() ; i++)
+		{
+			Rule r = rules.get(i);
+			currDeltas.addAll(deltaRules(r, genForInsert));
+			ScRelation relNext = i<rules.size()-1?rules.get(i+1).getHead().getRelation():null;
+			if (relNext != r.getHead().getRelation()
+					|| relNext == null)
+			{
+				deltaRules.add(currDeltas.toArray(new Rule[0]));
+				currDeltas.clear();
+			}
+				
+		}
+	}
+	*/
+	/*
+	protected List<Rule[]> oldInsertionRules() {
+	    
+	    List<Rule> vr = new ArrayList<Rule>();
+	    List<Rule[]> var = new ArrayList<Rule[]>();
+	    
+	    for(ScRelationContext edb : _edbs){
+	    	List<Rule> v = deltaApplicationRule(edb, true, AtomType.INS);
+	    	for(Rule r : v) 
+	    		vr.add(r);
+	    }
+	    var.add(vr.toArray(new Rule[0]));
+	    vr.clear();
+	
+	    int len = _rules.size();
+	    for (int i = 0; i < len ; i++) {
+	        ScRelationContext cur = _rules.get(i).getHead().getRelationContext();
+	        ScRelationContext nxt = i+1 < len ? _rules.get(i+1).getHead().getRelationContext() : null;
+	
+	        vr.addAll(insertionRules(_mappingRules.get(i)));
+	        vr.addAll(insertionRules(_mappingProjections.get(i)));
+	        //vr.add(deltaApplicationRule(m_mappingProjections[i], true));
+	        if (nxt == null || !cur.equals(nxt)) 
+	        {
+	            var.add(vr.toArray(new Rule[0]));
+	            vr.clear();
+	        }
+	    }
+	    
+	    for(ScRelationContext idb : _idbs){
+	    	List<Rule> v = deltaApplicationRule(idb, true, AtomType.INS);
+	    	for(Rule r : v) 
+	    		vr.add(r);
+	    }
+	    var.add(vr.toArray(new Rule[0]));
+	    return var;
+	}
+*/
+
+
+	/**
+	 * Generate the delta rules for a given list of rules
+	 * @param rules Rules for which to generate delta rules
+	 * @param deltaRules For each rule, this method will add an array of delta rules to this list
+	 * @param genForInsert If true, the delta rules are generated for insertion. Otherwise for deletion.
+	 */
+	/*
+	private static void generateDeltaRules (List<Rule> rules, 
+											List<Rule[]> deltaRules, 
+											boolean genForInsert)
+	{
+		List<Rule> currDeltas=new ArrayList<Rule> ();
+		for (int i = 0 ; i < rules.size() ; i++)
+		{
+			Rule r = rules.get(i);
+			currDeltas.addAll(deltaRules(r, genForInsert));
+			ScRelation relNext = i<rules.size()-1?rules.get(i+1).getHead().getRelation():null;
+			if (relNext != r.getHead().getRelation()
+					|| relNext == null)
+			{
+				deltaRules.add(currDeltas.toArray(new Rule[0]));
+				currDeltas.clear();
+			}
+				
+		}
+	}
+	*/
+	
+    protected DatalogProgram insertionRules(boolean DRed) {
+		NonRecursiveDatalogProgram ret;
+		List<DatalogProgram> l = new ArrayList<DatalogProgram>();
+		List<DatalogProgram> looplist = new ArrayList<DatalogProgram>();
+
+		l.add(edbDeltaApplicationRules(true));
+    	
+		RecursiveDatalogProgram fixpoint;
+		//looplist.add(oldNewCleanupAndCopy(true));
+		
+		int len = _rules.size();
+        for (int i = 0; i < len ; i++) {
+	        //ScRelationContext cur = _rules.get(i).getHead().getRelationContext();
+	        //ScRelationContext nxt = i+1 < len ? _rules.get(i+1).getHead().getRelationContext() : null;
+	    
+	        looplist.add(new NonRecursiveDatalogProgram(insertionRules(_mappingRules.get(i))));
+	        looplist.add(new NonRecursiveDatalogProgram(insertionRules(_mappingProjections.get(i))));
+	        
+	        //vr.addAll(insertionRules(_mappingRules.get(i)));
+	        //vr.addAll(insertionRules(_mappingProjections.get(i)));
+	        
+	        //vr.add(deltaApplicationRule(_mappingProjections[i], true));
+        }
+        for (int i = 0; i < len ; i++) {
+	        looplist.add(idbDeltaApplicationRules(true));
+        }
+        fixpoint = new RecursiveDatalogProgram(looplist);
+        l.add(fixpoint);
+        //l.add(idbDeltaApplicationRules(true));
+        l.add(insertionApplication(DRed));
+	    ret = new NonRecursiveDatalogProgram(l);
+	    return ret;
+	}	
+	
+	
+	
+	//Note: some atoms are shared between different rules. If these atoms need to be modified 
+	// independently in another process, we should deep copy all atoms.
+	
+	/**
+	 * Generate all insertion delta rules for a given rule 
+	 * @param r Rule for which to generate the delta rules
+	 * @return Delta rules
+	 */
+	//private static List<Rule> insertionRules (Rule r)
+    private static List<DatalogProgram> insertionRules (Rule r)
+	{
+		AtomType type = AtomType.INS;
+		
+		RuleAtom head = new RuleAtom (r.getHead(), type);
+		
+		List<RuleAtom> body = new ArrayList<RuleAtom> ();
+		for (RuleAtom atom : r.getBody())
+			body.add (new RuleAtom (atom, AtomType.OLD));
+		
+		//List<Rule> deltas = new ArrayList<Rule> ();
+		List<DatalogProgram> deltas = new ArrayList<DatalogProgram> ();
+		for (int i = 0 ; i < body.size() ; i++)
+		{
+			if (i>0)
+				body.set(i-1, new RuleAtom(body.get(i-1), AtomType.NEW));
+			body.set (i, new RuleAtom(body.get(i), type));
+			//deltas.add(new Rule(head, body));
+			deltas.add(new SingleRuleDatalogProgram(new Rule(head, body)));
+		}
+		return deltas;
+	}
+	
+	/**
+	 * Generate all delta rules for a given rule and a given "operation"
+	 * @param r Rule for which to generate the delta rules
+	 * @param genForInsert If true, delta rules are generated for Insertion, 
+	 *           if false for deletion.
+	 * @return Delta rules
+	 */
+	/*
+	private static List<Rule> deltaRules (Rule r, boolean genForInsert)
+	{
+		AtomType type = genForInsert?AtomType.INS:AtomType.DEL;
+		
+		
+		RuleAtom head = new RuleAtom (r.getHead(), type);
+		
+		List<RuleAtom> body = new ArrayList<RuleAtom> ();
+		for (RuleAtom atom : r.getBody())
+			body.add (new RuleAtom (atom, AtomType.OLD));
+		
+		List<Rule> deltas = new ArrayList<Rule> ();
+		for (int i = 0 ; i < body.size() ; i++)
+		{
+			if (i>0)
+				body.set(i-1, new RuleAtom(body.get(i-1), AtomType.NEW));
+			body.set (i, new RuleAtom(body.get(i), type));
+			deltas.add(new Rule(head, body));
+		}
+		return deltas;
+	}	
+	*/
+	
+	
+	/**
+	 * From the set of rules extract the list of EDB and IDB relations
+	 * Add the result to the _edb and _idb attributes 
+	 * @param rules Rules from which to extract edb/idb relations
+	 */
+	private void extractEdbsIdbs (List<Rule> rules)
+	{
+		// In this map a relation viewed in at least one rule head has value false, true otherwise
+		Map<ScRelation, Boolean> edbsMap = new HashMap<ScRelation, Boolean> ();
+		Map<ScRelation, ScRelationContext> contextMap = new HashMap<ScRelation, ScRelationContext> ();
+		for (Rule r : rules)
+		{
+			edbsMap.put(r.getHead().getRelation(), false);
+			contextMap.put(r.getHead().getRelation(), r.getHead().getRelationContext());
+			for (ScMappingAtom atom : r.getBody())
+				if (!edbsMap.containsKey(atom.getRelation()))
+				{
+					edbsMap.put(atom.getRelation(), true);
+					contextMap.put(atom.getRelation(), atom.getRelationContext());
+				}
+		}
+		
+		// Extract the list of relations for which the map says its an EDB relation //  Idbs
+		_edbs = new ArrayList<ScRelationContext> ();
+		_idbs = new ArrayList<ScRelationContext> ();
+		for (Map.Entry<ScRelation, Boolean> entry : edbsMap.entrySet())
+			if (entry.getValue().booleanValue())
+				_edbs.add (contextMap.get(entry.getKey()));
+			else
+				_idbs.add (contextMap.get(entry.getKey()));
+	
+
+	}
+
+
+	/**
+	 * Get the delta rules computed
+	 * @return Delta rules
+	 */
+	/*public List<Rule[]> getDeltaRules() 
+	{
+		return _deltaRules;
+	}
+	*/
+
+
+	/**
+	 * Get the EDB relations
+	 * @return EDB relations
+	 */
+	public List<ScRelationContext> getEdbs() 
+	{
+		return _edbs;
+	}
+
+	/**
+	 * Get the IDB relations
+	 * @return IDB relations
+	 */
+	public List<ScRelationContext> getIdbs() 
+	{
+		return _idbs;
+	}	
+	
+	
+	/***************************************************************************************
+	 * OBI: Changes for SIGMOD 2007: integrate Greg's new developments
+	 ****************************************************************************************
+	 */
+    protected void calcMappingRules(boolean create){
+    	_mappingRules = new ArrayList<Rule>();
+    	_mappingProjections = new ArrayList<Rule>();
+    	_mappingRels = new ArrayList<ScRelationContext>();
+    	
+    	
+    	
+    	// Only rules with variables - no skolems or constants for now ...
+    	for(ScRelationContext idb : _idbs){
+    		List<Rule> rules4idb = new ArrayList<Rule>();
+    		for(Rule rule : _rules){
+    			if(rule.getHead().getRelationContext().equals(idb))
+    				rules4idb.add(rule);
+    		}
+    		
+    		//Rule baserule = rules4idb.get(0);
+    		
+
+    		List<ScMappingAtomValue> newVars = new ArrayList<ScMappingAtomValue>(rules4idb.get(0).getHead().getValues().size());
+    		for(int i = 0; i < rules4idb.get(0).getHead().getValues().size(); i++){
+    			ScMappingAtomValVariable var = new ScMappingAtomValVariable("GREG_" + i);		
+//    			Debug.println("GREG_" + i);
+    			newVars.add(var);
+    		}
+    		
+    		RuleAtom template = new RuleAtom(rules4idb.get(0).getHead().getRelationContext(), newVars); 
+    		template.setType(rules4idb.get(0).getHead().getType());
+    		    		
+    		for(int i = 0; i < rules4idb.size(); i++){
+    			HashMap<String, String> varmap = new HashMap<String, String>();
+    			Rule current = rules4idb.get(i); 
+    			for(int j = 0; j < current.getHead().getValues().size(); j++){
+    				if(current.getHead().getValues().get(j) instanceof ScMappingAtomValVariable)
+    				{
+    					varmap.put(current.getHead().getValues().get(j).toString(), template.getValues().get(j).toString());			
+    				}else if(current.getHead().getValues().get(j) instanceof ScMappingAtomValConst)	{ //Constant or null
+    				}else if(current.getHead().getValues().get(j) instanceof ScMappingAtomValSkolem){ //Skolem
+    					float foo = 1/0;
+    				}else{ // should never go here ...
+    					float foo = 1/0;
+    				}
+    			}
+    			current.fresh(varmap, false);
+    		}
+    	}
+    	
+    	
+    	
+    	for(int i = 0; i < _rules.size(); i++){
+    		Rule rule = _rules.get(i);
+    		
+    		
+    		List<ScMappingAtomValVariable> allVars = rule.getAllBodyVariables();
+    		List<ScMappingAtomValue> allVarsCast = new ArrayList<ScMappingAtomValue> (allVars.size());
+    		for (ScMappingAtomValVariable var : allVars)
+    			allVarsCast.add(var);
+    		/*
+    		// For each rule, create a new "caching" relation in the schema...
+    		// TODO: The actual datatype should be extracted from the corresp relation!!???
+    		List<ScField> fields = new ArrayList<ScField> ();    		
+    		for (int j = 0 ; j < allVars.size() ; j++){
+    			fields.add (new ScField("C" + j, "C" + j, Types.VARCHAR, true));
+    		}
+    		
+    		ScRelation rel = new ScRelation(_dbCacheCatalog, 
+												_dbCacheSchema, 
+												  "M"+i, "M"+i, 
+												  "Cache relation for M" + i,
+												  true,
+												  fields,
+												  -1
+											);
+			*/
+
+    		ScRelation rel = _provenancePrep.createProvenanceRelation(rule, i, create);
+		
+    		try
+			{
+				_cacheSchema.addRelation(rel);
+			} catch (DuplicateRelationIdException ex)
+			{
+				assert false : "This error should be dealt with ... if a relation already has the same name";
+				System.out.println (1F/0F);
+			}
+			
+    		ScRelationContext relCtx = new ScRelationContext(rel, _cacheSchema, _cachePeer);
+            _mappingRels.add(relCtx);
+    		RuleAtom mapping_head = new RuleAtom(relCtx, allVarsCast);
+            
+        	
+            _mappingRules.add(new Rule(mapping_head, rule.getBody()));
+            
+            RuleAtom head = new RuleAtom(rule.getHead());
+
+            
+            List<RuleAtom> new_body = new ArrayList<RuleAtom>();
+            new_body.add(mapping_head.deepCopy());
+            _mappingProjections.add(new Rule(head, new_body));
+    	}
+
+    }	
+    protected List<Rule> deltaApplicationRule(ScRelationContext relation, boolean pos, AtomType type, boolean skipold) {
+    	return deltaApplicationRule(relation, pos, type, skipold, false);
+    }
+    
+    protected List<Rule> deltaApplicationRule(ScRelationContext relation, boolean pos, AtomType type, boolean skipold, boolean delfix) {
+    	List<Rule> ret = new ArrayList<Rule>();
+    	List<ScMappingAtomValue> vars = new ArrayList<ScMappingAtomValue>();
+    	for(int i = 0; i < relation.getRelation().getFields().size(); i++){
+    		vars.add(new ScMappingAtomValVariable(Rule.getFreshAutogenVariableName()));
+    	}
+    	RuleAtom head = new RuleAtom(relation, vars, AtomType.NEW);
+    	
+    	//RuleAtom bodyatom = new RuleAtom(head, pos ? AtomType.INS : AtomType.DEL);
+    	RuleAtom bodyatom = new RuleAtom(head, type);
+    	List<RuleAtom> body1 = new ArrayList<RuleAtom>();
+    	RuleAtom bodyat1 = head.deepCopy();
+    	bodyat1.setType(AtomType.OLD);
+		body1.add(bodyat1);
+		
+    	if(pos){
+    		if (skipold == false) {
+    			ret.add(new Rule(head, body1, delfix));
+    		}
+        	List<RuleAtom> body2 = new ArrayList<RuleAtom>();
+    		body2.add(bodyatom);
+    		ret.add(new Rule(head, body2, delfix));
+    	}else{
+    		bodyatom.negate();
+    		body1.add(bodyatom);
+    		if (skipold == false) {
+    			ret.add(new Rule(head, body1, delfix));
+    		}
+    	}
+        return ret;      
+    }    
+
+    protected NonRecursiveDatalogProgram edbDeltaApplicationRules(boolean ins){
+    	//List<Rule> vr = new ArrayList<Rule>();
+    	List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
+    	
+	    // Reminder: idb update rules only need to be evaluated once ... 
+	    // not necessary to have these as rules
+	    for(ScRelationContext edb : _edbs){
+	    	List<Rule> v;
+	    	if(ins)
+	    		v = deltaApplicationRule(edb, ins, AtomType.INS, false);
+	    	else
+	    		v = deltaApplicationRule(edb, ins, AtomType.DEL, false);
+	    	for(Rule r : v){ 
+	    		//vr.add(r);
+	    		vr.add(new SingleRuleDatalogProgram(r));
+	    	}
+	    }
+	    NonRecursiveDatalogProgram ret = new NonRecursiveDatalogProgram(vr);
+	    return ret;
+    }
+    
+    protected NonRecursiveDatalogProgram idbDeltaApplicationRules(boolean ins, boolean delfix){
+    	return idbDeltaApplicationRules(ins, false, false, delfix);
+    }
+    
+    protected NonRecursiveDatalogProgram idbDeltaApplicationRules(boolean ins){
+    	return idbDeltaApplicationRules(ins, false, false, false);
+    }
+    
+    protected NonRecursiveDatalogProgram idbDeltaApplicationRules(boolean ins, boolean DRed, boolean skipold, boolean delfix){
+    	//List<Rule> vr = new ArrayList<Rule>();
+    	List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
+    	// application of deletions on idbs
+	    // not necessary to have these as rules
+	    for(ScRelationContext idb : _idbs){
+	    	List<Rule> v;
+	    	if(ins){
+	    		v = deltaApplicationRule(idb, ins, AtomType.INS, skipold, delfix);
+	    	}else{
+	    		if(DRed){
+	    			v = deltaApplicationRule(idb, ins, AtomType.DEL, skipold, delfix);
+	    		}else{
+	    			v = deltaApplicationRule(idb, ins, AtomType.ALLDEL, skipold, delfix);
+	    		}
+	    	}
+	    	for(Rule r : v) {
+	    		//vr.add(r);
+	    		vr.add(new SingleRuleDatalogProgram(r));
+	    	}
+	    }
+	    NonRecursiveDatalogProgram ret = new NonRecursiveDatalogProgram(vr);
+	    return ret;
+    }
+    
+    protected NonRecursiveDatalogProgram mappingDeltaApplicationRules(boolean ins, boolean DRed, boolean skipold){
+    	//List<Rule> vr = new ArrayList<Rule>();
+    	List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
+    	// application of deletions on idbs
+	    // not necessary to have these as rules
+	    for(ScRelationContext idb : _mappingRels){
+	    	List<Rule> v;
+	    	if(ins){
+	    		v = deltaApplicationRule(idb, ins, AtomType.INS, skipold);
+	    	}else{
+	    		if(DRed){
+	    			v = deltaApplicationRule(idb, ins, AtomType.DEL, skipold);
+	    		}else{
+	    			v = deltaApplicationRule(idb, ins, AtomType.ALLDEL, skipold);
+	    		}
+	    	}
+	    	for(Rule r : v) {
+	    		//vr.add(r);
+	    		vr.add(new SingleRuleDatalogProgram(r));
+	    	}
+	    }
+	    NonRecursiveDatalogProgram ret = new NonRecursiveDatalogProgram(vr);
+	    return ret;
+    }
+    
+    protected List<DatalogProgram> relCleanup(List<ScRelationContext> rels, AtomType type){
+    	//List<Rule> ret = new ArrayList<Rule>();
+    	List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+    	
+    	for(ScRelationContext rel : rels){
+			Rule r = relCleanup(rel, type);
+    		ret.add(new SingleRuleDatalogProgram(r));
+		}
+    	return ret;
+    }
+    
+    protected List<DatalogProgram> relCopy(List<ScRelationContext> rels, AtomType headType, AtomType bodyType){
+    	//List<Rule> ret = new ArrayList<Rule>();
+    	List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+    	for(ScRelationContext rel : rels){
+			Rule r = relCopy(rel, headType, bodyType);
+    		ret.add(new SingleRuleDatalogProgram(r));
+		}
+    	return ret;
+    }
+    
+    protected DatalogProgram invCleanup() {
+		//List<Rule> ret = new ArrayList<Rule>();
+    	List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+		
+    	ret.addAll(relCleanup(_idbs, AtomType.INV));
+		ret.addAll(relCleanup(_edbs, AtomType.INV));
+		ret.addAll(relCleanup(_mappingRels, AtomType.INV));
+		
+		DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+		return p;
+	}
+    
+    protected DatalogProgram insCleanup() {
+		//List<Rule> ret = new ArrayList<Rule>();
+    	List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+		
+    	ret.addAll(relCleanup(_idbs, AtomType.INS));
+		ret.addAll(relCleanup(_edbs, AtomType.INS));
+		ret.addAll(relCleanup(_mappingRels, AtomType.INS));
+		
+		DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+		return p;
+	}
+
+    protected DatalogProgram rchCleanup() {
+		//List<Rule> ret = new ArrayList<Rule>();
+    	List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+    	
+		ret.addAll(relCleanup(_idbs, AtomType.RCH));
+		
+		DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+		return p;
+	}
+
+	protected DatalogProgram insertionApplication(boolean DRed) {
+    	//List<Rule> ret = new ArrayList<Rule>();
+		List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+    	
+    	ret.addAll(relCleanup(_edbs,AtomType.NONE));
+    	ret.addAll(relCopy(_edbs, AtomType.NONE, AtomType.NEW));
+    	ret.addAll(relCopy(_edbs, AtomType.OLD, AtomType.NONE));
+    	ret.addAll(relCleanup(_edbs,AtomType.NEW));
+    	
+    	ret.addAll(relCopy(_idbs, AtomType.NONE, AtomType.INS));
+    	ret.addAll(relCopy(_idbs, AtomType.OLD, AtomType.NONE));
+    	ret.addAll(relCleanup(_idbs,AtomType.NEW));
+    	
+    	if(DRed){
+    		ret.addAll(relCopy(_mappingRels, AtomType.NONE, AtomType.INS));
+        	ret.addAll(relCopy(_mappingRels, AtomType.OLD, AtomType.NONE));
+        	ret.addAll(relCleanup(_mappingRels,AtomType.NEW));	
+    	}else{
+    		ret.addAll(relCopy(_mappingRels, AtomType.NONE, AtomType.INS));
+    		//ret.addAll(relCopy(_mappingRels, AtomType.OLD, AtomType.NONE));
+    		//ret.addAll(relCleanup(_mappingRels,AtomType.NEW));
+    		ret.addAll(relCopy(_mappingRels, AtomType.NEW, AtomType.NONE));
+    	}
+    	DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+    	return p;
+    }
+
+	protected DatalogProgram idbDelCopyAndCleanup() {
+    	//List<Rule> ret = new ArrayList<Rule>();
+		List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+		for(ScRelationContext rel : _idbs){
+			ret.add(new SingleRuleDatalogProgram(relCopy(rel, AtomType.ALLDEL, AtomType.DEL, true)));
+			ret.add(new SingleRuleDatalogProgram(relCleanup(rel, AtomType.DEL)));	
+		}
+    	
+    	DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+    	return p;
+    }
+
+	//protected List<Rule> oldNewCleanupAndCopy(List<ScRelationContext> rels){
+	protected List<DatalogProgram> oldNewCleanupAndCopy(List<ScRelationContext> rels){
+		//List<Rule> ret = new ArrayList<Rule>();
+		List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+		
+		for(ScRelationContext rel : rels){
+			List<DatalogProgram> v = oldNewCleanupAndCopyRule(rel);
+			for(DatalogProgram r : v) 
+				ret.add(r);
+		}
+		return ret;
+	}
+
+	protected DatalogProgram oldNewCleanupAndCopy(boolean idbs, boolean maps) {
+    	//List<Rule> ret = new ArrayList<Rule>();
+		List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+		
+    	
+    	if(idbs){
+    		ret.addAll(oldNewCleanupAndCopy(_idbs));
+    	}
+    	if(maps){
+    		ret.addAll(oldNewCleanupAndCopy(_mappingRels));
+    	}
+    	DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+    	return p;
+    }
+    
+    protected List<Rule> Old_oldNewCleanupAndCopyRule(ScRelationContext relation) {
+		List<Rule> ret = new ArrayList<Rule>();
+		
+		Rule del = relCleanup(relation, AtomType.OLD);
+		Rule copy = relCopy(relation, AtomType.OLD, AtomType.NEW);
+		Rule delNew = relCleanup(relation, AtomType.NEW);
+	
+		ret.add(del);
+		ret.add(copy);
+		ret.add(delNew);
+
+	    return ret;      
+	}
+    
+    protected List<DatalogProgram> oldNewCleanupAndCopyRule(ScRelationContext relation) {
+		//List<Rule> ret = new ArrayList<Rule>();
+    	List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+		
+		Rule copy = relCopy(relation, AtomType.OLD, AtomType.NEW);
+	
+		copy.setClearNcopy();
+		ret.add(new SingleRuleDatalogProgram(copy));
+		
+
+	    return ret;      
+	}
+    
+    protected DatalogProgram delCleanup() {
+		//List<Rule> ret = new ArrayList<Rule>();
+		List<DatalogProgram> ret = new ArrayList<DatalogProgram>();
+
+		// I think I shouldn't delete edb dels ...
+		// e.g. in 3+-way joins there could be a rule with 
+		// edb_del and idb_del that "fires" in 2nd loop but 
+		// not in 1st etc
+		ret.addAll(relCleanup(_edbs, AtomType.DEL));
+		ret.addAll(relCleanup(_mappingRels, AtomType.DEL));
+		
+		DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+		return p;
+	}
+    protected Rule relCopy(ScRelationContext relation, AtomType headType, AtomType bodyType){
+    	return relCopy(relation, headType, bodyType, false);
+    }
+    
+    
+	protected Rule relCopy(ScRelationContext relation, AtomType headType, AtomType bodyType, boolean delfix) {
+		List<ScMappingAtomValue> vars = new ArrayList<ScMappingAtomValue>();
+		for(int i = 0; i < relation.getRelation().getFields().size(); i++){
+			vars.add(new ScMappingAtomValVariable(Rule.getFreshAutogenVariableName()));
+		}
+		RuleAtom head = new RuleAtom(relation, vars, headType);
+		RuleAtom bodyatom = new RuleAtom(relation, vars, bodyType);
+		List<RuleAtom> copyBody = new ArrayList<RuleAtom>();
+		copyBody.add(bodyatom);
+		Rule copy = new Rule(head, copyBody, delfix);	
+		
+		return copy;      
+	}
+    
+    protected Rule relCleanup(ScRelationContext relation, AtomType type) {
+		List<ScMappingAtomValue> vars = new ArrayList<ScMappingAtomValue>();
+		for(int i = 0; i < relation.getRelation().getFields().size(); i++){
+			vars.add(new ScMappingAtomValVariable(Rule.getFreshAutogenVariableName()));
+		}
+		RuleAtom deleteHead = new RuleAtom(relation, vars, type);
+		deleteHead.negate();
+		List<RuleAtom> deleteBody = new ArrayList<RuleAtom>();
+		Rule del = new Rule(deleteHead, deleteBody);
+		
+		return del;      
+	}
+
+	protected DatalogProgram DRedRules() {
+		NonRecursiveDatalogProgram ret;
+		List<DatalogProgram> l = new ArrayList<DatalogProgram>();
+		
+		l.add(insCleanup());
+		
+		l.add(edbDeltaApplicationRules(false));
+
+		l.add(new RecursiveDatalogProgram(deltaRules()));
+
+		l.add(idbDeltaApplicationRules(false, true, false, false));
+
+		l.add(mappingDeltaApplicationRules(false, true, false));
+		
+		l.add(compensationRules());
+		
+		ret = new NonRecursiveDatalogProgram(l);
+	    return ret;
+	}
+
+	
+	
+	protected DatalogProgram compensationRules(){
+		List<DatalogProgram> rules = new ArrayList<DatalogProgram>();
+		
+//		for (int i = 0; i < _rules.size(); i++) {
+//			rules.add(compensationRule(_rules.get(i), i));
+//		}
+		for (int i = 0; i < _mappingRules.size(); i++) {
+			rules.add(compensationRule(_rules.get(i), i));
+		}	
+		for (int i = 0; i < _mappingProjections.size(); i++) {
+			rules.add(compensationRule(_rules.get(i), i));
+		}
+		
+		rules.add(idbDeltaApplicationRules(true, false, true, false));
+		
+		rules.add(mappingDeltaApplicationRules(true, false, true));
+		
+		rules.add(applyCompensationRules());
+		
+		return new RecursiveDatalogProgram(rules, false);
+	}
+	
+	protected DatalogProgram compensationRule(Rule rule, int index) {
+		List<RuleAtom> body = new ArrayList<RuleAtom> (rule.getBody().size());
+
+		RuleAtom head = rule.getHead().deepCopy();
+		head.setType(AtomType.INS);
+		
+		for (RuleAtom atom : rule.getBody()){
+			body.add(new RuleAtom(atom, AtomType.NEW));
+		}
+		RuleAtom goal = head.deepCopy();
+		goal.setType(AtomType.DEL);
+		body.add(goal);
+				
+		Rule r = new Rule(head, body);
+		r.setDeleteFromHead();
+		SingleRuleDatalogProgram comp = new SingleRuleDatalogProgram(r);
+		
+		return comp;  
+	}
+
+    protected NonRecursiveDatalogProgram applyCompensationRules(){
+    	//List<Rule> vr = new ArrayList<Rule>();
+    	List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
+    	// application of deletions on idbs
+	    // not necessary to have these as rules
+	    for(ScRelationContext idb : _idbs){
+	    	vr.add(applyCompensationRule(idb));	
+	    }
+	    for(ScRelationContext idb : _mappingRels){
+	    	vr.add(applyCompensationRule(idb));	
+	    }
+
+	    NonRecursiveDatalogProgram ret = new NonRecursiveDatalogProgram(vr);
+	    return ret;
+    }
+	
+    protected DatalogProgram applyCompensationRule(ScRelationContext relation) {
+    	List<ScMappingAtomValue> vars = new ArrayList<ScMappingAtomValue>();
+    	
+    	for(int i = 0; i < relation.getRelation().getFields().size(); i++){
+    		vars.add(new ScMappingAtomValVariable(Rule.getFreshAutogenVariableName()));
+    	}
+    	RuleAtom head = new RuleAtom(relation, vars, AtomType.DEL);
+    	
+    	RuleAtom bodyatom = new RuleAtom(head, AtomType.INS);
+    	List<RuleAtom> body1 = new ArrayList<RuleAtom>();
+    	RuleAtom bodyat1 = head.deepCopy();
+    	bodyat1.setType(AtomType.DEL);
+		body1.add(bodyat1);
+		
+		bodyatom.negate();
+		body1.add(bodyatom);
+		
+		return (new SingleRuleDatalogProgram(new Rule(head, body1)));
+    }   
+    
+	protected List<DatalogProgram> deltaRules(){
+		List<DatalogProgram> dels = new ArrayList<DatalogProgram>();
+		
+//		for (int i = 0; i < _rules.size(); i++) {
+//			dels.addAll(deltaRule(_rules.get(i), i));
+//		}
+		for (int i = 0; i < _mappingRules.size(); i++) {
+			dels.addAll(deltaRule(_mappingRules.get(i), i));
+		}
+		for (int i = 0; i < _mappingProjections.size(); i++) {
+			dels.addAll(deltaRule(_mappingProjections.get(i), i));
+		}
+
+		
+		return dels;
+	}
+	
+	protected List<DatalogProgram> deltaRule(Rule rule, int index) {
+		List<RuleAtom> body = new ArrayList<RuleAtom> (rule.getBody().size());
+
+		RuleAtom head = rule.getHead().deepCopy();
+		head.setType(AtomType.DEL);
+		
+		for (RuleAtom atom : rule.getBody())
+			body.add(new RuleAtom(atom, AtomType.OLD));
+
+		List<DatalogProgram> provDeltas = new ArrayList<DatalogProgram>(body.size());
+		
+		body.get(0).setType(AtomType.DEL);
+		provDeltas.add(new SingleRuleDatalogProgram(new Rule(head, body)));
+		for (int i = 1; i < body.size(); i++) {
+			body.set(i-1, new RuleAtom(body.get(i-1), AtomType.OLD));
+			body.set(i, new RuleAtom(body.get(i), AtomType.DEL));
+			// "project" non-key and lab.null attributes as in our deletion case
+			provDeltas.add(new SingleRuleDatalogProgram(new Rule(head, body, true)));
+		}
+		return provDeltas;  
+	}
+    
+	protected DatalogProgram deletionRules() {
+		NonRecursiveDatalogProgram ret;
+		List<DatalogProgram> l = new ArrayList<DatalogProgram>();
+		
+		l.add(edbDeltaApplicationRules(false));
+	    
+		//l.add(oldNewCleanupAndCopy(true,false));
+		
+		RecursiveDatalogProgram mainLoop;
+		List<DatalogProgram> looplist = new ArrayList<DatalogProgram>();
+		
+	    List<List<DatalogProgram>> temp = provenanceTblDeletionRules();
+  
+	    // provenance table deletion rules
+	    looplist.add(new NonRecursiveDatalogProgram(temp.get(0),false));
+
+	    // application of deletions on provenance tables
+	    // should be here
+	    // but not necessary to have these as rules
+	    looplist.add(new NonRecursiveDatalogProgram(provenanceTblUpdateRules(),false));
+	    
+	    // Copy idb_dels to all dels and cleanup idb_dels
+	    looplist.add(idbDelCopyAndCleanup());
+	    
+	    // "certain" deletions from idb relations
+	    looplist.add(new NonRecursiveDatalogProgram(temp.get(1),true));
+	   
+	    //Correct but more complicated than needs to be
+	    //looplist.add(new NonRecursiveDatalogProgram(temp.get(2),false));
+	    // Simpler version ... 
+	    //looplist.add(new NonRecursiveDatalogProgram(affectedSetRules(),false));
+	    looplist.add(new NonRecursiveDatalogProgram(affectedSetRules(),true));
+	    // Note: counting of these has to be false if I am not reseting m_dels!
+	    // Otherwise, it probably should not matter ... but apparently it does ...
+	    // why are these always non-zero?
+	    
+	    looplist.add(reachabilityTestingProgram());
+	    
+	    // not necessary to have these as rules
+	    looplist.add(new NonRecursiveDatalogProgram(unreachableDeletionApplicationRules(),true));
+	    
+	    // delete old, copy new to old and delete new
+	    // Replace with deletion over m_new
+	    //looplist.add(oldNewCleanupAndCopy(false, true));
+
+	    // delete inv
+	    looplist.add(invCleanup());
+	    
+	    // delete rch
+	    looplist.add(rchCleanup());
+	    
+	    // delete del relations - I think I shouldn't
+	    // It is probably correct either way, but need to think which will perform better
+	    looplist.add(delCleanup());
+	    
+	    mainLoop = new RecursiveDatalogProgram(looplist);
+	    
+	    l.add(mainLoop);
+	    l.add(idbDeltaApplicationRules(false, true));
+	    ret = new NonRecursiveDatalogProgram(l);
+	    return ret;
+	}
+
+
+
+/*	protected List<Rule[]> oldDeletionRules() {
+    	NonRecursiveDatalogProgram ret;
+    	List<DatalogProgram> l = new ArrayList<DatalogProgram>();
+    	
+    	List<Rule[]> var = new ArrayList<Rule[]>();
+	    
+    	List<Rule> vr = new ArrayList<Rule>();
+	    // Reminder: idb update rules only need to be evaluated once ... 
+	    // not necessary to have these as rules
+	    for(ScRelationContext edb : _edbs){
+	    	vr.add(deltaApplicationRule(edb, false));
+	    }
+	    NonRecursiveDatalogProgram p1 = new NonRecursiveDatalogProgram(vr);
+	    //var.add(vr.toArray(new Rule[0]));
+	    vr.clear(); 
+	    
+	    
+	    List<Rule[]> temp = provenanceTblDeletionRules();
+	
+	    // provenance table deletion rules
+	    var.add(temp.get(0)); 
+	    
+	    // application of deletions on provenance tables
+	    // should be here
+	    // but not necessary to have these as rules
+	    var.add(provenanceTblUpdateRules().toArray(new Rule[0]));
+	    
+	    // "certain" deletions from idb relations
+	    var.add(temp.get(1)); 
+	    
+	    vr.addAll(affectedSetRules());
+	    
+	    var.add(vr.toArray(new Rule[0]));
+	    
+	    var.add(inverseRules().toArray(new Rule[0]));
+	    
+	    var.add(reachabilityTestingRules().toArray(new Rule[0]));
+	    
+	    // not necessary to have these as rules
+	    var.add(unreachableDeletionApplicationRules().toArray(new Rule[0]));
+	    
+	    // application of deletions on idbs
+	    // not necessary to have these as rules
+	    for(ScRelationContext idb : _idbs){
+	    	vr.add(deltaApplicationRule(idb, false));
+	    }
+	    return var;
+	}
+*/
+	/*
+	 * Creates "deltarules" with provrels on the head, rules for computing the 
+	 * certain deltas for idbs and rules for computing the possibly affected idb
+	 * tuples (inv) that are then check for "reachability"/re-derivation
+	 */
+	//protected List<List<Rule>> basicDeletionRules(Rule rule, Rule mapping_rule, int index) {
+
+	protected List<List<DatalogProgram>> basicDeletionRules(Rule rule, Rule mapping_rule, int index) {
+		//Vector<IValue> allVars = rule.allVars();
+		List<RuleAtom> body = new ArrayList<RuleAtom> (mapping_rule.getBody().size());
+	        
+	//  Atom mapping_head = new Atom("M" + index, allVars.toArray(javagenericssuck4));
+		RuleAtom mapping_head = mapping_rule.getHead().deepCopy();
+		mapping_head.setType(AtomType.DEL);
+		
+		for (RuleAtom atom : mapping_rule.getBody())
+			body.add(new RuleAtom(atom, AtomType.OLD));
+
+		List<DatalogProgram> provDeltas = new ArrayList<DatalogProgram>(body.size());
+		
+		body.get(0).setType(AtomType.DEL);
+				
+		provDeltas.add(new SingleRuleDatalogProgram(new Rule(mapping_head, body, true)));
+		for (int i = 1; i < body.size(); i++) {
+			body.set(i-1, new RuleAtom(body.get(i-1), AtomType.OLD));
+			body.set(i, new RuleAtom(body.get(i), AtomType.DEL));
+			provDeltas.add(new SingleRuleDatalogProgram(new Rule(mapping_head, body, true)));
+		}
+	    	    
+		// certain deletion rules
+		List<DatalogProgram> deltas = new ArrayList<DatalogProgram>(body.size());
+		RuleAtom head = new RuleAtom(rule.getHead(), AtomType.DEL);
+		RuleAtom bar = mapping_head.deepCopy();
+		bar.setType(AtomType.OLD);
+		List<RuleAtom> new_body = new ArrayList<RuleAtom>();
+		new_body.add(bar);
+		for(Rule r : _mappingProjections){
+			if(r.getHead().getRelationContext().equals(rule.getHead().getRelationContext())){
+				RuleAtom foo = r.getBody().get(0).deepCopy();
+				foo.setType(AtomType.NEW);
+				foo.negate();
+				
+	        	if(foo.getRelationContext().equals(bar.getRelationContext())){
+        			foo.renameExistentialVars(r);
+        		}
+	        	     		
+	        	new_body.add(foo);
+	        }
+		}
+		// Don't add deletions that have been found before
+		RuleAtom notAlreadyDel = head.deepCopy();
+		notAlreadyDel.setType(AtomType.ALLDEL);
+		notAlreadyDel.negate();
+		new_body.add(notAlreadyDel);
+	    
+		deltas.add(new SingleRuleDatalogProgram(new Rule(head, new_body, true)));
+	    
+//		 affected set rules
+		List<DatalogProgram> affected = new ArrayList<DatalogProgram>(body.size());
+		RuleAtom invhead = new RuleAtom(rule.getHead(), AtomType.INV);
+		RuleAtom invbar = mapping_head.deepCopy();
+		bar.setType(AtomType.DEL);
+		new_body.add(invbar);
+		for(Rule r : _mappingProjections){
+			if(r.getHead().getRelationContext().equals(rule.getHead().getRelationContext())){
+				List<RuleAtom> invbody = new ArrayList<RuleAtom>();
+				invbody.add(invbar);
+				RuleAtom foo = r.getBody().get(0).deepCopy();
+				foo.setType(AtomType.NEW);
+				
+				
+	        	if(foo.getRelationContext().equals(bar.getRelationContext())){
+        			foo.renameExistentialVars(r);
+        		}
+	        	     		
+	        	invbody.add(foo);
+	        	// Shouldn't be necessary ... but is, because we don't want to reconsider tuples
+	        	// that were checked for reachability and deleted on previous iterations
+	        	// not necessary if we reset m_del relations
+	        	/* RuleAtom notDel = invhead.deepCopy();
+	        	notDel.setType(AtomType.DEL);
+	        	notDel.negate();
+	        	invbody.add(notDel);*/
+	        	affected.add(new SingleRuleDatalogProgram(new Rule(invhead, invbody, true)));
+	        }
+		}
+		
+	    
+		
+		List<List<DatalogProgram>> ret = new ArrayList<List<DatalogProgram>>();
+		//ret.add(provDeltas.toArray(javagenericssuck2));
+		//ret.add(deltas.toArray(javagenericssuck2));
+		ret.add(provDeltas);
+		ret.add(deltas);
+		ret.add(affected);
+		return ret;	
+	}
+
+	//protected List<List<Rule>> provenanceTblDeletionRules(){
+	protected List<List<DatalogProgram>> provenanceTblDeletionRules(){
+		List<DatalogProgram> provDels = new ArrayList<DatalogProgram>();
+		List<DatalogProgram> relDels = new ArrayList<DatalogProgram>();
+		List<DatalogProgram> affDels = new ArrayList<DatalogProgram>();
+		//List<Rule[]> vr = new ArrayList<Rule[]>();
+		List<List<DatalogProgram>> vr = new ArrayList<List<DatalogProgram>>();
+		
+		for (int i = 0; i < _rules.size(); i++) {
+			List<List<DatalogProgram>> rules = basicDeletionRules(_rules.get(i), _mappingRules.get(i), i);
+			provDels.addAll(rules.get(0));
+			relDels.addAll(rules.get(1));
+			affDels.addAll(rules.get(2));
+		}
+		//vr.add(provDels.toArray(new Rule[0]));
+		//vr.add(relDels.toArray(new Rule[0]));
+		vr.add(provDels);
+		vr.add(relDels);
+		vr.add(affDels);
+		return vr;
+	}
+
+	//protected List<Rule> provenanceTblUpdateRules(){
+	protected List<DatalogProgram> provenanceTblUpdateRules(){
+	    int len = _mappingRules.size();
+	
+	    //List<Rule> var = new ArrayList<Rule>();
+	    List<DatalogProgram> var = new ArrayList<DatalogProgram>();
+	   	 
+	    for (int i = 0; i < len; i++) {
+	    	/*
+	            Atom head = new Atom("M"+i, m_rules[i].allVars());
+	            head.setType(Atom.Type.NEW);
+	            Atom[] body = new Atom[2];
+	            body[0] = new Atom("M"+i, m_rules[i].allVars());
+	    		body[0].setType(Atom.Type.OLD);
+	    		body[1] = new Atom("M"+i, m_rules[i].allVars());
+	    		body[1].setType(Atom.Type.DEL);
+	    		body[1].negate();
+	    		
+	    		Rule rule = new Rule(head, body);
+	    		var.add(rule);
+	    	*/
+	    		
+	    	ScRelation rel = _cacheSchema.getRelation("M"+i);
+	    	ScRelationContext relCtx = new ScRelationContext (rel, _cacheSchema, _cachePeer);
+	    	List<Rule> v = deltaApplicationRule(relCtx, false, AtomType.DEL, false, true);
+	    	for(Rule r : v){
+	    		r.setDeleteFromHead();
+		    	var.add(new SingleRuleDatalogProgram(r));	
+	    	}
+	    }
+	    return var;
+	}
+
+	//protected List<Rule> affectedSetRules(){
+	protected List<DatalogProgram> affectedSetRules(){
+		//List<Rule> vr = new ArrayList<Rule>();
+		List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
+		
+		for(Rule r : _mappingProjections){ 		
+        	List<RuleAtom> body = new ArrayList<RuleAtom>();
+        	RuleAtom head = new RuleAtom(r.getHead(), AtomType.INV);
+        	RuleAtom foo = r.getBody().get(0).deepCopy();
+			
+			foo.setType(AtomType.DEL);
+        	body.add(foo);
+        	
+        	RuleAtom edbMinus = head.deepCopy();
+        	edbMinus.setType(AtomType.DEL);
+        	edbMinus.negate();
+        	body.add(edbMinus);
+		
+        	RuleAtom edbAllMinus = head.deepCopy();
+        	edbAllMinus.setType(AtomType.ALLDEL);
+        	edbAllMinus.negate();
+        	body.add(edbAllMinus);
+        	
+         	vr.add(new SingleRuleDatalogProgram(new Rule(head, body, true)));
+		}
+		return vr;
+	}
+	
+	protected boolean isIdb(ScRelationContext rel){
+	/*	for(ScRelationContext r : getIdbs()){
+			if(rel.equals(r))
+				return true;
+		}
+		return false;*/
+		return (getIdbs().contains(rel));
+	}
+	
+	protected List<Rule> unfoldIdbs(List<Rule> rules, List<Rule> defs){
+		List<Rule> newRules = new ArrayList<Rule> ();
+		newRules.addAll(rules);
+		
+		for(int j = 0; j < newRules.size(); j++){
+			Rule r = newRules.get(j);
+			int i = 0;
+			for(i = 0; i < r.getBody().size() && !isIdb(r.getBody().get(i).getRelationContext()); i++);
+			if(i < r.getBody().size()){
+				newRules.remove(j);
+				newRules.addAll(r.substituteAtom(i, defs));
+				j--;
+			}
+		}
+		return newRules;
+	}
+	
+	protected DatalogProgram reachabilityTestingProgram(){
+		List<DatalogProgram> var = new ArrayList<DatalogProgram>();
+		var.add(new RecursiveDatalogProgram(inverseRules(), false));
+		var.add(new RecursiveDatalogProgram(reachabilityTestingRules(), false));
+		return new NonRecursiveDatalogProgram(var,false);
+	}
+
+
+
+//	protected List<Rule> inverseRules(){
+	protected List<DatalogProgram> inverseRules(){
+		//List<Rule> vr = new ArrayList<Rule>();
+		List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
+		
+		// Substitute idbs with mappingProjections in body of mappingRules -> result
+		// invert result + mappingProjections ...
+		
+		for(Rule r : _mappingRules){
+			List<Rule> inv = r.invertForReachabilityTest(true, false, getEdbs());
+			for(Rule rr : inv){
+				//vr.add(rr);
+				rr.setOnlyKeyAndNulls();
+				vr.add(new SingleRuleDatalogProgram(rr));
+			}
+		}
+		
+		_unfoldedMappingRules = unfoldIdbs(_mappingRules, _mappingProjections);
+		
+		int i = 0;
+		for(Rule r : _unfoldedMappingRules){
+			i++;
+			//System.out.println(i);
+			List<Rule> inv = r.invertForReachabilityTest(false, true, getEdbs());
+			for(Rule rr : inv){
+				//vr.add(rr);
+				rr.setOnlyKeyAndNulls();
+				vr.add(new SingleRuleDatalogProgram(rr));
+			}
+		}
+		for(Rule r : _mappingProjections){
+			List<Rule> inv = r.invertForReachabilityTest(true, true, getEdbs());
+			for(Rule rr : inv){
+				//vr.add(rr);
+				rr.setOnlyKeyAndNulls();
+				vr.add(new SingleRuleDatalogProgram(rr));
+			}
+		}
+		return vr;
+	}
+	
+//	protected List<Rule> reachabilityTestingRules(){
+	protected List<DatalogProgram> reachabilityTestingRules(){
+		//List<Rule> vr = new ArrayList<Rule>();
+		List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
+		
+		for(Rule r : _rules){
+			RuleAtom head = new RuleAtom(r.getHead(), AtomType.RCH);
+			List<RuleAtom> body = new ArrayList<RuleAtom>();
+			
+			for(RuleAtom a : r.getBody()){
+				if(_idbs.contains(a.getRelationContext())){
+					RuleAtom foo = new RuleAtom(a, AtomType.RCH);
+					RuleAtom bar = new RuleAtom(a, AtomType.DEL);
+					bar.negate();
+					RuleAtom oldDel = new RuleAtom(a, AtomType.ALLDEL);
+					oldDel.negate();
+					body.add(foo);
+					body.add(bar);
+					body.add(oldDel);
+				}else{ 
+					// Don't need to subtract deleted because inverse rules 
+					// now join with new versions of edbs
+					RuleAtom foo = new RuleAtom(a, AtomType.INV);
+					//RuleAtom bar = new RuleAtom(a, AtomType.DEL);
+					//bar.negate();
+					body.add(foo);
+					//body.add(bar);
+				}
+			}
+			vr.add(new SingleRuleDatalogProgram(new Rule(head, body, true)));
+		}
+		return vr;
+	}
+	
+
+    
+	//protected List<Rule> unreachableDeletionApplicationRules() {
+    protected List<DatalogProgram> unreachableDeletionApplicationRules() {
+    	//List<Rule> vr = new ArrayList<Rule>();
+    	List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
+    	
+    	for(ScRelationContext rel: _idbs){
+    		List<ScMappingAtomValue> vars = new ArrayList<ScMappingAtomValue>();
+    		
+    		for(int i = 0; i < rel.getRelation().getFields().size(); i++){
+    			vars.add(new ScMappingAtomValVariable(Rule.getFreshAutogenVariableName()));
+    		}
+    		RuleAtom head = new RuleAtom(rel, vars, AtomType.DEL);
+    		//RuleAtom head2 = new RuleAtom(rel, vars, AtomType.LOOPTEST);
+    		
+    		RuleAtom bodyatom1 = new RuleAtom(head, AtomType.INV);
+    		RuleAtom bodyatom2 = new RuleAtom(head, AtomType.RCH);
+    		bodyatom2.negate();
+    		
+    		List<RuleAtom> body = new ArrayList<RuleAtom>();
+    		body.add(bodyatom1);
+    		body.add(bodyatom2);
+    		
+    		vr.add(new SingleRuleDatalogProgram(new Rule(head, body, true)));
+    		// I think I don't need this with the new fixpoint operator
+    		// possible optim: mark the rules to be counted towards fixpoint,
+    		// don't count everything ... e.g., here count only this rule
+    		// vr.add(new Rule(head2, body)); 
+    	}
+        return vr;
+        
+    }    
+    
+    
+    public List<Rule> getMappingRules ()
+    {
+    	return _mappingRules;
+    }
+    
+    public List<Rule> getMappingsProjection ()
+    {
+    	return _mappingProjections;    	
+    }
+    
+   /* 
+    public List<Rule[]> getInsertionRules ()
+    {
+    	return _insertionRules;
+    }
+
+    public List<Rule[]> getDeletionRules ()
+    {
+    	return _deletionRules;
+    }
+    */
+    public DatalogProgram getInsertionRules ()
+    {
+    	return _insertionRules;
+    }
+
+    public DatalogProgram getDeletionRules ()
+    {
+    	return _deletionRules;
+    }
+    
+    
+    
+    
+}
+
+
+
