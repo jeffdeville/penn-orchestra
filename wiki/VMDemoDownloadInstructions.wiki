@@ -2,10 +2,10 @@
 
 = Virtual Machine Demo =
 
-We have created a virtual machine with an Orchestra installation already configured and ready to go. It requires either the free [http://www.vmware.com/products/player/ VMWare Player] (Windows, Linux) or [http://www.vmware.com/products/fusion/ VMWare Fusion] (Mac).
+We have created a virtual machine with an Orchestra installation already configured and ready to go. It requires the free [http://www.vmware.com/products/player/ VMWare Player] (Windows, Linux).
 
 
 = Instructions =
-  # Install VMWare Player or Fusion.
+  # Install VMWare Player.
   # Download the virtual machine: [https://dbappserv.cis.upenn.edu/orchestra-demo/orchestra-demo.zip orchestra-demo.zip] (about 2.5 GB).
-  # Unzip orchestra-demo.zip and open orchestra-demo/orchestra-demo.vmx with your VMWare product. 
+  # Unzip orchestra-demo.zip and open orchestra-demo/orchestra-demo.vmx with VMWare Player. 
