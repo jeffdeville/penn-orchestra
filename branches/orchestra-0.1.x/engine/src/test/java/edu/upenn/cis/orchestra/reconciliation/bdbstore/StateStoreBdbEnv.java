@@ -55,13 +55,16 @@ public class StateStoreBdbEnv implements IBdbStoreEnvironment {
 	/** The format of the database. */
 	private final BdbEnvironment stateStoreFormat;
 	private final static Method readInt;
+	private final static Method readTupleNoLength;
 	private final static Method readTuple;
 	private final static Method readStoreEntry;
 	private final static Method readUpdate;
 	static {
 		try {
 			readInt = BdbEntryInfo.getByteBufferReaderMethod("readInt");
-			readTuple = StateStoreBdbEnv.class.getMethod("keyTupleFromBytes",
+			readTupleNoLength = StateStoreBdbEnv.class.getMethod("keyTupleFromBytes",
+					ByteBufferReader.class);
+			readTuple = StateStoreBdbEnv.class.getMethod("keyTupleFromLengthFirstBytes",
 					ByteBufferReader.class);
 			readStoreEntry = StateStoreBdbEnv.class.getMethod(
 					"storeEntryFromBytes", ByteBufferReader.class);
@@ -98,7 +101,7 @@ public class StateStoreBdbEnv implements IBdbStoreEnvironment {
 
 		// state: (relationId, primary key subtuple) --> StoreEntry
 		// keyInfo.add(new BdbEntryInfo("relationID", readInt, false));
-		keyInfo.add(new BdbEntryInfo("key", readTuple, false));
+		keyInfo.add(new BdbEntryInfo("key", readTupleNoLength, false));
 		dataInfo.add(new BdbEntryInfo("storeEntry", readStoreEntry, false));
 		databases.put("stateDb", new BdbDatabase("stateDb", keyInfo, dataInfo));
 
@@ -231,10 +234,7 @@ public class StateStoreBdbEnv implements IBdbStoreEnvironment {
 
 		StringBuffer sb = new StringBuffer();
 		Relation r = bbr.readRelationFromId();
-		if (r == null) {
-			// updatesDb puts a record length in front of the relation ID.
-			r = bbr.readRelationFromId();
-		}
+		
 		sb.append(r.getName());
 		sb.append("(");
 		int numCols = r.getNumCols();
@@ -257,5 +257,20 @@ public class StateStoreBdbEnv implements IBdbStoreEnvironment {
 		}
 		sb.append(")");
 		return sb.toString();
+	}
+
+	/**
+	 * Returns a string representation of the key tuple encoded in {@code bbr}.
+	 * 
+	 * @param bbr
+	 * @return a string representation of the key tuple encoded in {@code bbr}
+	 */
+	public static String keyTupleFromLengthFirstBytes(ByteBufferReader bbr) {
+
+		// The first entry is the length of the key columns representation,
+		// which we do not
+		// care about.
+		bbr.readInt();
+		return keyTupleFromBytes(bbr);
 	}
 }
