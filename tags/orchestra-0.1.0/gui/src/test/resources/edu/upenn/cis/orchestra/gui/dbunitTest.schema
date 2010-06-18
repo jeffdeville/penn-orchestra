@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<catalog recmode="false" name="dbunitTest">
+  <migrated>true</migrated>
+  <peer address="localhost" name="PSAMD">
+    <description>Sam's Peer</description>
+    <schema name="SSAMD">
+      <description>Sam's Schema</description>
+      <relation materialized="true" name="RSAMD" hasLocalData="true">
+	<dbinfo schema="SSAMD" table="RSAMD" />
+	<field key="true" name="SAMDWORD" type="varchar(40)" />
+      </relation>
+    </schema>
+  </peer>
+  <peer address="localhost" name="PJOHNFR" localPeer="true">
+    <description>John's Peer</description>
+    <schema name="SJOHNFR">
+      <description>John's Schema</description>
+      <relation materialized="true" name="RJOHNFR" hasLocalData="true">
+	<dbinfo schema="SJOHNFR" table="RJOHNFR" />
+	<field key="true" name="JOHNFRWORD" type="varchar(40)" />
+      </relation>
+    </schema>
+  </peer>
+  <mapping materialized="true" name="M0">
+    <head>
+      <atom>
+	PJOHNFR.SJOHNFR.RJOHNFR(WORD)
+      </atom>
+    </head>
+    <body>
+      <atom>
+	PSAMD.SSAMD.RSAMD(WORD)
+      </atom>
+    </body>
+  </mapping>
+  <engine>
+    <mappings password="" server="jdbc:db2://localhost:50000/DBUNIT"
+	      type="sql" username="" />
+  </engine>
+  <store>
+    <update hostname="localhost" port="9999" type="bdb" />
+    <state type="hash" />
+  </store>
+</catalog>

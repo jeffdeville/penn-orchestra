@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<environment name="updateStore_env">
+	<database name="decisions">
+		<!-- (peer, tid) -> (accepted[boolean], recno[int]) -->
+		<key>
+			<method name="readPeerID" />
+			<method name="readTxnPeerID" />
+		</key>
+		<data>
+			<method name="readBoolean" />
+			<method name="readInt" />
+		</data>
+	</database>
+	<database name="epochContents">
+		<!-- epoch -> list of tids -->
+		<key>
+			<method name="readInt" />
+		</key>
+		<data>
+			<method name="readTxnPeerID+" />
+		</data>
+	</database>
+	<database name="lastRecno">
+		<!-- peer -> last reconciliation number -->
+		<key>
+			<method name="fromBytes"
+				class="edu.upenn.cis.orchestra.datamodel.AbstractPeerID" />
+		</key>
+		<data>
+			<method name="readInt" />
+		</data>
+	</database>
+	<database name="txns">
+		<!-- tid -> transaction contents -->
+		<key>
+			<method name="fromBytes" class="edu.upenn.cis.orchestra.datamodel.TxnPeerID" />
+		</key>
+		<data>
+			<method name="readUpdate+" />
+		</data>
+	</database>
+	<!-- <database name="schemaInfo">
+		<key>
+			<method name="readString" />
+		</key>
+		<data>
+			<method name="readSchemaMap" class="edu.upenn.cis.orchestra.reconciliation.SchemaMapFromBytes"/>
+		</data>
+	</database> -->
+	<database name="recnoEpochs">
+		<!-- (peer, recno) -> epoch -->
+		<key>
+			<method name="readPeerID" />
+			<method name="readInt" />
+		</key>
+		<data>
+			<method name="readInt" />
+		</data>
+	</database>
+	<database name="reconAcceptedTxns">
+		<!-- (peer, recno) -> tid -->
+		<key>
+			<method name="readPeerID" />
+			<method name="readInt" />
+		</key>
+		<data>
+			<method name="fromBytes" class="edu.upenn.cis.orchestra.datamodel.TxnPeerID" />
+		</data>
+	</database>
+	<database name="reconRejectedTxns">
+		<!-- (peer, recno) -> tid -->
+		<key>
+			<method name="readPeerID" />
+			<method name="readInt" />
+		</key>
+		<data>
+			<method name="fromBytes" class="edu.upenn.cis.orchestra.datamodel.TxnPeerID" />
+		</data>
+	</database>
+</environment>

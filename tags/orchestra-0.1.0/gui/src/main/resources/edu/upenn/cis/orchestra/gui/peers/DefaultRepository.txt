@@ -1,0 +1,78 @@
+// Test comment
+PEERS
+PEER P1 localhost:1515 "Mon PC"
+	// Now schemas are separated from relations, to be able to have a description, know if they are materialized...
+	SCHEMAS
+		SCHEMA SCHEMA1 "First schema for Peer 1\nThis should be on a new line"
+			RELATIONS
+				RELATION relation1 "A description, a catalog, no schema" MATERIALIZED 
+					DBINFO , schema1, dbrel1 
+					FIELDS field1 INTEGER INTEGER 9, field2 BLOB 4000 NOT NULL, field3 CLOB 5000 NULL					
+					PRIMARY KEY pk_rel1 (field1)
+				RELATION relation2 "A description, not catalog, no schema" MATERIALIZED 
+					DBINFO ,,dbrel2
+					FIELDS field1 INTEGER 9, field2 BLOB 6000 NOT NULL, field3 VARCHAR VARCHAR2(200) 200 NULL	
+					UNIQUE INDEX relation2_idx_1 (field1)				
+					NON UNIQUE INDEX relation2_idx_2 (field3)				
+					FOREIGN KEY rel2_fk_rel1 (field2) REFERENCES relation1 (field1)
+				RELATION relation3 MATERIALIZED 
+					DBINFO , , dbrel3
+					FIELDS field1 INTEGER 9, field2 CHAR 1 NOT NULL	
+					FOREIGN KEY rel3_fk_rel1 (field1) REFERENCES relation1 (field1)
+		SCHEMA SCHEMA2 "Second schema for Peer 1"
+			RELATIONS
+				RELATION relation1 MATERIALIZED 
+					DBINFO , , dbrel3
+					FIELDS field1 INTEGER 9, field2 INTEGER 9, field3 VARCHAR 26 NOT NULL	
+					PRIMARY KEY pk_rel1 (field1, field2)
+				RELATION relation3 MATERIALIZED 
+					DBINFO , , dbrel3
+					FIELDS field1 INTEGER 9, field2 INTEGER 9, field3 CHAR 1 NOT NULL	
+					FOREIGN KEY rel3_fk_rel1 (field1, field2) REFERENCES relation1 (field1, field2)
+	MAPPINGS
+		// Implicit skolem
+		M1 MATERIALIZED: P1.SCHEMA1.relation1 (x, y, z) :- P1.SCHEMA2.relation3 (x, y)
+		M2 MATERIALIZED: P1.SCHEMA1.relation1 (x, y, z) :- P2.SCHEMA1.relation4 (y, x, z)
+
+
+PEER P2 localhost "Emul linux"
+	SCHEMAS
+		SCHEMA SCHEMA1 "First schema for Peer P2"
+			RELATIONS
+				RELATION relation4 "Description rel4" MATERIALIZED <<27>>
+					DBINFO catal4, , dbrel3
+					FIELDS field1 INTEGER 9, field2 CHAR 1 NOT NULL, field3 CLOB 9000
+					PRIMARY KEY rel4_pk (field1, field2)
+					NON UNIQUE INDEX relation4_idx_2 (field2) <<5>>
+		MAPPINGS
+			M1 MATERIALIZED: P2.SCHEMA1.relation4 ( xEU1,'CONSTANT',f1(x,y)):-P1.SCHEMA2.relation3(x,y)	
+			M2 MATERIALIZED: P2.SCHEMA1.relation4 ( f2(f1(y,x),y),'CONSTANT',f1(x,y)) :- P1.SCHEMA2.relation3(x,y)	
+			M3 MATERIALIZED: P2.SCHEMA1.relation4 ( -,x) :- P1.SCHEMA2.relation3(x,_)	
+
+			
+PEER P3 localhost "This is my third peer with a line return before the end"
+	SCHEMAS
+		SCHEMA SCHEMA1 "First schema for Peer P3"
+			RELATIONS
+				RELATION relation1 "Description rel1" MATERIALIZED <<857>>
+					DBINFO , , dbrel1
+					FIELDS field1 INTEGER 9, field2 VARCHAR VARCHAR(12) 12 NOT NULL, field3 CLOB 9000
+					PRIMARY KEY rel1_pk (field1, field2)
+					NON UNIQUE INDEX relation1_idx_1 (field2) <<5>>
+		MAPPINGS			
+			M1 MATERIALIZED: P3.SCHEMA1.relation1 (x,y) :- P1.SCHEMA2.relation3 (x,y)
+			
+			
+PEER P4 localhost:3012 "This is my fourth peer \n cc of peer 3"
+	SCHEMAS
+		SCHEMA SCHEMA1 "First schema for Peer P4"
+			RELATIONS
+				RELATION relation1 "Description rel1" MATERIALIZED <<857>>
+					DBINFO , , dbrel1
+					FIELDS field1 INTEGER 9, field2 VARCHAR VARCHAR(12) 12 NOT NULL, field3 CLOB 9000
+					PRIMARY KEY rel1_pk (field1, field2)
+					NON UNIQUE INDEX relation1_idx_1 (field2) <<5>>
+		MAPPINGS			
+			M1 MATERIALIZED: P4.SCHEMA1.relation1 (x,y) :- P1.SCHEMA2.relation3 (x,y), P3.SCHEMA1.relation1(x,y)			
+			
+			

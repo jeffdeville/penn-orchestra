@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Orchestra Update Store
+Type=Application
+Exec=gnome-terminal --title "Update Store" --working-directory /home/db2inst1/orchestra-demo/updateStore/orchestra -e "/home/db2inst1/orchestra-demo/updateStore/orchestra/bin/updateStore -p 9999 updateStore_env"
+TryExec=
+X-GNOME-DocPath=
+Terminal=false
+Name[en_US]=Orchestra Update Store
+GenericName[en_US]=
+Comment[en_US]=
+Icon=/home/db2inst1/orchestra-demo/OrchestraIcon.ico
