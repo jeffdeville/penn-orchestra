@@ -2,4 +2,5 @@
   * [GettingStarted Getting Started]
   * [OrchestraTables Table Descriptions]
   * [Glossary Glossary]
+  * [VMDemoDownloadInstructions Virtual Machine Demonstration]
  
