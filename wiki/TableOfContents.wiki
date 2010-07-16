@@ -1,7 +1,7 @@
 #summary documentation outline for docreader
   * [GettingStarted Getting Started]
   * [OrchestraTables Table Descriptions]
-  * [Glossary Glossary]
   * [VMDemoDownloadInstructions Virtual Machine Demonstration]
     * [VMDemoInstructions Instructions for the Orchestra demo]
+  * [Glossary Glossary]
  
