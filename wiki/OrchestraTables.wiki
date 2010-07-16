@@ -11,7 +11,7 @@ These tables, along with _Rel_, constitute the peer's Orchestra instance.
 *_Rel_`_`R*
   For local Rejections. These are tuples the peer has decided that it does not want to receive via update exchange. Their presence here prevents update exchange from adding them to _Rel_.
 
-  If a tuple is deleted _Rel_, the tuple will appear in _Rel_`_`R only if a mapping would put it back into _Rel_.
+  If a tuple is deleted _Rel_, the tuple will appear in _Rel`_`R only if a mapping would put it back into _Rel_.
 
 *_Rel_`_`PREV*
   After a peer performs an update exchange, the contents of _Rel_ are copied into this table, so that the next time the peer publishes a diff can be done between _Rel_ and _Rel_`_`PREV so that any any local modifications captured.
