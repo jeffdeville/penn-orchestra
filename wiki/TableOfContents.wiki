@@ -3,5 +3,5 @@
   * [OrchestraTables Table Descriptions]
   * [Glossary Glossary]
   * [VMDemoDownloadInstructions Virtual Machine Demonstration]
-    *[VMDemoInstructions Instructions]
+    * [VMDemoInstructions Instructions]
  
