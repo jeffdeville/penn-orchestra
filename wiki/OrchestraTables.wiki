@@ -17,7 +17,7 @@ These tables, along with _Rel_, constitute the peer's Orchestra instance.
   After a peer performs an update exchange, the contents of _Rel_ are copied into this table, so that the next time the peer publishes a diff can be done between _Rel_ and _Rel_`_`PREV so that any any local modifications captured.
 
 =Tables used by the publish/update exchange operation=
-These tables are used by Orchestra during a publish/update exchange operation. They are otherwise kept empty. Tuples placed in the table _T_`_`INS will be Inserted into the table _T_, while tuples placed in the table _T_`_`DEL will be Deleted from the table _T_.
+These tables are used by Orchestra during a publish/update exchange operation. They are otherwise kept empty. Tuples placed in the table _T_`_`INS will be Inserted into the table _T_ during publish/update-exchange, while tuples placed in the table _T_`_`DEL will be Deleted from the table _T_.
 
 *_Rel_`_`DEL, _Rel_`_`L`_`DEL, _Rel_`_`R`_`DEL*
   Contain tuples that should be deleted from the corresponding non-"`_`DEL" table. So, for example, _Rel_`_`DEL contains the tuples that will be deleted from _Rel_. The existence of data in these tables is essentially the first step of update exchange. As a result, both local and peer tables can have deletions (that's why we need both _Rel_`_`L`_`DEL and _Rel_`_`DEL).
