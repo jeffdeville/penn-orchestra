@@ -20,7 +20,7 @@ These tables, along with _Rel_, constitute the peer's Orchestra instance.
 These tables are used by Orchestra during a publish/update exchange operation. They are otherwise kept empty. Tuples placed in the table _T_`_`INS will be _I_ nserted into the table _T_ during publish/update exchange, while tuples placed in the table _T_`_`DEL will be _D_ eleted from the table _T_.
 
 *_Rel_`_`INS, _Rel_`_`L`_`INS, _Rel_`_`R`_`INS*
-  Contain tuples that should be inserted from the corresponding non-"`_`INS" table. So, for example, _Rel_`_`INS contains the tuples that will be inserted into _Rel_. Putting data into these tables is one of the first steps of update exchange. As a result, both local (_Rel_`_`L) and peer (_Rel_) tables can have insertions (that's why we need both _Rel_`_`L`_`INS and _Rel_`_`INS).
+  Contain tuples that should be inserted from the corresponding non-"`_`INS" table. So, for example, _Rel_`_`INS contains the tuples that will be inserted into _Rel_. Putting data into these tables is one of the first steps of update exchange. As a result, both local (_Rel_`_`L, _Rel_`_`R) and peer (_Rel_) tables can have insertions (that's why we need both _Rel_`_`L`_`INS and _Rel_`_`INS).
 
 *_Rel_`_`DEL, _Rel_`_`L`_`DEL, _Rel_`_`R`_`DEL*
   Like `_`INS, but for deletions rather than insertions.
