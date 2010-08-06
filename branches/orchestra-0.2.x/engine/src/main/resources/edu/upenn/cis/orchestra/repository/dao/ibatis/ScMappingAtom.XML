@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="orchestraSchema">
+	
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.ScMappingAtomTextBean" alias="ScMappingAtomTextBean"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerMappingAtom" alias="EncapsPeerMappingAtom"/>
+	
+	
+	<resultMap class="ScMappingAtomTextBean" id="mappingAtoms" groupBy="peerId,schemaId,relationId,atomPosition">
+		<result property="peerId" column="mappAtom_peerId"/>
+		<result property="schemaId" column="mappAtom_schemaId"/>
+		<result property="relationId" column="mappAtom_relationId"/>
+		<result property="atomPosition" column="mappAtom_atomOrder"/>		
+		<result property="strValues" column="mappAtom_atomValues"/>
+	</resultMap>			
+	
+
+
+
+	<select id="getMappingAtoms" resultMap="mappingAtoms">
+		SELECT 
+			atomPeerId			mappAtom_peerId,
+			atomSchemaId		mappAtom_schemaId,
+			atomRelationId		mappAtom_relationId,
+			atomOrder			mappAtom_atomOrder,
+			atomValues			mappAtom_atomValues
+		 FROM mappings map
+		      JOIN mappingsAtoms atom ON 
+		      			(
+		      			 map.peerId = atom.peerId 
+		      			 AND map.mappingId = atom.mappingId)
+		 WHERE map.peerId = #peerId#
+		  AND  map.mappingId = #mappingId#
+		  AND  atom.isHead = #isHead#
+		 ORDER BY  map.peerId, map.mappingId, atom.atomOrder			
+	</select>
+
+	<insert id="insertMappingAtom" parameterClass="EncapsPeerMappingAtom">
+		INSERT INTO mappingsAtoms
+		   (peerId, mappingId, isHead, atomPeerId, atomSchemaId, atomRelationId, atomOrder, atomValues)
+		 VALUES 
+		   (#peer.id#, #mapping.id#, #head#, #atom.peerId#, #atom.schemaId#, #atom.relationId#, #atom.atomPosition#, #atom.strValues#);
+	</insert>
+	
+	
+	<delete id="deleteMappingAtom" parameterClass="EncapsPeerIdMappingId">
+		DELETE FROM mappingsAtoms
+		  WHERE peerId=#peerId#
+		    AND mappingId=#mappingId#
+	</delete>	
+	
+	<delete id="deleteMappingsAtomsForPeer" parameterClass="java.lang.String">
+		DELETE FROM mappingsAtoms
+		  WHERE peerId=#value#
+	</delete>	
+	
+</sqlMap>

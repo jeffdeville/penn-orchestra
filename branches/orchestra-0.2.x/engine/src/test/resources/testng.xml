@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Fast Suite" verbose="1">
+	<test name="Fast Tests">
+		<groups>
+			<run>
+				<include name="fast" />
+				<exclude name="broken" />
+				<exclude name="development" />
+				<exclude name="requires-database" />
+			</run>
+		</groups>
+		<packages>
+			<package name="edu.upenn.cis.orchestra.datamodel" />
+			<package name="edu.upenn.cis.orchestra.datalog" />
+			<package name="edu.upenn.cis.orchestra.dbms" />
+			<package name="edu.upenn.cis.orchestra.deltaRules" />
+			<package name="edu.upenn.cis.orchestra.exchange" />
+			<package name="edu.upenn.cis.orchestra.extractupdates" />
+			<package name="edu.upenn.cis.orchestra.localupdates.apply.sql" />
+			<package name="edu.upenn.cis.orchestra.localupdates.sql" />
+			<package name="edu.upenn.cis.orchestra.predicate" />
+			<package name="edu.upenn.cis.orchestra.util" />
+			<package name="edu.upenn.cis.orchestra.datamodel.iterators" />
+			<package name="edu.upenn.cis.orchestra.mappings" />
+			<package name="edu.upenn.cis.orchestra.repository.dao.flatfile" />
+			<package name="edu.upenn.cis.orchestra.sql" />
+		</packages>
+		<classes>
+			<class name="edu.upenn.cis.orchestra.reconciliation.TestTxnChain" />
+			<class name="edu.upenn.cis.orchestra.reconciliation.TestBerkeleyDBStore" />
+			<class name="edu.upenn.cis.orchestra.reconciliation.TestHashTableStore" />
+			<class name="edu.upenn.cis.orchestra.reconciliation.TestByteifying" />
+			<class name="edu.upenn.cis.orchestra.reconciliation.TestConflicts" />
+			<class name="edu.upenn.cis.orchestra.reconciliation.TestFlatten" />
+			<class
+				name="edu.upenn.cis.orchestra.reconciliation.bdbstore.TestBDBReconciliation" />
+			<class
+				name="edu.upenn.cis.orchestra.reconciliation.bdbstore.StartStopServerTest" />
+			<class name="edu.upenn.cis.orchestra.reconciliation.TestBerkeleyDBStore" />
+			<class name="edu.upenn.cis.orchestra.reconciliation.TestHashTableStore" />
+		</classes>
+	</test>
+</suite>		

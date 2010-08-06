@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?><userRelations>
+  <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+  <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+</userRelations>
