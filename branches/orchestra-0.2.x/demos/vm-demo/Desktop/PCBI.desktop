@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Orchestra GUI (PCBI)
+Type=Application
+Exec=gnome-terminal --title "PCBI PLASMODB" --working-directory /home/db2inst1/orchestra-demo/pcbi_plasmodb/orchestra -e /home/db2inst1/orchestra-demo/pcbi_plasmodb/orchestra/bin/orchestraGui
+TryExec=
+X-GNOME-DocPath=
+Terminal=false
+Name[en_US]=Orchestra GUI (PCBI)
+GenericName[en_US]=Orchestra GUI for the PCBI Peer
+Comment[en_US]=
+Icon=/home/db2inst1/orchestra-demo/OrchestraIcon.ico

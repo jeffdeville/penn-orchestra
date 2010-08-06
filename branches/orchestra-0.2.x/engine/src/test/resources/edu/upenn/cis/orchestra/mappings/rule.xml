@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><mapping type="rule" clearNCopy="false" deleteFromHead="false" distinct="true" edb="false" onlyKeyAndNulls="false" replaceValsWithNullValues="false" bidirectional="false" description="INTERNAL RULE" isFakeMapping="false" materialized="true" name="-1" trustRank="1">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+          </atom>
+          <atom allStrata="true" backwardDeletable="false" negated="true" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_R(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU_R"/>
+          </atom>
+        </body>
+      <mapping type="mapping" bidirectional="false" derivedFrom="pPODotu1otu2" description="pPODotu1otu2" isFakeMapping="false" materialized="true" name="pPODotu1otu2" relationship="parentMapping" trustRank="1">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+          </atom>
+        </body>
+        <provenanceRelation>
+          <relationContext mapping="true" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="pM0"/>
+        </provenanceRelation>
+      </mapping>
+    </mapping>

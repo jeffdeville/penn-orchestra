@@ -1,0 +1,999 @@
+<statements>
+  <code>
+    <statement>insert into PPOD1.OTU_L_NEW  (select distinct R0.OTU_ID OTU_ID, R0.LABEL LABEL, R0.OBJ_VERSION OBJ_VERSION, R0.PPOD_VERSION PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU_L R0 where (not (exists (select 1 from PPOD1.OTU_L_NEW R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X89, X90, X91, X92)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X89, X90, X91, X92)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X89, X90, X91, X92)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_L_NEW  (select distinct R0.OTU_ID OTU_ID, R0.LABEL LABEL, R0.OBJ_VERSION OBJ_VERSION, R0.PPOD_VERSION PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD2.OTU_L R0 where (not (exists (select 1 from PPOD2.OTU_L_NEW R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X93, X94, X95, X96)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X93, X94, X95, X96)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X93, X94, X95, X96)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD1.OTU_NEW  (select distinct R0.OTU_ID OTU_ID, R0.LABEL LABEL, R0.OBJ_VERSION OBJ_VERSION, R0.PPOD_VERSION PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU R0 where (not (exists (select 1 from PPOD1.OTU_NEW R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X97, X98, X99, X100)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X97, X98, X99, X100)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X97, X98, X99, X100)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_NEW  (select distinct R0.OTU_ID OTU_ID, R0.LABEL LABEL, R0.OBJ_VERSION OBJ_VERSION, R0.PPOD_VERSION PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD2.OTU R0 where (not (exists (select 1 from PPOD2.OTU_NEW R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X101, X102, X103, X104)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X101, X102, X103, X104)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X101, X102, X103, X104)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.pM0_NEW  (select distinct R0.C0 C0, R0.C1 C1, R0.C2 C2, R0.C3 C3, R0.C0_LN C0_LN, R0.C1_LN C1_LN, R0.C2_LN C2_LN, R0.C3_LN C3_LN from PPOD2.pM0 R0 where (not (exists (select 1 from PPOD2.pM0_NEW R1 where (((((R1.C0 = R0.C0) and (R1.C0_LN = R0.C0_LN)) and (R1.C1_LN = R0.C1_LN)) and (R1.C2_LN = R0.C2_LN)) and (R1.C3_LN = R0.C3_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X105, X106, X107, X108)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X105, X106, X107, X108)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X105, X106, X107, X108)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD1.OTU_L_NEW R0 where (exists (select 1 from PPOD1.OTU_L_DEL R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="true" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X109, X110, X111, X112)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X109, X110, X111, X112)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X109, X110, X111, X112)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.OTU_L_NEW R0 where (exists (select 1 from PPOD2.OTU_L_DEL R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="true" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X113, X114, X115, X116)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X113, X114, X115, X116)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X113, X114, X115, X116)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD1.OTU_DEL  (select distinct CAST(? AS INTEGER) STRATUM, R0.OTU_ID OTU_ID, R0.LABEL LABEL, R0.OBJ_VERSION OBJ_VERSION, R0.PPOD_VERSION PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU_L_DEL R0 where (not (exists (select 1 from PPOD1.OTU_DEL R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="-1" onlyKeyAndNulls="false" preparedParams="[0]" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_DEL  (select distinct CAST(? AS INTEGER) STRATUM, R0.OTU_ID OTU_ID, R0.LABEL LABEL, R0.OBJ_VERSION OBJ_VERSION, R0.PPOD_VERSION PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD2.OTU_L_DEL R0 where (not (exists (select 1 from PPOD2.OTU_DEL R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="-1" onlyKeyAndNulls="false" preparedParams="[0]" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.pM0_DEL  (select distinct CAST(? AS INTEGER) STRATUM, R0.OTU_ID C0, cast(null as VARCHAR(255)) C1, cast(null as INT) C2, cast(null as INT) C3, R0.OTU_ID_LN C0_LN, R0.LABEL_LN C1_LN, R0.OBJ_VERSION_LN C2_LN, R0.PPOD_VERSION_LN C3_LN from PPOD1.OTU_DEL R0 where (not (exists (select 1 from PPOD2.pM0_DEL R1 where (((((R1.C0 = R0.OTU_ID) and (R1.C0_LN = R0.OTU_ID_LN)) and (R1.C1_LN = R0.LABEL_LN)) and (R1.C2_LN = R0.OBJ_VERSION_LN)) and (R1.C3_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" preparedParams="[0]" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+      <mapping bidirectional="false" derivedFrom="pPODotu1otu2" description="pPODotu1otu2" isFakeMapping="false" materialized="true" name="pPODotu1otu2" relationship="parentMapping" trustRank="1" type="mapping">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+          </atom>
+        </body>
+        <provenanceRelation>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </provenanceRelation>
+      </mapping>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.pM0_NEW R0 where (exists (select 1 from PPOD2.pM0_DEL R1 where (((((R1.C0 = R0.C0) and (R1.C0_LN = R0.C0_LN)) and (R1.C1_LN = R0.C1_LN)) and (R1.C2_LN = R0.C2_LN)) and (R1.C3_LN = R0.C3_LN))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="true" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X117, X118, X119, X120)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X117, X118, X119, X120)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X117, X118, X119, X120)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_INV  (select distinct R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU_DEL R0 where ((not (exists (select 1 from PPOD2.OTU_DEL R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))) and (not (exists (select 1 from PPOD2.OTU_INV R2 where (((((R2.OTU_ID = R0.OTU_ID) and (R2.OTU_ID_LN = R0.OTU_ID_LN)) and (R2.LABEL_LN = R0.LABEL_LN)) and (R2.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R2.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+      <mapping bidirectional="false" derivedFrom="pPODotu1otu2" description="MH-PROJpPODotu1otu2" isFakeMapping="false" materialized="true" name="MH-PROJpPODotu1otu2" relationship="parentMapping" trustRank="1" type="mapping">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+          </atom>
+        </body>
+      </mapping>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD1.OTU_RCH  (select distinct R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU_L R0, PPOD1.OTU_INV R1 where (((((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)) and (not (exists (select 1 from PPOD1.OTU_L_DEL R2 where (((((R2.OTU_ID = R0.OTU_ID) and (R2.OTU_ID_LN = R0.OTU_ID_LN)) and (R2.LABEL_LN = R0.LABEL_LN)) and (R2.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R2.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))) and (not (exists (select 1 from PPOD1.OTU_RCH R3 where (((((R3.OTU_ID = R0.OTU_ID) and (R3.OTU_ID_LN = R0.OTU_ID_LN)) and (R3.LABEL_LN = R0.LABEL_LN)) and (R3.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R3.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="RCH">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD1.OTU_INV R0 where (exists (select 1 from PPOD1.OTU_RCH R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="true" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_RCH  (select distinct R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD2.OTU_L R0, PPOD2.OTU_INV R1 where (((((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)) and (not (exists (select 1 from PPOD2.OTU_L_DEL R2 where (((((R2.OTU_ID = R0.OTU_ID) and (R2.OTU_ID_LN = R0.OTU_ID_LN)) and (R2.LABEL_LN = R0.LABEL_LN)) and (R2.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R2.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))) and (not (exists (select 1 from PPOD2.OTU_RCH R3 where (((((R3.OTU_ID = R0.OTU_ID) and (R3.OTU_ID_LN = R0.OTU_ID_LN)) and (R3.LABEL_LN = R0.LABEL_LN)) and (R3.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R3.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.OTU_INV R0 where (exists (select 1 from PPOD2.OTU_RCH R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="true" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD1.OTU_L_INV  (select distinct R0.C0 OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.C0_LN OTU_ID_LN, R0.C1_LN LABEL_LN, R0.C2_LN OBJ_VERSION_LN, R0.C3_LN PPOD_VERSION_LN from PPOD2.pM0_INV R0, PPOD1.OTU_L_NEW R1 where ((((((R1.OTU_ID = R0.C0) and (R1.OTU_ID_LN = R0.C0_LN)) and (R1.LABEL_LN = R0.C1_LN)) and (R1.OBJ_VERSION_LN = R0.C2_LN)) and (R1.PPOD_VERSION_LN = R0.C3_LN)) and (not (exists (select 1 from PPOD1.OTU_L_INV R2 where (((((R2.OTU_ID = R0.C0) and (R2.OTU_ID_LN = R0.C0_LN)) and (R2.LABEL_LN = R0.C1_LN)) and (R2.OBJ_VERSION_LN = R0.C2_LN)) and (R2.PPOD_VERSION_LN = R0.C3_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="BASEOTU" onlyKeyAndNulls="false" relationship="parentMapping" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+          </atom>
+        </body>
+      </mapping>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD1.OTU_L_INV  (select distinct R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU_INV R0, PPOD1.OTU_L_NEW R1 where ((((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)) and (not (exists (select 1 from PPOD1.OTU_L_INV R2 where (((((R2.OTU_ID = R0.OTU_ID) and (R2.OTU_ID_LN = R0.OTU_ID_LN)) and (R2.LABEL_LN = R0.LABEL_LN)) and (R2.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R2.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="BASEOTU" onlyKeyAndNulls="false" relationship="parentMapping" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+          </atom>
+        </body>
+      </mapping>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_L_INV  (select distinct R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD2.OTU_INV R0, PPOD2.OTU_L_NEW R1 where ((((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)) and (not (exists (select 1 from PPOD2.OTU_L_INV R2 where (((((R2.OTU_ID = R0.OTU_ID) and (R2.OTU_ID_LN = R0.OTU_ID_LN)) and (R2.LABEL_LN = R0.LABEL_LN)) and (R2.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R2.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="true" materialized="true" name="BASEOTU" onlyKeyAndNulls="false" relationship="parentMapping" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+          </atom>
+        </body>
+      </mapping>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.pM0_INV  (select distinct R0.OTU_ID C0, cast(null as VARCHAR(255)) C1, cast(null as INT) C2, cast(null as INT) C3, R0.OTU_ID_LN C0_LN, R0.LABEL_LN C1_LN, R0.OBJ_VERSION_LN C2_LN, R0.PPOD_VERSION_LN C3_LN from PPOD2.OTU_INV R0, PPOD2.pM0_NEW R1 where ((((((R1.C0 = R0.OTU_ID) and (R1.C0_LN = R0.OTU_ID_LN)) and (R1.C1_LN = R0.LABEL_LN)) and (R1.C2_LN = R0.OBJ_VERSION_LN)) and (R1.C3_LN = R0.PPOD_VERSION_LN)) and (not (exists (select 1 from PPOD2.pM0_INV R2 where (((((R2.C0 = R0.OTU_ID) and (R2.C0_LN = R0.OTU_ID_LN)) and (R2.C1_LN = R0.LABEL_LN)) and (R2.C2_LN = R0.OBJ_VERSION_LN)) and (R2.C3_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+      <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" derivedFrom="MH-PROJ0-B" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" relationship="parentMapping" replaceValsWithNullValues="false" trustRank="1" type="rule">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+          </atom>
+        </body>
+        <mapping bidirectional="false" description="MH-PROJ0-A" isFakeMapping="false" materialized="true" name="MH-PROJ0-B" relationship="parentMapping" trustRank="1" type="mapping">
+          <head>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+              <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+            </atom>
+          </head>
+          <body>
+            <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+              <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+              <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+            </atom>
+          </body>
+        </mapping>
+      </mapping>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD1.OTU_RCH  (select distinct R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU_L_INV R0 where (not (exists (select 1 from PPOD1.OTU_RCH R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="RCH">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X1_M1, X2_M1, X3_M1, X4_M1)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_RCH  (select distinct R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD2.OTU_L_INV R0 where (not (exists (select 1 from PPOD2.OTU_RCH R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X5_M2, X6_M2, X7_M2, X8_M2)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_RCH  (select distinct R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU_RCH R0 where (((not (exists (select 1 from PPOD2.OTU_R_INV R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))) and (not (exists (select 1 from PPOD2.OTU_DEL R2 where (((((R2.OTU_ID = R0.OTU_ID) and (R2.OTU_ID_LN = R0.OTU_ID_LN)) and (R2.LABEL_LN = R0.LABEL_LN)) and (R2.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R2.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))) and (not (exists (select 1 from PPOD2.OTU_RCH R3 where (((((R3.OTU_ID = R0.OTU_ID) and (R3.OTU_ID_LN = R0.OTU_ID_LN)) and (R3.LABEL_LN = R0.LABEL_LN)) and (R3.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R3.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="RCH">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_R(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_R" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+      <mapping bidirectional="false" derivedFrom="pPODotu1otu2" description="pPODotu1otu2" isFakeMapping="false" materialized="true" name="pPODotu1otu2" relationship="parentMapping" trustRank="1" type="mapping">
+        <head>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+          </atom>
+        </head>
+        <body>
+          <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+            <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID_M0, LABEL_M0, OBJ_VERSION_M0, PPOD_VERSION_M0)</atomValue>
+            <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+          </atom>
+        </body>
+        <provenanceRelation>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </provenanceRelation>
+      </mapping>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD1.OTU_DEL  (select distinct CAST(? AS INTEGER) STRATUM, R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD1.OTU_INV R0 where ((not (exists (select 1 from PPOD1.OTU_RCH R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))) and (not (exists (select 1 from PPOD1.OTU_DEL R2 where (((((R2.OTU_ID = R0.OTU_ID) and (R2.OTU_ID_LN = R0.OTU_ID_LN)) and (R2.LABEL_LN = R0.LABEL_LN)) and (R2.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R2.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" preparedParams="[0]" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X121, X122, X123, X124)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X121, X122, X123, X124)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X121, X122, X123, X124)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X121, X122, X123, X124)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>insert into PPOD2.OTU_DEL  (select distinct CAST(? AS INTEGER) STRATUM, R0.OTU_ID OTU_ID, cast(null as VARCHAR(255)) LABEL, cast(null as INT) OBJ_VERSION, cast(null as INT) PPOD_VERSION, R0.OTU_ID_LN OTU_ID_LN, R0.LABEL_LN LABEL_LN, R0.OBJ_VERSION_LN OBJ_VERSION_LN, R0.PPOD_VERSION_LN PPOD_VERSION_LN from PPOD2.OTU_INV R0 where ((not (exists (select 1 from PPOD2.OTU_RCH R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))) and (not (exists (select 1 from PPOD2.OTU_DEL R2 where (((((R2.OTU_ID = R0.OTU_ID) and (R2.OTU_ID_LN = R0.OTU_ID_LN)) and (R2.LABEL_LN = R0.LABEL_LN)) and (R2.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R2.PPOD_VERSION_LN = R0.PPOD_VERSION_LN)))))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" preparedParams="[0]" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X125, X126, X127, X128)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X125, X126, X127, X128)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X125, X126, X127, X128)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X125, X126, X127, X128)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD1.OTU_INV</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X129, X130, X131, X132)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.OTU_INV</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X133, X134, X135, X136)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD1.OTU_L_INV</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X137, X138, X139, X140)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.OTU_L_INV</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X141, X142, X143, X144)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.pM0_INV</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="INV">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X145, X146, X147, X148)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD1.OTU_RCH</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X149, X150, X151, X152)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.OTU_RCH</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="RCH">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X153, X154, X155, X156)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD1.OTU_NEW R0 where (exists (select 1 from PPOD1.OTU_DEL R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="true" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X157, X158, X159, X160)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X157, X158, X159, X160)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X157, X158, X159, X160)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.OTU_NEW R0 where (exists (select 1 from PPOD2.OTU_DEL R1 where (((((R1.OTU_ID = R0.OTU_ID) and (R1.OTU_ID_LN = R0.OTU_ID_LN)) and (R1.LABEL_LN = R0.LABEL_LN)) and (R1.OBJ_VERSION_LN = R0.OBJ_VERSION_LN)) and (R1.PPOD_VERSION_LN = R0.PPOD_VERSION_LN))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="true" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X161, X162, X163, X164)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X161, X162, X163, X164)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X161, X162, X163, X164)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.pM0_NEW R0 where (exists (select 1 from PPOD2.pM0_DEL R1 where (((((R1.C0 = R0.C0) and (R1.C0_LN = R0.C0_LN)) and (R1.C1_LN = R0.C1_LN)) and (R1.C2_LN = R0.C2_LN)) and (R1.C3_LN = R0.C3_LN))))</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="true" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="true" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X165, X166, X167, X168)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X165, X166, X167, X168)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X165, X166, X167, X168)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.pM0_DEL</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X169, X170, X171, X172)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD1.OTU_L_DEL</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X173, X174, X175, X176)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.OTU_L_DEL</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X177, X178, X179, X180)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD1.OTU_DEL</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X181, X182, X183, X184)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>delete from PPOD2.OTU_DEL</statement>
+    <mapping bidirectional="false" clearNCopy="false" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="true" type="DEL">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X185, X186, X187, X188)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body/>
+    </mapping>
+  </code>
+  <code>
+    <statement>DELETE FROM PPOD1.OTU_L</statement>
+    <statement>INSERT INTO PPOD1.OTU_L (SELECT * FROM PPOD1.OTU_L_NEW)</statement>
+    <statement>DELETE FROM PPOD1.OTU_L_NEW</statement>
+    <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X189, X190, X191, X192)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU_L(X189, X190, X191, X192)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU_L" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>DELETE FROM PPOD2.OTU_L</statement>
+    <statement>INSERT INTO PPOD2.OTU_L (SELECT * FROM PPOD2.OTU_L_NEW)</statement>
+    <statement>DELETE FROM PPOD2.OTU_L_NEW</statement>
+    <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X193, X194, X195, X196)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU_L(X193, X194, X195, X196)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU_L" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>DELETE FROM PPOD1.OTU</statement>
+    <statement>INSERT INTO PPOD1.OTU (SELECT * FROM PPOD1.OTU_NEW)</statement>
+    <statement>DELETE FROM PPOD1.OTU_NEW</statement>
+    <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X197, X198, X199, X200)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(X197, X198, X199, X200)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer1" relation="OTU" schema="pPODPeer1Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>DELETE FROM PPOD2.OTU</statement>
+    <statement>INSERT INTO PPOD2.OTU (SELECT * FROM PPOD2.OTU_NEW)</statement>
+    <statement>DELETE FROM PPOD2.OTU_NEW</statement>
+    <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X201, X202, X203, X204)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(X201, X202, X203, X204)</atomValue>
+          <relationContext mapping="false" peer="pPODPeer2" relation="OTU" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+  <code>
+    <statement>DELETE FROM PPOD2.pM0</statement>
+    <statement>INSERT INTO PPOD2.pM0 (SELECT * FROM PPOD2.pM0_NEW)</statement>
+    <statement>DELETE FROM PPOD2.pM0_NEW</statement>
+    <mapping bidirectional="false" clearNCopy="true" deleteFromHead="false" description="INTERNAL RULE" distinct="true" edb="false" isFakeMapping="false" materialized="true" name="-1" onlyKeyAndNulls="false" replaceValsWithNullValues="false" trustRank="1" type="rule">
+      <head>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X205, X206, X207, X208)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </head>
+      <body>
+        <atom allStrata="true" backwardDeletable="false" negated="false" type="NEW">
+          <atomValue>pPODPeer2.pPODPeer2Schema1.pM0(X205, X206, X207, X208)</atomValue>
+          <relationContext mapping="true" peer="pPODPeer2" relation="pM0" schema="pPODPeer2Schema1"/>
+        </atom>
+      </body>
+    </mapping>
+  </code>
+</statements>

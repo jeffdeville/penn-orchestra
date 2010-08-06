@@ -1,0 +1,487 @@
+<?xml version="1.0" ?>
+<!--11:49:52 05/21/07 EDT
+{'cutoff': 1024, 'help': False, 'skip': 0, 'fanout': 2, 'todd': False, 'schemas': 3, 'xmlformat': True, 'filename': 'bioSimple', 'maxcycles': None, 'deletions': 1, 'dbalias': 'BIOTB', 'coverage': 0.75, 'mincycles': None, 'password': 'password', 'integers': False, 'peers': 3, 'insertions': 1, 'tukwila': False, 'username': 'user', 'seed': 0, 'olivier': False, 'oracle': False, 'relsize': 4}-->
+<catalog recmode="false">
+  <migrated>true</migrated>
+  <peer address="localhost" name="EBI">
+  	<description>This peer from European Bioinformatics Institue provides information from the Interpro database, a database of protein families, domains and functional sites.</description>
+    <schema name="INTERPRO">
+  		<description>The Interpro database is a database of protein families, domains and functional sites, in which identifiable features found in known proteins can be applied to unknown protein sequences.</description>
+      <relation materialized="true" name="ENTRY">
+        <dbinfo schema="INTERPRO" table="ENTRY"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field name="NAME" type="varchar(100)"/>        
+      </relation>
+      <relation materialized="true" name="ENTRY_L">
+        <dbinfo schema="INTERPRO" table="ENTRY_L"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field name="NAME" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="ENTRY_R">
+        <dbinfo schema="INTERPRO" table="ENTRY_R"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field name="NAME" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="ENTRY2METH">
+        <dbinfo schema="INTERPRO" table="ENTRY2METH"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field key="true" name="METHOD_AC" type="varchar(25)"/>
+        <field key="true" name="DB" type="varchar(20)"/>
+      </relation>
+      <foreignkey name="INT_FK1" source="ENTRY2METH" target="ENTRY">
+      	<from>ENTRY_AC</from>
+      	<to>ENTRY_AC</to>
+      </foreignkey>
+      <relation materialized="true" name="ENTRY2METH_L">
+        <dbinfo schema="INTERPRO" table="ENTRY2METH_L"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field key="true" name="METHOD_AC" type="varchar(25)"/>
+        <field key="true" name="DB" type="varchar(20)"/>
+      </relation>
+      <relation materialized="true" name="ENTRY2METH_R">
+        <dbinfo schema="INTERPRO" table="ENTRY2METH_R"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field key="true" name="METHOD_AC" type="varchar(25)"/>
+        <field key="true" name="DB" type="varchar(20)"/>
+      </relation>            
+      <relation materialized="true" name="INTERPRO2GO">
+        <dbinfo schema="INTERPRO" table="INTERPRO2GO"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field key="true" name="GO_AC" type="varchar(10)"/>
+      </relation>
+      <foreignkey name="INT_FK2" source="INTERPRO2GO" target="ENTRY">
+      	<from>ENTRY_AC</from>
+      	<to>ENTRY_AC</to>
+      </foreignkey>
+      <relation materialized="true" name="INTERPRO2GO_L">
+        <dbinfo schema="INTERPRO" table="INTERPRO2GO_L"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field key="true" name="GO_AC" type="varchar(10)"/>
+      </relation>
+      <relation materialized="true" name="INTERPRO2GO_R">
+        <dbinfo schema="INTERPRO" table="INTERPRO2GO_R"/>
+        <field key="true" name="ENTRY_AC" type="varchar(9)"/>
+        <field key="true" name="GO_AC" type="varchar(10)"/>
+      </relation>            
+    </schema>
+  </peer>
+  <peer address="localhost" name="GO">
+  	<description>The Gene Ontology project provides a controlled vocabulary to describe gene and gene product attributes in any organism. This project is a collaborative effort to address the need for consistent descriptions of gene products in different databases.</description>
+    <schema name="GOTERM">
+  		<description>The Gene Ontology database plus the mapping Interpro2Go.</description>
+      <!-- Temporary fix due to bad comparison of fields that are not in the 
+           key. Actual key is ID not ACC, although ACC is unique -->
+      <relation materialized="true" name="TERM">
+        <dbinfo schema="GO" table="TERM"/>
+        <field name="ID" type="integer"/>
+        <field name="NAME" type="varchar(255)"/>
+        <field key="true" name="ACC" type="varchar(255)"/>
+      </relation>
+      <relation materialized="true" name="TERM_L">
+        <dbinfo schema="GO" table="TERM_L"/>
+        <field name="ID" type="integer"/>
+        <field name="NAME" type="varchar(255)"/>
+        <field key="true" name="ACC" type="varchar(255)"/>
+      </relation>
+      <relation materialized="true" name="TERM_R">
+        <dbinfo schema="GO" table="TERM_R"/>
+        <field name="ID" type="integer"/>
+        <field name="NAME" type="varchar(255)"/>
+        <field key="true" name="ACC" type="varchar(255)"/>
+      </relation>            
+    </schema>
+  </peer>
+  <peer address="localhost" name="NCBI1">
+  	<description>National Center for Biotechnology Information first peer. This peer provides information about sequences (genomic DNA, RNA, protein products)</description>
+    <schema name="REFSEQ">
+  		<description>The Reference Sequence collection aims to provide a comprehensive, integrated, non-redundant set of sequences, including genomic DNA, transcript (RNA), and protein products, for major research organisms.</description>
+      <relation materialized="true" name="CATALOG">
+        <dbinfo schema="REFSEQ" table="CATALOG"/>
+        <!-- Olivier: temp fix: actual key is GO although ACC is also unique -->
+        <field name="GI" type="integer"/>
+        <field key="true" name="ACC" type="varchar(40)"/>
+        <field name="TAX_ID" type="integer"/>
+        <field name="SEQ" type="varchar(500)"/>
+      </relation>
+      <relation materialized="true" name="CATALOG_L">
+        <dbinfo schema="REFSEQ" table="CATALOG_L"/>
+        <field name="GI" type="integer"/>
+        <field key="true" name="ACC" type="varchar(40)"/>
+        <field name="TAX_ID" type="integer"/>
+        <field name="SEQ" type="varchar(500)"/>
+      </relation>
+      <relation materialized="true" name="CATALOG_R">
+        <dbinfo schema="REFSEQ" table="CATALOG_R"/>
+        <field name="GI" type="integer"/>
+        <field key = "true" name="ACC" type="varchar(40)"/>
+        <field name="TAX_ID" type="integer"/>
+        <field name="SEQ" type="varchar(500)"/>
+      </relation>
+      <relation materialized="true" name="SPECIES">
+        <dbinfo schema="REFSEQ" table="SPECIES"/>
+        <field key ="true" name="TAX_ID" type="integer"/>
+        <field name="SPECIES" type="varchar(300)"/>
+      </relation>
+      <relation materialized="true" name="SPECIES_L">
+        <dbinfo schema="REFSEQ" table="SPECIES_L"/>
+        <field key ="true" name="TAX_ID" type="integer"/>
+        <field name="SPECIES" type="varchar(300)"/>
+      </relation>
+      <relation materialized="true" name="SPECIES_R">
+        <dbinfo schema="REFSEQ" table="SPECIES_R"/>
+        <field key ="true" name="TAX_ID" type="integer"/>
+        <field name="SPECIES" type="varchar(300)"/>
+      </relation>
+      <relation materialized="true" name="RMVRECORDS">
+        <dbinfo schema="REFSEQ" table="RMVRECORDS"/>
+        <!-- Olivier: temp fix: actual key is GO although ACC is also unique -->
+        <field name="GI" type="integer"/>
+        <field key="true" name="ACC" type="varchar(40)"/>
+        <field name="TAX_ID" type="integer"/>
+        <field name="SEQ" type="varchar(500)"/>
+        <field name="replacedby" type="integer"/>
+      </relation>
+      <relation materialized="true" name="RMVRECORDS_L">
+        <dbinfo schema="REFSEQ" table="RMVRECORDS_L"/>
+        <field name="GI" type="integer"/>
+        <field key="true" name="ACC" type="varchar(40)"/>
+        <field name="TAX_ID" type="integer"/>
+        <field name="SEQ" type="varchar(500)"/>
+        <field name="replacedby" type="integer"/>
+      </relation>
+      <relation materialized="true" name="RMVRECORDS_R">
+        <dbinfo schema="REFSEQ" table="RMVRECORDS_R"/>
+        <field name="GI" type="integer"/>
+        <field key="true" name="ACC" type="varchar(40)"/>
+        <field name="TAX_ID" type="integer"/>
+        <field name="SEQ" type="varchar(500)"/>
+        <field name="replacedby" type="integer"/>
+      </relation>
+      <foreignkey name="NCB1_FK1" source="CATALOG" target="SPECIES">
+      	<from>TAX_ID</from>
+      	<to>TAX_ID</to>
+      </foreignkey>
+      <foreignkey name="NCB1_FK2" source="RMVRECORDS" target="SPECIES">
+      	<from>TAX_ID</from>
+      	<to>TAX_ID</to>
+      </foreignkey>
+      <foreignkey name="NCB1_FK3" source="RMVRECORDS" target="CATALOG">
+      	<from>replacedby</from>
+      	<to>ACC</to>
+      </foreignkey>      
+    </schema>
+  </peer>
+  <peer address="localhost" name="NCBI2">    
+  	<description>National Center for Biotechnology Information first peer. This peer provides information about taxonomy.</description>
+    <schema name="TAXO">
+    	<description>The NCBI Taxonomy attempts to incorporate phylogenetic and taxonomic knowledge from a variety of sources, including the published literature, web-based databases, and the advice of sequence submitters and outside taxonomy experts.</description>
+      <relation materialized="true" name="NAMES">
+        <dbinfo schema="TAXO" table="NAMES"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+        <field key="true" name="NAME" type="varchar(500)"/>
+        <field key="true" name="NAME_CLASS" type="varchar(300)"/>
+      </relation>
+      <relation materialized="true" name="NAMES_L">
+        <dbinfo schema="TAXO" table="NAMES_L"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+        <field key="true" name="NAME" type="varchar(500)"/>
+        <field key="true" name="NAME_CLASS" type="varchar(300)"/>
+      </relation>
+      <relation materialized="true" name="NAMES_R">
+        <dbinfo schema="TAXO" table="NAMES_R"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+        <field key="true" name="NAME" type="varchar(500)"/>
+        <field key="true" name="NAME_CLASS" type="varchar(300)"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer address="localhost" name="PCBI">
+  	<description>This is the Penn Center for Bioinformatics's peer, which publishes PlasmoDB data.</description>
+    <schema name="PLASMODB">
+  		<description>PlasmoDB: The Plasmodium Genome Resource. This schema hosts genomic and proteomic data (and more) for different species of the parasitic eukaryote Plasmodium, the cause of Malaria. It brings together data provided by numerous laboratories worldwide, and adds its own data analysis.</description>
+      <relation materialized="true" name="GENEFEAT">
+        <dbinfo schema="PLASMO" table="GENEFEAT"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field name="PRODUCT" type="varchar(4000)"/>
+        <field name="REFSEQ_ACC" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="GENEFEAT_L">
+        <dbinfo schema="PLASMO" table="GENEFEAT_L"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field name="PRODUCT" type="varchar(4000)"/>
+        <field name="REFSEQ_ACC" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="GENEFEAT_R">
+        <dbinfo schema="PLASMO" table="GENEFEAT_R"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field name="PRODUCT" type="varchar(4000)"/>
+        <field name="REFSEQ_ACC" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="REFSEQ">
+        <dbinfo schema="PLASMO" table="REFSEQ"/>
+        <field name="GI" type="integer"/>
+        <field key="true" name="ACC" type="varchar(100)"/>
+        <field name="SEQ" type="varchar(500)"/>
+        <field name="DEPRECATED" type="varchar(3)"/>
+      </relation>
+      <relation materialized="true" name="REFSEQ_L">
+        <dbinfo schema="PLASMO" table="REFSEQ_L"/>
+        <field name="GI" type="integer"/>
+        <field key="true" name="ACC" type="varchar(100)"/>
+        <field name="SEQ" type="varchar(500)"/>
+        <field name="DEPRECATED" type="varchar(3)"/>
+      </relation>
+      <relation materialized="true" name="REFSEQ_R">
+        <dbinfo schema="PLASMO" table="REFSEQ_R"/>
+        <field name="GI" type="integer"/>
+        <field key="true" name="ACC" type="varchar(100)"/>
+        <field name="SEQ" type="varchar(500)"/>
+        <field name="DEPRECATED" type="varchar(3)"/>
+      </relation>            
+      <relation materialized="true" name="GENETAX">
+        <dbinfo schema="PLASMO" table="GENETAX"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+      </relation>
+      <relation materialized="true" name="GENETAX_L">
+        <dbinfo schema="PLASMO" table="GENETAX_L"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+      </relation>
+      <relation materialized="true" name="GENETAX_R">
+        <dbinfo schema="PLASMO" table="GENETAX_R"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+      </relation>            
+      <relation materialized="true" name="TAXNAMES">
+        <dbinfo schema="PLASMO" table="TAXNAMES"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+        <field key="true" name="TAX_NAME" type="varchar(255)"/>
+        <field key="true" name="NAME_CLASS" type="varchar(300)"/>
+      </relation>            
+      <relation materialized="true" name="TAXNAMES_L">
+        <dbinfo schema="PLASMO" table="TAXNAMES_L"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+        <field key="true" name="TAX_NAME" type="varchar(255)"/>
+        <field key="true" name="NAME_CLASS" type="varchar(300)"/>
+      </relation>            
+      <relation materialized="true" name="TAXNAMES_R">
+        <dbinfo schema="PLASMO" table="TAXNAMES_R"/>
+        <field key="true" name="TAX_ID" type="integer"/>
+        <field key="true" name="TAX_NAME" type="varchar(255)"/>
+        <field key="true" name="NAME_CLASS" type="varchar(300)"/>
+      </relation>                        
+      <relation materialized="true" name="DOMAIN_REF">
+        <dbinfo schema="PLASMO" table="DOMAIN_REF"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="DB" type="varchar(80)"/>
+        <field key="true" name="DBACC" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="DOMAIN_REF_L">
+        <dbinfo schema="PLASMO" table="DOMAIN_REF_L"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="DB" type="varchar(80)"/>
+        <field key="true" name="DBACC" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="DOMAIN_REF_R">
+        <dbinfo schema="PLASMO" table="DOMAIN_REF_R"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="DB" type="varchar(80)"/>
+        <field key="true" name="DBACC" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="GOTERM_SUMMARY">
+        <dbinfo schema="PLASMO" table="GOTERM_SUMMARY"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="GO_ID" type="varchar(32)"/>
+      </relation>
+      <relation materialized="true" name="GOTERM_SUMMARY_L">
+        <dbinfo schema="PLASMO" table="GOTERM_SUMMARY_L"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="GO_ID" type="varchar(32)"/>
+      </relation>
+      <relation materialized="true" name="GOTERM_SUMMARY_R">
+        <dbinfo schema="PLASMO" table="GOTERM_SUMMARY_R"/>
+        <field key="true" name="SRC_ID" type="varchar(50)"/>
+        <field key="true" name="GO_ID" type="varchar(32)"/>
+      </relation> 
+      <relation materialized="true" name="GOTERM">
+        <dbinfo schema="PLASMO" table="GOTERM"/>
+        <field key="true" name="GO_ID" type="varchar(32)"/>
+        <field name="GO_NAME" type="varchar(255)"/>
+      </relation>            
+      <relation materialized="true" name="GOTERM_L">
+        <dbinfo schema="PLASMO" table="GOTERM_L"/>
+        <field key="true" name="GO_ID" type="varchar(32)"/>
+        <field name="GO_NAME" type="varchar(255)"/>
+      </relation>            
+      <relation materialized="true" name="GOTERM_R">
+        <dbinfo schema="PLASMO" table="GOTERM_R"/>
+        <field key="true" name="GO_ID" type="varchar(32)"/>
+        <field name="GO_NAME" type="varchar(255)"/>
+      </relation>                              
+      <foreignkey name="PCBI_FK1" source="DOMAIN_REF" target="GENEFEAT">
+      	<from>SRC_ID</from>
+      	<to>SRC_ID</to>
+      </foreignkey>
+      <foreignkey name="PCBI_FK2" source="GOTERM_SUMMARY" target="GENEFEAT">
+      	<from>SRC_ID</from>
+      	<to>SRC_ID</to>
+      </foreignkey>
+      <foreignkey name="PCBI_FK3" source="GENETAX" target="GENEFEAT">
+      	<from>SRC_ID</from>
+      	<to>SRC_ID</to>
+      </foreignkey>
+      <foreignkey name="PCBI_FK4" source="GENETAX" target="TAXNAMES">
+      	<from>TAX_ID</from>
+      	<to>TAX_ID</to>
+      </foreignkey>
+      <foreignkey name="PCBI_FK5" source="GOTERM_SUMMARY" target="GOTERM">
+      	<from>GO_ID</from>
+      	<to>GO_ID</to>
+      </foreignkey>
+      <foreignkey name="PCBI_FK6" source="GENEFEAT" target="REFSEQ">
+      	<from>REFSEQ_ACC</from>
+      	<to>ACC</to>
+      </foreignkey>      
+    </schema>
+  </peer>
+  <mapping materialized="true" name="M0">
+    <head>
+      <atom>
+        NCBI1.REFSEQ.SPECIES(TAXID, TAXNAME)
+      </atom>
+    </head>
+    <body>
+      <atom>
+        NCBI2.TAXO.NAMES(TAXID, TAXNAME, 'scientific name')
+      </atom>
+    </body>
+  </mapping>
+  <mapping materialized="true" name="M1">
+    <head>
+      <atom>
+        PCBI.PLASMODB.TAXNAMES(TAXID, TAXNAME, NAMECLASS)
+      </atom>
+    </head>
+    <body>
+      <atom>
+        NCBI2.TAXO.NAMES(TAXID, TAXNAME, NAMECLASS)
+      </atom>
+    </body>
+  </mapping>  
+  <mapping materialized="true" name="M2">
+    <head>
+      <atom>
+        PCBI.PLASMODB.REFSEQ(GI, REFS, SEQ, 'NO')
+      </atom>
+    </head>
+    <body>
+      <atom>
+        NCBI1.REFSEQ.CATALOG(GI, REFS, _, SEQ)
+      </atom>
+    </body>
+  </mapping>  
+  <mapping materialized="true" name="M3">
+    <head>
+      <atom>
+        PCBI.PLASMODB.REFSEQ(GI, REFS, SEQ, 'YES')
+      </atom>
+    </head>
+    <body>
+      <atom>
+        PCBI.PLASMODB.GENEFEAT(_, _, REFS)
+      </atom>
+      <atom>
+        NCBI1.REFSEQ.RMVRECORDS(GI, REFS, _, SEQ, _)
+      </atom>
+    </body>
+  </mapping>  
+  <mapping materialized="true" name="M4">
+    <head>
+      <atom>
+        PCBI.PLASMODB.DOMAIN_REF(SRCID, DB, DBACC)
+      </atom>
+    </head>
+    <body>
+      <atom>
+        PCBI.PLASMODB.DOMAIN_REF(SRCID, 'Interpro', ITACC)
+      </atom>
+      <atom>
+        EBI.INTERPRO.ENTRY2METH(ITACC,DBACC, DB)
+      </atom>
+    </body>
+  </mapping>  
+  <mapping materialized="true" name="M5">
+    <head>
+		  <atom>
+        PCBI.PLASMODB.GOTERM_SUMMARY(SRCID, GOID)
+      </atom>
+      <atom>
+        PCBI.PLASMODB.GOTERM(GOID, GONAME)
+      </atom>
+    </head>
+    <body>
+      <atom>
+        PCBI.PLASMODB.DOMAIN_REF(SRCID, 'Interpro', ITACC)
+      </atom>
+      <atom>
+        EBI.INTERPRO.INTERPRO2GO(ITACC, GOID)
+      </atom>
+      <atom>
+        GO.GOTERM.TERM(_,GONAME,GOID)
+      </atom>
+    </body>
+  </mapping>      
+  <engine>
+    <mappings password="password" server="jdbc:db2://localhost:50000/DEMOPCBI" type="sql" username="user"/>
+  </engine>
+  <store>
+    <update hostname="localhost" port="42" type="bdb"/>
+    <state type="hash"/>
+  </store>
+<!--
+  <trustConditions peer="P0" schema="S0">
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P0_S0_R0"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P0_S0_R1"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P0_S0_R2"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P0_S0_R3"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P0_S0_R4"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P0_S0_R5"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P0_S0_R0"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P0_S0_R1"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P0_S0_R2"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P0_S0_R3"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P0_S0_R4"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P0_S0_R5"/>
+  </trustConditions>
+  <trustConditions peer="P1" schema="S1">
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P1_S1_R0"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P1_S1_R1"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P1_S1_R2"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P1_S1_R3"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P1_S1_R4"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P1_S1_R0"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P1_S1_R1"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P1_S1_R2"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P1_S1_R3"/>
+    <trusts pid="P2" pidType="STRING" priority="5" relation="P1_S1_R4"/>
+  </trustConditions>
+  <trustConditions peer="P2" schema="S2">
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P2_S2_R0"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P2_S2_R1"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P2_S2_R2"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P2_S2_R3"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P2_S2_R4"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P2_S2_R5"/>
+    <trusts pid="P0" pidType="STRING" priority="5" relation="P2_S2_R6"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P2_S2_R0"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P2_S2_R1"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P2_S2_R2"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P2_S2_R3"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P2_S2_R4"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P2_S2_R5"/>
+    <trusts pid="P1" pidType="STRING" priority="5" relation="P2_S2_R6"/>
+  </trustConditions>
+-->
+</catalog>
+

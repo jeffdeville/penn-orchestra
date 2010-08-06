@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="orchestraSchema">
+	
+	<typeAlias type="edu.upenn.cis.orchestra.repository.model.beans.ScConstraintBean" alias="ScConstraint"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.model.beans.ScForeignKeyBean" alias="ScForeignKey"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsSchemaRelationCstBean" alias="EncapsSchemaRelationCstBean"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsSchemaRelationCstFieldBean" alias="EncapsSchemaRelationCstFieldBean"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsSchemaRelationFkBean" alias="EncapsSchemaRelationFkBean"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerIdSchemaId" alias="EncapsPeerIdSchemaId"/>
+	
+	
+	<resultMap class="ScConstraint" id="constraint" groupBy="name">
+		<result property="name" column="cst_name"/>
+		<result property="type" column="cst_type"/>		
+		<result property="statsNbUniqueVals" column="cst_cntUniq"/>
+		<result property="fields" resultMap="orchestraSchema.fldRef"/>					
+	</resultMap>			
+	
+	<resultMap class="java.lang.String" id="fldRef">
+		<result property="value" column="cst_fldName"/>
+	</resultMap>
+
+	<resultMap class="ScForeignKey" id="foreignKey" extends="constraint" groupBy="name">
+		<result property="fields" resultMap="orchestraSchema.fldRef"/>		
+		<result property="refRelation" column="fk_refRelationId"/>		
+		<result property="refFields" resultMap="orchestraSchema.fkFldRef"/>		
+	</resultMap>			
+
+	<resultMap class="java.lang.String" id="fkFldRef">
+		<result property="value" column="fk_fldName"/>
+	</resultMap>	
+
+
+	<select id="getRelationDirectConstraints" resultMap="constraint">
+		SELECT 
+			cst.name        cst_name,
+			cst.typeCst     cst_type,
+			cstFld.fldName  cst_fldName,
+			statNbUniqueVals cst_cntUniq
+		FROM 
+		   constraints cst JOIN constraintsFields cstFld
+		     ON   (cst.schemaId = cstFld.schemaId
+		     AND   cst.relationId = cstFld.relationId
+		     AND   cst.name = cstFld.name)
+	    WHERE
+	          cst.peerId = #peerId#
+	      AND cst.schemaId = #schemaId#
+	      AND cst.relationId = #relationId#
+	      AND cst.typeCst != 'F'
+	    ORDER BY fldPosition;		   
+	</select>
+
+	<select id="getForeignKeys" resultMap="foreignKey">
+		SELECT 
+			cst.name          cst_name,
+			cst.typeCst       cst_type,
+			statNbUniqueVals  cst_cntUniq,
+			cstFld.fldName    cst_fldName,
+			fk.refRelationId  fk_refRelationId,
+			fk.refFldName     fk_fldName
+		FROM 
+		   constraints cst JOIN constraintsFields cstFld
+		     ON   (cst.peerId = cstFld.peerId
+		     AND   cst.schemaId = cstFld.schemaId
+		     AND   cst.relationId = cstFld.relationId
+		     AND   cst.name = cstFld.name)
+		   JOIN foreignKeys fk
+		     ON  (    cst.peerId = fk.peerId
+		          AND cst.schemaId = fk.schemaId
+		          AND cst.relationId = fk.relationId 
+		          AND cst.name = fk.name
+		          AND fk.refFldPosition = cstFld.fldPosition
+		         )
+	    WHERE
+	          cst.peerId = #peerId#
+	      AND cst.schemaId = #schemaId#
+	      AND cst.relationId = #relationId#
+	      AND cst.typeCst = 'F'
+	    ORDER BY cstFld.fldPosition;		   
+	</select>
+	
+	<insert id="insertDirectConstraint" parameterClass="EncapsSchemaRelationCstBean">
+		INSERT INTO constraints
+		   (peerId, schemaId, relationId, name, typeCst, statNbUniqueVals)
+		 VALUES 
+		   (#peer.id#, #schema.schemaId#, #relation.name#, #constraint.name#, #constraint.type#, #constraint.statsNbUniqueVals#);
+	</insert>
+	
+	<insert id="insertDirectConstraintField" parameterClass="EncapsSchemaRelationCstFieldBean">
+		INSERT INTO constraintsFields
+		   (peerId, schemaId, relationId, name, fldName, fldPosition)
+		 VALUES 
+		   (#peer.id#, #schema.schemaId#, #relation.name#, #constraint.name#, #field#, #position#);
+	</insert>	
+	
+	<insert id="insertForeignKeyRefFld" parameterClass="EncapsSchemaRelationFkBean">
+		INSERT INTO foreignKeys
+		   (peerId, schemaId, relationId, name, refRelationId, 
+		    refFldName, refFldPosition
+		   )
+		 VALUES 
+		   (
+		    #peer.id#, #schema.schemaId#, #relation.name#, #constraint.name#, #refRelation#,
+		    #refField#, #position#
+		   );
+	</insert>
+	
+	
+	<delete id="deleteConstraintForPeer" parameterClass="java.lang.String">
+		DELETE FROM constraints
+		  WHERE peerId=#value#		
+	</delete>	
+	
+	
+	<delete id="deleteDirectConstraintForPeer" parameterClass="java.lang.String">
+		DELETE FROM constraintsFields
+		  WHERE peerId=#value#
+	</delete>		
+	
+	
+	<delete id="deleteForeignKeysForPeer" parameterClass="java.lang.String">
+		DELETE FROM foreignKeys
+		  WHERE peerId=#value#
+	</delete>		
+	
+	
+	<delete id="deleteConstraintForSchema" parameterClass="EncapsPeerIdSchemaId">
+		DELETE FROM constraints
+		  WHERE peerId=#peerId#		
+		    AND schemaId=#schemaId#
+	</delete>	
+	
+	<delete id="deleteDirectConstraintForSchema" parameterClass="EncapsPeerIdSchemaId">
+		DELETE FROM constraintsFields
+		  WHERE peerId=#peerId#
+		    AND schemaId=#schemaId#
+	</delete>		
+	
+	<delete id="deleteForeignKeysForSchema" parameterClass="EncapsPeerIdSchemaId">
+		DELETE FROM foreignKeys
+		  WHERE peerId=#peerId#
+		    AND schemaId=#schemaId#
+	</delete>		
+	
+</sqlMap>

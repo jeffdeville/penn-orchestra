@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<!--11:49:52 05/21/07 EDT
+{'cutoff': 1024, 'help': False, 'skip': 0, 'fanout': 2, 'todd': False, 'schemas': 3, 'xmlformat': True, 'filename': 'bioSimple', 'maxcycles': None, 'deletions': 1, 'dbalias': 'BIOTB', 'coverage': 0.75, 'mincycles': None, 'password': '', 'integers': False, 'peers': 3, 'insertions': 1, 'tukwila': False, 'username': '', 'seed': 0, 'olivier': False, 'oracle': False, 'relsize': 4}-->
+<catalog recmode="false" name="bidir">
+  <migrated>true</migrated>
+  <peer address="localhost" name="P1">
+  	<description></description>
+    <schema name="S1">
+  		<description></description>
+      <relation materialized="true" name="R1">
+        <dbinfo schema="S1" table="R1"/>
+        <field key="true" name="R11" type="varchar(9)"/>
+        <field name="R12" type="varchar(100)"/>
+      </relation>
+      <relation materialized="true" name="R2">
+        <dbinfo schema="S1" table="R2"/>
+        <field key="true" name="R21" type="varchar(9)"/>
+        <field key="true" name="R22" type="varchar(25)"/>
+        <field name="R23" type="varchar(25)"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer address="localhost" name="P2">
+  	<description></description>
+    <schema name="S2">
+  		<description></description>
+      <relation materialized="true" name="T1">
+        <dbinfo schema="S2" table="T1"/>
+        <field key="true" name="T11" type="varchar(50)"/>
+        <field name="T12" type="varchar(80)"/>
+        <field key="true" name="T13" type="varchar(100)"/>
+      </relation>
+    </schema>
+  </peer>
+  <mapping materialized="true" bidirectional="true" name="M4">
+    <head>
+      <atom del="true">
+        P2.S2.T1(X,Y,Z)
+      </atom>
+    </head>
+    <body>
+      <atom del="true">
+        P1.S1.R1(X, Y)
+      </atom>
+      <atom>
+        P1.S1.R2(X, Z, W)
+      </atom>
+    </body>
+  </mapping>  
+  <engine>
+    <mappings password="" server="localhost:50000" type="sql" username=""/>
+<!--    <updates password="" server="localhost:50000" type="sql" username=""/>-->
+  </engine>
+  <store>
+    <update hostname="localhost" port="9999" type="bdb"/>
+    <state type="hash"/>
+  </store>
+  <trustConditions peer="P1" schema="S1">
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T1"/>
+  </trustConditions>
+  <trustConditions peer="P2" schema="S2">
+	    <trusts pid="P1" pidType="STRING" priority="5" relation="R1"/>
+	    <trusts pid="P1" pidType="STRING" priority="5" relation="R2"/>
+  </trustConditions>
+</catalog>
+

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SchemaLoaderConfig>
+	<DBSpecific>
+		<DB productName="DB2/NT">
+			<!-- Currently no include support. -->
+			<Excludes>
+				<Exclude type="SCHEMA" name="SYSTOOLS" />
+			</Excludes>
+		</DB>
+	</DBSpecific>
+	<DBGeneric>
+		<Excludes>
+		<Exclude type="TABLE" name="PM\d+"/>
+		</Excludes>
+	</DBGeneric>
+</SchemaLoaderConfig>

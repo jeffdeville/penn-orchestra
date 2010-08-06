@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="orchestraSchema">
+	
+	<typeAlias type="edu.upenn.cis.orchestra.repository.model.beans.ScRelationBean" alias="ScRelation"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsSchemaRelationBean" alias="EncapsSchemRel"/>
+	<typeAlias type="edu.upenn.cis.orchestra.repository.dao.model.beans.EncapsPeerIdSchemaId" alias="EncapsPeerIdSchemaId"/>
+	
+	<resultMap class="ScRelation" id="relation">
+		<result property="dbSchema" column="rel_dbSchema"/>
+		<result property="dbCatalog" column="rel_dbCatalog"/>
+		<result property="dbRelName" column="rel_dbRelName"/>
+		<result property="name" column="rel_name"/>
+		<result property="description" column="rel_description"/>
+		<result property="materialized" column="rel_materialized"/>
+		<result property="materialized" column="rel_materialized"/>
+		<result property="statNbRows" column="rel_statNbRows"/>
+	</resultMap>
+	
+	<resultMap class="ScRelation" id="relationDetail" extends="relation" groupBy="dbSchema,dbCatalog,name">
+		<result property="fields" resultMap="orchestraSchema.field"/>
+		<result property="directConstraints" column="{peerId=rel_peerId,schemaId=rel_schemaId,relationId=rel_name}" select="getRelationDirectConstraints" /> 
+		<result property="foreignKeys" column="{peerId=rel_peerId,schemaId=rel_schemaId,relationId=rel_name}" select="getForeignKeys"/>
+	</resultMap>
+	
+	
+	
+	<select id="getRelationsBySchema" resultMap="relationDetail">
+		SELECT 
+			   rel.peerId       rel_peerId,
+			   rel.dbSchema     rel_dbSchema,
+			   rel.dbCatalog    rel_dbCatalog,
+			   rel.dbRelName    rel_dbRelName,
+			   rel.name         rel_name,
+			   rel.description  rel_description,
+			   rel.materialized rel_materialized,
+			   rel.schemaId     rel_schemaId,
+			   rel.statNbRows	rel_statNbRows,
+			   fld.name         fld_name,
+			   fld.description  fld_description,
+			   fld.type         fld_type,
+			   fld.dbType		fld_dbType,
+			   fld.dbSize       fld_dbSize, 
+			   fld.isNullable   fld_isNullable
+		  FROM 
+		  	  relations rel 
+		  	     JOIN fields fld
+		  	        ON (
+		  	                rel.peerId = fld.peerId
+		  	            AND rel.schemaId = fld.schemaId 
+		  	     	    AND rel.name = fld.relationId
+		  	     	   )
+		  WHERE rel.peerId = #peerId#
+		  	AND rel.schemaId = #schemaId#;
+	</select>
+
+	<insert id="insertRelation" parameterClass="EncapsSchemRel">
+		INSERT INTO relations
+		   (peerId, schemaId, dbSchema, dbCatalog, dbRelName, name, description, materialized, statNbRows)
+		VALUES
+		   (#peer.id#, #schema.schemaId#, #relation.dbSchema#, #relation.dbCatalog#, #relation.dbRelName#, #relation.name#, #relation.description#, #relation.materialized#, #relation.statNbRows#);
+	</insert>
+
+	<delete id="deleteRelationsForPeer" parameterClass="java.lang.String">
+		DELETE FROM relations
+		  WHERE peerId=#value#
+	</delete>	
+
+	<delete id="deleteRelationsForSchema" parameterClass="EncapsPeerIdSchemaId">
+		DELETE FROM relations
+		  WHERE peerId=#peerId#
+		    AND schemaId=#schemaId#
+	</delete>	
+
+</sqlMap>
