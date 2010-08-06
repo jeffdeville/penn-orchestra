@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><mappings name="systemMappings">
+  <mapping bidirectional="false" description="" isFakeMapping="false" materialized="true" name="pPODotu1otu2" trustRank="1" type="mapping">
+    <head>
+      <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+        <atomValue>pPODPeer2.pPODPeer2Schema1.OTU(OTU_ID, LABEL, OBJ_VERSION, PPOD_VERSION)</atomValue>
+        <relationContext mapping="false" peer="pPODPeer2" schema="pPODPeer2Schema1" relation="OTU"/>
+      </atom>
+    </head>
+    <body>
+      <atom allStrata="true" backwardDeletable="false" negated="false" type="NONE">
+        <atomValue>pPODPeer1.pPODPeer1Schema1.OTU(OTU_ID, LABEL, OBJ_VERSION, PPOD_VERSION)</atomValue>
+        <relationContext mapping="false" peer="pPODPeer1" schema="pPODPeer1Schema1" relation="OTU"/>
+      </atom>
+    </body>
+  </mapping>
+</mappings>

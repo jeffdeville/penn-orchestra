@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="mysqlConn"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://localhost/orchestraRepos" />
+		<property name="username" value="" />
+		<property name="password" value="" />
+	</bean>
+	<bean id="ppod"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost/ppod" />
+		<property name="username" value="" />
+		<property name="password" value="" />
+	</bean>
+	<bean id="db2Conn"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.ibm.db2.jcc.DB2Driver" />
+		<property name="url"
+			value="jdbc:db2://localhost:50000/BIOBANK" />
+		<property name="username" value="" />
+		<property name="password" value="" />
+	</bean>
+</beans>

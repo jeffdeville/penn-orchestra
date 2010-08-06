@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<EXTRACTSCHEMA.BASE RID="1" RSTR="inBoth" />
+	<EXTRACTSCHEMA.BASE RID="2" RSTR="Insertion" />
+	<EXTRACTSCHEMA.BASE_PREV RID="1" RSTR="inBoth" />
+	<EXTRACTSCHEMA.BASE_PREV RID="3" RSTR="Deletion" />
+</dataset>

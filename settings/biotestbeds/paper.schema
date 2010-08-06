@@ -1,0 +1,112 @@
+<?xml version="1.0" ?>
+<!--11:49:52 05/21/07 EDT
+{'cutoff': 1024, 'help': False, 'skip': 0, 'fanout': 2, 'todd': False, 'schemas': 3, 'xmlformat': True, 'filename': 'bioSimple', 'maxcycles': None, 'deletions': 1, 'dbalias': 'BIOTB', 'coverage': 0.75, 'mincycles': None, 'password': '', 'integers': False, 'peers': 3, 'insertions': 1, 'tukwila': False, 'username': '', 'seed': 0, 'olivier': False, 'oracle': False, 'relsize': 4}-->
+<catalog recmode="false" name="join3">
+  <migrated>true</migrated>
+  <peer address="localhost" name="GUS">
+  	<description></description>
+    <schema name="GUS">
+  		<description></description>
+      <relation materialized="true" name="G">
+        <dbinfo schema="G" table="G"/>
+        <field key="true" name="id" type="int"/>
+        <field key="true" name="can" type="varchar(100)"/>
+        <field key="true" name="nam" type="varchar(100)"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer address="localhost" name="uBio">
+  	<description></description>
+    <schema name="uBio">
+  		<description></description>
+      <relation materialized="true" name="U">
+        <dbinfo schema="uBio" table="U"/>
+        <field key="true" name="nam" type="varchar(100)"/>
+        <field key="true" name="can" type="varchar(100)"/>
+      </relation>
+    </schema>
+  </peer>
+	<peer address="localhost" name="BioSQL">
+  	<description></description>
+    <schema name="BioSQL">
+  		<description></description>
+      <relation materialized="true" name="B">
+        <dbinfo schema="BioSQL" table="B"/>
+        <field key="true" name="id" type="int"/>
+        <field key="true" name="nam" type="varchar(100)"/>
+      </relation>
+    </schema>
+  </peer>
+	<mapping materialized="true" bidirectional="false" name="m1">
+    <head>
+      <atom del="false">
+        BioSQL.BioSQL.B(i,n)
+      </atom>
+    </head>
+    <body>
+      <atom del="false">
+        GUS.GUS.G(i,c,n)
+      </atom>
+    </body>
+  </mapping> 
+	<mapping materialized="true" bidirectional="false" name="m2">
+    <head>
+      <atom del="false">
+        uBio.uBio.U(n,c)
+      </atom>
+    </head>
+    <body>
+      <atom del="false">
+        GUS.GUS.G(i,c,n)
+      </atom>
+    </body>
+  </mapping>
+	<mapping materialized="true" bidirectional="false" name="m3">
+    <head>
+      <atom del="false">
+        uBio.uBio.U(n,c)
+      </atom>
+    </head>
+    <body>
+      <atom del="false">
+        BioSQL.BioSQL.B(i,n)
+      </atom>
+    </body>
+  </mapping>  
+	<mapping materialized="true" bidirectional="false" name="m4">
+    <head>
+      <atom del="false">
+        BioSQL.BioSQL.B(i,n)
+      </atom>
+    </head>
+    <body>
+      <atom del="false">
+        BioSQL.BioSQL.B(i,c)
+      </atom>
+      <atom del="false">
+        uBio.uBio.U(n,c)
+      </atom>
+    </body>
+  </mapping>  
+  <engine>
+    <mappings password="" server="" type="sql" username=""/>
+<!--    <updates password="" server="" type="sql" username=""/>-->
+  </engine>
+  <store>
+    <update hostname="localhost" port="9999" type="bdb"/>
+    <state type="hash"/>
+  </store>
+  <trustConditions peer="GUS" schema="GUS">
+	    <trusts pid="uBio" pidType="STRING" priority="5" relation="U"/>
+	    <trusts pid="BioSQL" pidType="STRING" priority="5" relation="B"/>
+  </trustConditions>
+  <trustConditions peer="uBio" schema="uBio">
+	    <trusts pid="GUS" pidType="STRING" priority="5" relation="G"/>
+	    <trusts pid="BioSQL" pidType="STRING" priority="5" relation="B"/>
+  </trustConditions>
+  <trustConditions peer="BioSQL" schema="BioSQL">
+	    <trusts pid="uBio" pidType="STRING" priority="5" relation="U"/>
+	    <trusts pid="GUS" pidType="STRING" priority="5" relation="G"/>
+  </trustConditions>
+</catalog>
+

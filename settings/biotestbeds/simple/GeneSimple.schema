@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<!--
+{'cutoff': 1024, 'help': False, 'skip': 0, 'fanout': 2, 'todd': False, 'schemas': 1, 'xmlformat': True, 'filename': 'GeneSimple', 'maxcycles': None, 'deletions': 1, 'dbalias': 'GENE', 'coverage': 0.75, 'mincycles': None, 'password': '', 'integers': False, 'peers': 1, 'insertions': 1, 'tukwila': False, 'username': '', 'seed': 0, 'olivier': False, 'oracle': False, 'relsize': 4}-->
+<catalog recmode="false" name="GeneSimple">
+  <migrated>true</migrated>
+  <peer address="localhost" name="SAVI">
+  	<description>The Yeast and Fly gene database, given by Perry</description>
+    <schema name="GENE">
+  		<description>The GENE database is a database having Yeast and Fly genes GO labels and their similarities </description>
+      <relation materialized="true" name="YEAST">
+        <dbinfo schema="GENE" table="YEAST"/>
+        <field name="GENE_NAME" type="varchar(25)"/>
+        <field name="GO_LABEL" type="varchar(30)"/>
+      </relation>
+      <relation materialized="true" name="FLY">
+        <dbinfo schema="GENE" table="FLY"/>
+        <field name="GENE_NAME" type="varchar(25)"/>
+        <field name="GO_LABEL" type="varchar(30)"/>
+      </relation>
+      <relation materialized="true" name="SIMILARITY">
+        <dbinfo schema="GENE" table="SIMILARITY"/>
+        <field name="GENE_YEAST" type="varchar(25)"/>
+        <field name="GENE_FLY" type="varchar(25)"/>
+	  <field name="BLAST_SIM" type="DOUBLE"/>	
+      </relation>
+      <relation materialized="true" name="TRAIN_PRUNED">
+        <dbinfo schema="GENE" table="TRAIN_PRUNED"/>
+        <field name="GENE_YEAST" type="varchar(25)"/>
+        <field name="GENE_FLY" type="varchar(25)"/>
+	<field name="BLAST_SIM" type="DOUBLE"/>	
+	<field name="OUTPUT" type="integer"/>	
+      </relation>
+    </schema>
+   </peer>
+  <mapping materialized="true" name="M0">
+    <head>
+      <atom>
+        SAVI.GENE.SIMILARITY(GENE_YEAST,GENE_FLY,BLAST_SIM)
+      </atom>
+    </head>
+    <body>
+      <atom>
+        SAVI.GENE.YEAST(GENE_NAME,GO_LABEL)
+      </atom>
+    </body>
+  </mapping>
+  <mapping materialized="true" name="M1">
+    <head>
+      <atom>
+        SAVI.GENE.SIMILARITY(GENE_YEAST,GENE_FLY,BLAST_SIM)
+      </atom>
+    </head>
+    <body>
+      <atom>
+        SAVI.GENE.FLY(GENE_NAME,GO_LABEL)
+      </atom>
+    </body>
+  </mapping>
+<store>
+    <update hostname="localhost" port="42" type="bdb"/>
+    <state type="hash"/>
+  </store>
+</catalog>

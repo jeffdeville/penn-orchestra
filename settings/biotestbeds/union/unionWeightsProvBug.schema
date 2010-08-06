@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+<!--11:49:52 05/21/07 EDT
+{'cutoff': 1024, 'help': False, 'skip': 0, 'fanout': 2, 'todd': False, 'schemas': 3, 'xmlformat': True, 'filename': 'bioSimple', 'maxcycles': None, 'deletions': 1, 'dbalias': 'BIOTB', 'coverage': 0.75, 'mincycles': None, 'password': '', 'integers': False, 'peers': 3, 'insertions': 1, 'tukwila': False, 'username': '', 'seed': 0, 'olivier': False, 'oracle': False, 'relsize': 4}-->
+<catalog recmode="false" name="unionWeightsProvBug">
+  <migrated>true</migrated>
+  <peer address="localhost" name="P1">
+  	<description></description>
+    <schema name="S1">
+  		<description></description>
+      <relation materialized="true" name="R1">
+        <dbinfo schema="S1" table="R1"/>
+        <field key="true" name="R11" type="varchar(9)"/>
+        <field name="R12" type="varchar(100)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+      <relation materialized="true" name="R2">
+        <dbinfo schema="S1" table="R2"/>
+        <field key="true" name="R21" type="varchar(9)"/>
+        <field key="true" name="R22" type="varchar(25)"/>
+        <field name="R23" type="varchar(25)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+    </schema>
+  </peer>
+  <peer address="localhost" name="P2">
+  	<description></description>
+    <schema name="S2">
+  		<description></description>
+      <relation materialized="true" name="T1">
+        <dbinfo schema="S2" table="T1"/>
+        <field key="true" name="T11" type="varchar(50)"/>
+        <field name="T12" type="varchar(80)"/>
+        <field key="true" name="T13" type="varchar(100)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+      <relation materialized="true" name="T2">
+        <dbinfo schema="S2" table="T2"/>
+        <field key="true" name="T21" type="varchar(50)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+      <relation materialized="true" name="T3">
+        <dbinfo schema="S2" table="T3"/>
+        <field key="true" name="T31" type="varchar(50)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+    </schema>
+  </peer>
+	<peer address="localhost" name="P3">
+  	<description></description>
+    <schema name="S3">
+  		<description></description>
+      <relation materialized="true" name="U1">
+        <dbinfo schema="S3" table="U1"/>
+        <field key="true" name="U11" type="varchar(50)"/>
+        <field name="U12" type="varchar(80)"/>
+        <field key="true" name="U13" type="varchar(100)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+      <relation materialized="true" name="U2">
+        <dbinfo schema="S3" table="U2"/>
+        <field key="true" name="U21" type="varchar(50)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+      <relation materialized="true" name="U3">
+        <dbinfo schema="S3" table="U3"/>
+        <field key="true" name="U31" type="varchar(50)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+    </schema>
+  </peer>
+	<peer address="localhost" name="P4">
+  	<description></description>
+    <schema name="S4">
+  		<description></description>
+      <relation materialized="true" name="V1">
+        <dbinfo schema="S4" table="V1"/>
+        <field key="true" name="V11" type="varchar(50)"/>
+        <field name="V12" type="varchar(80)"/>
+        <field key="true" name="V13" type="varchar(100)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+      <relation materialized="true" name="V2">
+        <dbinfo schema="S4" table="V2"/>
+        <field key="true" name="V21" type="varchar(50)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+      <relation materialized="true" name="V3">
+        <dbinfo schema="S4" table="V3"/>
+        <field key="true" name="V31" type="varchar(50)"/>
+        <field key="true" name="value" type="integer"/>
+      </relation>
+    </schema>
+  </peer>
+	<mapping materialized="true" bidirectional="false" name="M0">
+    <head>
+      <atom del="false">
+        P3.S3.U1(B,D,E,0)
+      </atom>
+      <atom del="false">
+        P3.S3.U2(A,0)
+      </atom>
+    </head>
+    <body>
+      <atom del="false">
+        P1.S1.R2(A,B,C,V1)
+      </atom>
+			<atom del="false">
+        P1.S1.R1(A,F,V2)
+      </atom>
+    </body>
+  </mapping> 
+	<mapping materialized="true" bidirectional="false" name="M1">
+    <head>
+      <atom del="false">
+        P3.S3.U1(A,B,C,0)
+      </atom>
+      <atom del="false">
+        P3.S3.U3(A,0)
+      </atom>
+    </head>
+    <body>
+      <atom del="false">
+        P2.S2.T1(A,B,D,V1)
+      </atom>
+			<atom del="false">
+        P2.S2.T3(A,V2)
+      </atom>
+    </body>
+  </mapping>
+	<mapping materialized="true" bidirectional="false" name="M2">
+    <head>
+      <atom del="false">
+        P4.S4.V1(A,E,D,0)
+      </atom>
+      <atom del="false">
+        P4.S4.V2(D,0)
+      </atom>
+    </head>
+    <body>
+      <atom del="false">
+        P3.S3.U1(A,B,D,V1)
+      </atom>
+      <atom del="false">
+        P3.S3.U2(A,V2)
+      </atom>
+    </body>
+  </mapping>  
+  <engine>
+    <mappings password="" server="localhost:50000" type="sql" username=""/>
+<!--    <updates password="" server="localhost:50000" type="sql" username=""/>-->
+  </engine>
+  <store>
+    <update hostname="localhost" port="9999" type="bdb"/>
+    <state type="hash"/>
+  </store>
+  <trustConditions peer="P1" schema="S1">
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T1"/>
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T2"/>
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T3"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U1"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U2"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U3"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V1"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V2"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V3"/>
+  </trustConditions>
+  <trustConditions peer="P2" schema="S2">
+	    <trusts pid="P1" pidType="STRING" priority="5" relation="R1"/>
+	    <trusts pid="P1" pidType="STRING" priority="5" relation="R2"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U1"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U2"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U3"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V1"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V2"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V3"/>
+  </trustConditions>
+  <trustConditions peer="P3" schema="S3">
+	    <trusts pid="P1" pidType="STRING" priority="5" relation="R1"/>
+	    <trusts pid="P1" pidType="STRING" priority="5" relation="R2"/>
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T1"/>
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T2"/>
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T3"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V1"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V2"/>
+	    <trusts pid="P4" pidType="STRING" priority="5" relation="V3"/>
+  </trustConditions>
+	<trustConditions peer="P4" schema="S4">
+	    <trusts pid="P1" pidType="STRING" priority="5" relation="R1"/>
+	    <trusts pid="P1" pidType="STRING" priority="5" relation="R2"/>
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T1"/>
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T2"/>
+	    <trusts pid="P2" pidType="STRING" priority="5" relation="T3"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U1"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U2"/>
+	    <trusts pid="P3" pidType="STRING" priority="5" relation="U3"/>
+  </trustConditions>
+</catalog>
+
