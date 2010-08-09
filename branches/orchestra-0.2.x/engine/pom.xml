@@ -6,7 +6,7 @@
 	<groupId>edu.upenn.cis.orchestra</groupId>
 	<artifactId>engine</artifactId>
 	<name>engine</name>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2-SNAPSHOT</version>
 	<description>Orchestra engine</description>
 	<url>http://TO_UPDATE___orchestra.cis.upenn.edu
 	</url>
@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>edu.upenn.cis.orchestra</groupId>
 		<artifactId>orchestra</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<build>
 		<testResources>
