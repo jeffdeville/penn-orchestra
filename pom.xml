@@ -6,7 +6,7 @@
 	<groupId>edu.upenn.cis.orchestra</groupId>
 	<artifactId>orchestra</artifactId>
 	<name>orchestra</name>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2-SNAPSHOT</version>
 	<description>Whole orchestra project</description>
 	<packaging>pom</packaging>
 
