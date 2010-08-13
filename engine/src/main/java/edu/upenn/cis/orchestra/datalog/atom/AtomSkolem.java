@@ -235,6 +235,12 @@ public class AtomSkolem extends AtomArgument {
 			val.renameVariable(extension);
 	}
 	
+	public synchronized void renameVariable (Map<String,String> renameTable)
+	{
+		for (AtomArgument val : getParams())
+			val.renameVariable(renameTable);
+	}
+	
 	@Override
 	public Element serialize(Document doc) {
 		Element result = super.serialize(doc);

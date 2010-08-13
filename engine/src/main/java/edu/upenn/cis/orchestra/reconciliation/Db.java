@@ -99,7 +99,7 @@ public abstract class Db {
 
 	public Db(TrustConditions tc, Schema schema) {
 		if (! schema.isFinished()) {
-			throw new IllegalArgumentException("schema must be finished before creating Db object");
+			throw new IllegalArgumentException("Schema " + schema.getSchemaId() + " must be finished before creating Db object");
 		}
 		this.schema = schema;
 		this.tc = tc.duplicate();

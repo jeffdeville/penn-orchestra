@@ -110,8 +110,7 @@ public class SchemaConverterStatementsGen {
 		for (Relation rel : _sc.getRelations()) {
 			if (!_existingTableNames.contains(rel.getFullQualifiedDbId())) {
 				String suffix = "";
-				statements.addAll(db.createSQLTableCode(rel.getDbRelName(),
-						suffix, rel, false, false, false, false, withLogging));
+				statements.addAll(db.createSQLTableCode(suffix, rel, false, false, false, withLogging));
 				// Create any key constraints
 				/*if (!rel.isInternalRelation()) {
 					// First of all, recreate primary keys. Necessary for
@@ -753,6 +752,7 @@ public class SchemaConverterStatementsGen {
 			// /*+ " DEFAULT -1"
 			// + " NOT NULL"*/);
 			// // }
+			inx++;
 			inx++;
 		}
 		statements.addAll(db.getSqlTranslator().addColsToTable(

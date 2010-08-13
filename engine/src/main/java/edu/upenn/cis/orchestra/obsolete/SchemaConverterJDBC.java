@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.repository.utils.dbConverter;
+package edu.upenn.cis.orchestra.obsolete;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.dbms.SqlDb;
+import edu.upenn.cis.orchestra.repository.utils.dbConverter.SchemaConverterStatementsGen;
 
 
 public class SchemaConverterJDBC {

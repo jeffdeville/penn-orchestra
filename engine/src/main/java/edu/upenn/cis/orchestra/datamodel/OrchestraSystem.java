@@ -25,6 +25,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -59,6 +61,13 @@ import edu.upenn.cis.orchestra.datalog.DatalogViewUnfolder;
 import edu.upenn.cis.orchestra.datalog.NonRecursiveDatalogProgram;
 import edu.upenn.cis.orchestra.datalog.RecursiveDatalogProgram;
 import edu.upenn.cis.orchestra.datalog.atom.Atom;
+import edu.upenn.cis.orchestra.datalog.atom.AtomAnnotation;
+import edu.upenn.cis.orchestra.datalog.atom.AtomAnnotationFactory;
+import edu.upenn.cis.orchestra.datalog.atom.AtomArgument;
+import edu.upenn.cis.orchestra.datalog.atom.AtomConst;
+import edu.upenn.cis.orchestra.datalog.atom.AtomVariable;
+import edu.upenn.cis.orchestra.datalog.atom.Atom.AtomType;
+import edu.upenn.cis.orchestra.datamodel.TrustConditions.Trusts;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateMappingIdException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicatePeerIdException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateRelationIdException;
@@ -92,8 +101,14 @@ import edu.upenn.cis.orchestra.reconciliation.StateStore;
 import edu.upenn.cis.orchestra.reconciliation.USDump;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore;
 import edu.upenn.cis.orchestra.reconciliation.UpdateStore.USException;
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreClient;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
+import edu.upenn.cis.orchestra.proql.MatchPatterns;
+import edu.upenn.cis.orchestra.proql.Pattern;
+import edu.upenn.cis.orchestra.proql.QueryParser;
+import edu.upenn.cis.orchestra.proql.SchemaGraph;
+import edu.upenn.cis.orchestra.proql.SchemaSubgraph;
 
 /****************************************************************
  * Class used to group multiple peers (global view of the system)
@@ -365,6 +380,19 @@ public class OrchestraSystem {
 					if (!r.isInternalRelation()) {
 						rels.add(new RelationContext(r, s, p, false));
 					}
+				}
+			}
+		}
+		return rels;
+	}
+
+	public synchronized List<RelationContext> getAllSystemRelations() {
+		List<RelationContext> rels = new ArrayList<RelationContext>();
+
+		for (Peer p : getPeers()) {
+			for (Schema s : p.getSchemas()) {
+				for (Relation r : s.getRelations()) {
+					rels.add(new RelationContext(r, s, p, false));
 				}
 			}
 		}
@@ -1192,12 +1220,12 @@ public class OrchestraSystem {
 					if (addLastProgram) {
 						if (lastWasRecursive) {
 							DatalogProgram prog = new RecursiveDatalogProgram(
-									rules, c4f);
+									rules, c4f, "RunMaterializedRecursive");
 							progs.add(prog);
 							// lastWasRecursive = false;
 						} else {
 							DatalogProgram prog = new NonRecursiveDatalogProgram(
-									rules, c4f);// isMigrated());
+									rules, c4f, "RunMaterializedNonRecursive");// isMigrated());
 							progs.add(prog);
 						}
 					}
@@ -1210,7 +1238,7 @@ public class OrchestraSystem {
 
 					// Don't count for fixpoint
 					DatalogProgram prog = new RecursiveDatalogProgram(rules,
-							c4f);
+							c4f, "RunRecursive");
 					progs.add(prog);
 
 					// Create a next program for whatever rules are next
@@ -1220,7 +1248,7 @@ public class OrchestraSystem {
 					// Period: end of a program / stratum
 				} else if (hasPeriod) {
 					DatalogProgram prog = new RecursiveDatalogProgram(rules,
-							c4f);// isMigrated());
+							c4f, "EndOfStratum");// isMigrated());
 					progs.add(prog);
 					Rule r = Rule.parse(this, next);
 					lastRule = r;
@@ -1246,11 +1274,11 @@ public class OrchestraSystem {
 			// isMigrated());
 			// progs.add(prog);
 			if (lastWasRecursive) {
-				DatalogProgram prog = new RecursiveDatalogProgram(rules, c4f);// isMigrated());
+				DatalogProgram prog = new RecursiveDatalogProgram(rules, c4f, "RunAsRecursive");// isMigrated());
 				progs.add(prog);
 				lastWasRecursive = false;
 			} else {
-				DatalogProgram prog = new NonRecursiveDatalogProgram(rules, c4f);// isMigrated());
+				DatalogProgram prog = new NonRecursiveDatalogProgram(rules, c4f, "RunAsNonRecursive");// isMigrated());
 				progs.add(prog);
 			}
 		}
@@ -1323,12 +1351,12 @@ public class OrchestraSystem {
 					if (addLastProgram) {
 						if (lastWasRecursive) {
 							DatalogProgram prog = new RecursiveDatalogProgram(
-									rules, c4f);
+									rules, c4f, "RunAsRecursive");
 							progs.add(prog);
 							// lastWasRecursive = false;
 						} else {
 							DatalogProgram prog = new NonRecursiveDatalogProgram(
-									rules, c4f);// isMigrated());
+									rules, c4f, "RunAsNonRecursive");// isMigrated());
 							progs.add(prog);
 						}
 					}
@@ -1340,7 +1368,7 @@ public class OrchestraSystem {
 
 					// Don't count for fixpoint
 					DatalogProgram prog = new RecursiveDatalogProgram(rules,
-							c4f);
+							c4f, "InitialRecursive");
 					progs.add(prog);
 
 					// Create a next program for whatever rules are next
@@ -1350,7 +1378,7 @@ public class OrchestraSystem {
 					// Period: end of a program / stratum
 				} else if (hasPeriod) {
 					DatalogProgram prog = new RecursiveDatalogProgram(rules,
-							c4f);// isMigrated());
+							c4f, "EndOfStratum");// isMigrated());
 					progs.add(prog);
 					Rule r = Rule.parse(this, next);
 					rules.add(r);
@@ -1369,11 +1397,11 @@ public class OrchestraSystem {
 		// In case there was no terminating period
 		if (addLastProgram) {
 			if (lastWasRecursive) {
-				DatalogProgram prog = new RecursiveDatalogProgram(rules, c4f);// isMigrated());
+				DatalogProgram prog = new RecursiveDatalogProgram(rules, c4f, "RunAsRecursive");// isMigrated());
 				progs.add(prog);
 				lastWasRecursive = false;
 			} else {
-				DatalogProgram prog = new NonRecursiveDatalogProgram(rules, c4f);// isMigrated());
+				DatalogProgram prog = new NonRecursiveDatalogProgram(rules, c4f, "RunAsNonRecursive");// isMigrated());
 				progs.add(prog);
 			}
 		}
@@ -1494,7 +1522,7 @@ public class OrchestraSystem {
 		_logger.debug("Publish finished.");
 		return count;
 	}
-
+	
 	/**
 	 * Publishes the local peer's updates and then performs an update exchange
 	 * mapping.
@@ -1591,7 +1619,9 @@ public class OrchestraSystem {
 		}
 		return relations;
 	}
-
+	public Map<String, Map<String, TrustConditions>> getTrustMapping() {
+		return _tcs;
+	}
 	public IDerivabilityCheck getDerivabilityCheck() {
 		return _derivabilityChecker;
 		

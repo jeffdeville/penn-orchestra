@@ -87,6 +87,8 @@ public interface ISchemaIDBindingClient {
 	 * 
 	 * @param peerDoc
 	 * @return a map from peer id to its associated schema, as specified by {@code peerDoc}.
+	 * @param peerDoc
+	 * @return a map from peer id to its associated schema, as specified by {@code peerDoc}.
 	 * @throws USException 
 	 */
 	Map<AbstractPeerID, Schema> loadSchemas(Document peerDoc)

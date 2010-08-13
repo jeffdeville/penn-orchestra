@@ -26,9 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.Debug;
 import edu.upenn.cis.orchestra.datalog.atom.Atom;
 import edu.upenn.cis.orchestra.datalog.atom.AtomArgument;
@@ -44,8 +47,9 @@ import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.TypedRelation;
 import edu.upenn.cis.orchestra.datamodel.exceptions.RelationNotFoundException;
 import edu.upenn.cis.orchestra.dbms.IRuleCodeGen;
-import edu.upenn.cis.orchestra.dbms.RuleSqlGen;
 import edu.upenn.cis.orchestra.dbms.IRuleCodeGen.UPDATE_TYPE;
+import edu.upenn.cis.orchestra.dbms.sql.generation.RuleSqlGen;
+import edu.upenn.cis.orchestra.dbms.sql.generation.SqlTableManipulation;
 import edu.upenn.cis.orchestra.provenance.ProvenanceNode;
 import edu.upenn.cis.orchestra.provenance.ProvenanceRelation;
 import edu.upenn.cis.orchestra.util.DomUtils;
@@ -76,6 +80,10 @@ public class Rule extends Mapping
 	private List<Integer> _preparedParams = new ArrayList<Integer>();
 
 	private final Map<String, Schema> _builtInSchemas;
+	/** Logger. */
+	private static final Logger _logger = LoggerFactory
+			.getLogger(Rule.class);
+
 	public Rule (Atom head, Atom b, Mapping mapping, Map<String, Schema> builtInSchemas)
 	{
 		super(head.deepCopy(), b.deepCopy());
@@ -164,6 +172,8 @@ public class Rule extends Mapping
 	}
 
 	public boolean onlyKeyAndNulls(){
+		if (Config.useCompactNulls())
+			return false;
 		return _onlyKeyAndNulls;
 	}
 
@@ -619,7 +629,7 @@ public class Rule extends Mapping
 		List<Rule> res = new ArrayList<Rule> ();
 
 		for(Atom a : mapping.getBody()){
-			if(!a.isNeg() && !a.isSkolem()){
+			if(!a.isNeg() && !a.isSkolem() && !builtInSchemas.containsKey(a.getSchema().getSchemaId())){
 				if((invertEdbs && invertOthers) ||
 						(edbs.contains(a.getRelationContext()) && invertEdbs) ||
 						(!edbs.contains(a.getRelationContext()) && invertOthers)){
@@ -834,9 +844,7 @@ public class Rule extends Mapping
 			}
 		}
 		if(containedOther && containedThis){
-			Debug.println("FOUND EQUIVALENT RULES:");
-			Debug.println(this.toString());
-			Debug.println(other.toString());
+			_logger.debug("FOUND EQUIVALENT RULES: {}\n and {}", toString(), other.toString());
 			return true; 
 		}else{
 			return false;
@@ -960,7 +968,7 @@ public class Rule extends Mapping
 								if(c1.equals("0"))
 									return false;
 							}else{
-								Debug.println("check");
+								_logger.warn("check");
 							}
 						}else{
 							return false;
@@ -1092,8 +1100,7 @@ public class Rule extends Mapping
 	}
 
 	public void minimize(){
-		Debug.println("Rule before minimization: " + this);
-		Debug.println("#atoms before minimization: " + getBody().size());
+		_logger.debug("Rule has {} atoms before minimization: {}", getBody().size(), this);
 		
 		List<Atom> newBody = new ArrayList<Atom>();
 		for(int i = 0; i < getBody().size(); i++){
@@ -1110,13 +1117,11 @@ public class Rule extends Mapping
 
 		}
 		this.setBody(newBody);
-		Debug.println("Rule after minimization: " + this);
-		Debug.println("#atoms after minimization: " + getBody().size());
+		_logger.debug("Rule has {} atoms after minimization: {}", getBody().size(), this);
 	}
 	
 	public List<Atom> minimize(List<Atom> discarded){
-		Debug.println("Rule before minimization: " + this);
-		Debug.println("#atoms before minimization: " + getBody().size());
+		_logger.debug("Rule has {} atoms before minimization: {}", getBody().size(), this);
 		
 		List<Atom> newBody = new ArrayList<Atom>();
 		for(int i = 0; i < getBody().size(); i++){
@@ -1134,8 +1139,7 @@ public class Rule extends Mapping
 		}
 		this.setBody(newBody);
 		List<Atom> ret = mergeComplementaryProvRelAtoms(discarded);
-		Debug.println("Rule after minimization: " + this);
-		Debug.println("#atoms after minimization: " + getBody().size());
+		_logger.debug("Rule has {} atoms after minimization: {}", getBody().size(), this);
 		return ret;
 	}
 

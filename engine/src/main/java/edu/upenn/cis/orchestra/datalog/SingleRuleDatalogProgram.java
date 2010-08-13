@@ -33,26 +33,26 @@ public class SingleRuleDatalogProgram extends NonRecursiveDatalogProgram {
 	protected String _queryString = new String("");
 	protected boolean preparedFlag = false;
 	
-	public SingleRuleDatalogProgram(List<Rule> r, boolean c4f){
-		super(r, c4f);
+	public SingleRuleDatalogProgram(List<Rule> r, boolean c4f, String desc){
+		super(r, c4f, desc);
 		_stmts=null;
 	}
 	
-	public SingleRuleDatalogProgram(List<Rule> r){
-		super(r);
+	public SingleRuleDatalogProgram(List<Rule> r, String desc){
+		super(r, desc);
 		_stmts=null;
 	}
 	
-	public SingleRuleDatalogProgram(Rule r){
-		super(null);
+	public SingleRuleDatalogProgram(Rule r, String desc){
+		super(null, desc);
 		List<Rule> l = new ArrayList<Rule>();
 		l.add(r);
 		_rules = l;
 		_stmts=null;
 	}
 	
-	public SingleRuleDatalogProgram(Rule r, boolean c4f){
-		super(null);
+	public SingleRuleDatalogProgram(Rule r, boolean c4f, String desc){
+		super(null, desc);
 		List<Rule> l = new ArrayList<Rule>();
 		l.add(r);
 		_rules = l;

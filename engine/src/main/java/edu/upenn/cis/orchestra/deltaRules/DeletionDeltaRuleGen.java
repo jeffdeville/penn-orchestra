@@ -84,11 +84,11 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		List<Rule> bidirDels = backwardDelPropagationRules();
 		if(bidirDels.size() > 0){
 //			Needed because GUI deletions go into _L_DEL relations
-			prep.add(new NonRecursiveDatalogProgram(moveLtoP(AtomType.DEL, AtomType.DEL, getBuiltInSchemas()) ,false));
-			policy.add(new RecursiveDatalogProgram(bidirDels, true));
+			prep.add(new NonRecursiveDatalogProgram(moveLtoP(AtomType.DEL, AtomType.DEL, getBuiltInSchemas()) ,false, "Bidir_Prep"));
+			policy.add(new RecursiveDatalogProgram(bidirDels, true, "Bidir_Policy"));
 //			The following should not be necessary, and will probably be wrong if we combine 
 //			unidirectional and bidirectional mappings - leave for now to make sure maintenance is correct
-			post.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas())));
+			post.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas()), "Bidir_Post"));
 		}
 
 		ret.add(prep);
@@ -97,24 +97,24 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		return ret;
 	}
 
-	protected DatalogSequence sideEffectFreeUpdatePolicyRulesOneProg() {
+	protected DatalogSequence sideEffectFreeUpdatePolicyRulesOneProg(Map<String, Schema> builtInSchemas) {
 		DatalogSequence ret = new DatalogSequence(false, true);
 		DatalogSequence upd = new DatalogSequence(false, true);
 		List<Rule> bidirDels = backwardDelPropagationRules();
 		if(bidirDels.size() > 0){
 			//			Needed because GUI deletions go into _L_DEL relations
-			upd.add(new NonRecursiveDatalogProgram(moveLtoP(AtomType.DEL, AtomType.DEL, getBuiltInSchemas()), false));
+			upd.add(new NonRecursiveDatalogProgram(moveLtoP(AtomType.DEL, AtomType.DEL, getBuiltInSchemas()), false, "MoveLtoP"));
 			//			HACKS, to avoid deleting idbs right away
-			upd.add(new NonRecursiveDatalogProgram(copyRelationList(getIdbs(), AtomType.INS, AtomType.DEL, getBuiltInSchemas()), false));
-			upd.add(new NonRecursiveDatalogProgram(applyRelonRel(getIdbs(), true, AtomType.NONE, AtomType.NONE, AtomType.INS, true, false, false, getBuiltInSchemas()), false));
-			upd.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.INS, getBuiltInSchemas())));
+			upd.add(new NonRecursiveDatalogProgram(copyRelationList(getIdbs(), AtomType.INS, AtomType.DEL, getBuiltInSchemas()), false, "CopyIDBs"));
+			upd.add(new NonRecursiveDatalogProgram(applyRelonRel(getIdbs(), true, AtomType.NONE, AtomType.NONE, AtomType.INS, true, false, false, getBuiltInSchemas()), false, "ApplyInsToIDBs"));
+			upd.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.INS, getBuiltInSchemas()), "clearIDBs"));
 
 			//			Update policy rules
-			upd.add(new RecursiveDatalogProgram(bidirDels, true));
+			upd.add(new RecursiveDatalogProgram(bidirDels, true, "UpdatePolicyRules"));
 
 			//			Copy idbs from - to d
-			upd.add(new NonRecursiveDatalogProgram(copyRelationList(getIdbs(), AtomType.D, AtomType.DEL, getBuiltInSchemas())));
-			upd.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas())));
+			upd.add(new NonRecursiveDatalogProgram(copyRelationList(getIdbs(), AtomType.D, AtomType.DEL, getBuiltInSchemas()), "CopyIDBsToD"));
+			upd.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas()), "CopyIDBstoDel"));
 
 			////			Backup all relations
 			//			upd.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.BCK, AtomType.NONE, getBuiltInSchemas())));
@@ -125,13 +125,13 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 			//			Test-run the maintenance program to compute side effects
 			ret.add(preDeletionRules());
-			ret.add(deletionRules());
+			ret.add(deletionRules(builtInSchemas));
 			ret.add(postDeletionRules(false, false)); // change last to false to avoid using BCK
 
 			//			Subtract idb^{d} from idb^{-} to get side effects (in {inv}) 
-			ret.add(new NonRecursiveDatalogProgram(applyRelonRel(getIdbs(), false, AtomType.INV, AtomType.DEL, AtomType.D, false, true, false, getBuiltInSchemas())));
-			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas())));
-			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.D, getBuiltInSchemas())));
+			ret.add(new NonRecursiveDatalogProgram(applyRelonRel(getIdbs(), false, AtomType.INV, AtomType.DEL, AtomType.D, false, true, false, getBuiltInSchemas()), "RemoveDfromDEL"));
+			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas()), "ClearIDBsDEL"));
+			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.D, getBuiltInSchemas()), "CLearIDBsD"));
 
 			////			Restore rels from backup
 			//			ret.add(new NonRecursiveDatalogProgram(moveRelationList(getEdbs(), AtomType.NONE, AtomType.BCK, getBuiltInSchemas())));
@@ -140,14 +140,14 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 			//			Compute lineage of side effects 
 			//			HACK to make things work for now
-			ret.add(new NonRecursiveDatalogProgram(copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas())));
-			ret.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas())));
-			ret.add(new RecursiveDatalogProgram(lineageRules(), true));
-			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getMappingRelations(), AtomType.NEW, getBuiltInSchemas())));
-			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.NEW, getBuiltInSchemas())));
+			ret.add(new NonRecursiveDatalogProgram(copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()), "MappingsToNew"));
+			ret.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()), "EDBsToNew"));
+			ret.add(new RecursiveDatalogProgram(lineageRules(), true, "LineageRules"));
+			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getMappingRelations(), AtomType.NEW, getBuiltInSchemas()), "NewToMappingRels"));
+			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.NEW, getBuiltInSchemas()), "ClearNew"));
 
 			//			Subtract edb^{inv} from edb^{-}
-			ret.add(new NonRecursiveDatalogProgram(applyRelonRel(getEdbs(), false, AtomType.DEL, AtomType.DEL, AtomType.INV, false, true, true, getBuiltInSchemas())));
+			ret.add(new NonRecursiveDatalogProgram(applyRelonRel(getEdbs(), false, AtomType.DEL, AtomType.DEL, AtomType.INV, false, true, true, getBuiltInSchemas()), "InvFromDel"));
 
 			//			Clear inv 
 			ret.add(cleanupRelations(AtomType.INV, getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas()));
@@ -157,7 +157,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		return(ret);
 	}
 
-	protected List<DatalogSequence> sideEffectFreeUpdatePolicyRules() {
+	protected List<DatalogSequence> sideEffectFreeUpdatePolicyRules(Map<String, Schema> builtInSchemas) {
 		List<DatalogSequence> ret = new ArrayList<DatalogSequence>();
 		DatalogSequence prep = new DatalogSequence(false, true);
 		DatalogSequence upd = new DatalogSequence(false, true);
@@ -176,18 +176,18 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 		if(bidirDels.size() > 0){
 //			Needed because GUI deletions go into _L_DEL relations
-			prep.add(new NonRecursiveDatalogProgram(moveLtoP(AtomType.DEL, AtomType.DEL, getBuiltInSchemas()), false));
+			prep.add(new NonRecursiveDatalogProgram(moveLtoP(AtomType.DEL, AtomType.DEL, getBuiltInSchemas()), false, "PrepDEL"));
 //			HACKS, to avoid deleting idbs right away
-			upd.add(new NonRecursiveDatalogProgram(copyRelationList(getIdbs(), AtomType.INS, AtomType.DEL, getBuiltInSchemas()), false));
-			upd.add(new NonRecursiveDatalogProgram(applyRelonRel(getIdbs(), true, AtomType.NONE, AtomType.NONE, AtomType.INS, true, false, false, getBuiltInSchemas()), false));
-			upd.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.INS, getBuiltInSchemas())));
+			upd.add(new NonRecursiveDatalogProgram(copyRelationList(getIdbs(), AtomType.INS, AtomType.DEL, getBuiltInSchemas()), false, "CopyDelToIns"));
+			upd.add(new NonRecursiveDatalogProgram(applyRelonRel(getIdbs(), true, AtomType.NONE, AtomType.NONE, AtomType.INS, true, false, false, getBuiltInSchemas()), false, "ApplyInsToIDBs"));
+			upd.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.INS, getBuiltInSchemas()), "ClearINS"));
 
 //			Update policy rules
-			upd.add(new RecursiveDatalogProgram(bidirDels, true));
+			upd.add(new RecursiveDatalogProgram(bidirDels, true, "Update Policy"));
 
 //			Copy idbs from - to d
-			post1.add(new NonRecursiveDatalogProgram(copyRelationList(getIdbs(), AtomType.D, AtomType.DEL, getBuiltInSchemas())));
-			post1.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas())));
+			post1.add(new NonRecursiveDatalogProgram(copyRelationList(getIdbs(), AtomType.D, AtomType.DEL, getBuiltInSchemas()), "DelToD"));
+			post1.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas()), "ClearDEL"));
 
 ////			Backup all relations
 //			upd.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.BCK, AtomType.NONE, getBuiltInSchemas())));
@@ -198,13 +198,13 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 //			Test-run the maintenance program to compute side effects
 			seDetectPrep.add(preDeletionRules());
-			seDetectMaint.add(deletionRules());
+			seDetectMaint.add(deletionRules(builtInSchemas));
 			seDetectPost.add(postDeletionRules(false, false)); // change last to false to avoid using BCK
 
 //			Subtract idb^{d} from idb^{-} to get side effects (in {inv}) 
-			subtract1.add(new NonRecursiveDatalogProgram(applyRelonRel(getIdbs(), false, AtomType.INV, AtomType.DEL, AtomType.D, false, true, false, getBuiltInSchemas())));
-			subtract1.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas())));
-			subtract1.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.D, getBuiltInSchemas())));
+			subtract1.add(new NonRecursiveDatalogProgram(applyRelonRel(getIdbs(), false, AtomType.INV, AtomType.DEL, AtomType.D, false, true, false, getBuiltInSchemas()), "ApplyDelToInv"));
+			subtract1.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas()), "ClearDel"));
+			subtract1.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.D, getBuiltInSchemas()), "ClearD"));
 
 ////			Restore rels from backup
 //			ret.add(new NonRecursiveDatalogProgram(moveRelationList(getEdbs(), AtomType.NONE, AtomType.BCK, getBuiltInSchemas())));
@@ -213,14 +213,14 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 //			Compute lineage of side effects 
 //			HACK to make things work for now
-			lineagePrep.add(new NonRecursiveDatalogProgram(copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas())));
-			lineagePrep.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas())));
-			lineage.add(new RecursiveDatalogProgram(lineageRules(), true));
-			lineagePost.add(new NonRecursiveDatalogProgram(clearRelationList(getMappingRelations(), AtomType.NEW, getBuiltInSchemas())));
-			lineagePost.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.NEW, getBuiltInSchemas())));
+			lineagePrep.add(new NonRecursiveDatalogProgram(copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()), "LineagePrepCopyToNew"));
+			lineagePrep.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()), "LinagePrepCopyEDBsToNew"));
+			lineage.add(new RecursiveDatalogProgram(lineageRules(), true, "LineageRules"));
+			lineagePost.add(new NonRecursiveDatalogProgram(clearRelationList(getMappingRelations(), AtomType.NEW, getBuiltInSchemas()), "LineagePostClearNew"));
+			lineagePost.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.NEW, getBuiltInSchemas()), "LineagePostClearNewEDBs"));
 
 //			Subtract edb^{inv} from edb^{-}
-			subtract2.add(new NonRecursiveDatalogProgram(applyRelonRel(getEdbs(), false, AtomType.DEL, AtomType.DEL, AtomType.INV, false, true, true, getBuiltInSchemas())));
+			subtract2.add(new NonRecursiveDatalogProgram(applyRelonRel(getEdbs(), false, AtomType.DEL, AtomType.DEL, AtomType.INV, false, true, true, getBuiltInSchemas()), "SubInvFromDel"));
 
 //			Clear inv 
 			post2.add(cleanupRelations(AtomType.INV, getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas()));
@@ -257,35 +257,37 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		rules.addAll(copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
 		rules.addAll(copyRelationList(getIncrementallyMaintenableJoinRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
 		rules.addAll(copyRelationList(getOuterUnionRelations(), AtomType.NEW, AtomType.NONE, getBuiltInSchemas()));
-
-		ret.add(new NonRecursiveDatalogProgram(rules, false));
+		
+		ret.add(new NonRecursiveDatalogProgram(rules, false, "PreDeletionRules"));
 		return ret;
 	}
 
-	private DatalogSequence deletionRules() {
+	private DatalogSequence deletionRules(Map<String, Schema> builtInSchemas) {
 		DatalogSequence ret;
 
 		ret = new DatalogSequence(false, true);
 
+		// zives 1/10/10 -- moved this below the certain deletions
+		//ret.add(edbDeltaApplicationRules(false));
+
+		List<Rule> certainDels = certainDeletionRules();
+		ret.add(new NonRecursiveDatalogProgram(certainDels, false, "CertainDeletionRules"));
+
+		// zives 1/10/10 -- moved this to after the certain-deletion rules
 		ret.add(edbDeltaApplicationRules(false));
 		ret.add(rejDeltaApplicationRules(false));
 
 		DatalogSequence mainLoop = new DatalogSequence(true, true);
 
+		List<Rule> defs = provenanceTblDeletionRules(builtInSchemas);
 
-
-		List<Rule> certainDels = certainDeletionRules();
-		ret.add(new NonRecursiveDatalogProgram(certainDels, false));
-
-		List<Rule> defs = provenanceTblDeletionRules();
-
-		mainLoop.add(new NonRecursiveDatalogProgram(defs, false));
+		mainLoop.add(new NonRecursiveDatalogProgram(defs, false, "ProvTableDeletionRules"));
 
 //		Application of deletions on provenance tables
 
 		List<Rule> provTableUpd = provenanceTblUpdateRules();
 
-		mainLoop.add(new NonRecursiveDatalogProgram(provTableUpd, false));
+		mainLoop.add(new NonRecursiveDatalogProgram(provTableUpd, false, "MainLoopProvTableDelRules"));
 
 
 //		Copy idb_dels to all dels and cleanup idb_dels
@@ -294,21 +296,25 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 //		Skip certain deletion rules
 
-		List<Rule> affSet = affectedSetRules();
+		List<Rule> affSet = affectedSetRules(builtInSchemas);
 		List<Rule> tempDefs = new ArrayList<Rule>();
+		
+		for (Rule r : affSet)
+			System.out.println(r.toString());
+
 		List<Rule> unfoldedAffSet = unfoldProvDefs(defs, affSet, tempDefs, false);
-
-
-		mainLoop.add(new NonRecursiveDatalogProgram(unfoldedAffSet, false));
+		
+		
+		mainLoop.add(new NonRecursiveDatalogProgram(unfoldedAffSet, false, "UnfoldedAffectedSet"));
 
 //		Note: counting of these has to be false if I am not reseting m_dels!
 //		Otherwise, it probably should not matter ... but apparently it does ...
 //		why are these always non-zero?
 
 
-		mainLoop.addAll(reachabilityTestingProgram());
+		mainLoop.addAll(reachabilityTestingProgram(builtInSchemas));
 
-		mainLoop.add(new NonRecursiveDatalogProgram(unreachableDeletionApplicationRules(),true));
+		mainLoop.add(new NonRecursiveDatalogProgram(unreachableDeletionApplicationRules(),true, "UnreachableDelApplication"));
 
 //		delete inv 
 		mainLoop.add(cleanupRelations(AtomType.INV, getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas()));
@@ -329,11 +335,11 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		ret.add(mainLoop);
 
 //		Apply deltas on IDBs/MappingRels
-		ret.add(new NonRecursiveDatalogProgram(idbDeltaApplicationRules(false, true), true));
-		ret.add(new NonRecursiveDatalogProgram(mappingDeltaApplicationRules(false, true), true));
+		ret.add(new NonRecursiveDatalogProgram(idbDeltaApplicationRules(false, true), true, "IDBDeltaApply"));
+		ret.add(new NonRecursiveDatalogProgram(mappingDeltaApplicationRules(false, true), true, "MappingDeltaApply"));
 
-		ret.printString();
-		Debug.println(ret.toString());
+//		ret.printString();
+//		Debug.println(ret.toString());
 
 		return ret;
 	}
@@ -343,32 +349,33 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		ret = new DatalogSequence(false, true);
 		List<RelationContext> emptyList = new ArrayList<RelationContext>();
 
-		ret.add(new NonRecursiveDatalogProgram(clearRelationList(getMappingRelations(), AtomType.DEL, getBuiltInSchemas())));
-		ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIncrementallyMaintenableJoinRelations(), AtomType.DEL, getBuiltInSchemas())));
-		ret.add(new NonRecursiveDatalogProgram(clearRelationList(getOuterUnionRelations(), AtomType.DEL, getBuiltInSchemas())));
+		ret.add(new NonRecursiveDatalogProgram(clearRelationList(getMappingRelations(), AtomType.DEL, getBuiltInSchemas()), "PostDelClearDel"));
+		ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIncrementallyMaintenableJoinRelations(), AtomType.DEL, getBuiltInSchemas()), "PostDelClearIncr"));
+		ret.add(new NonRecursiveDatalogProgram(clearRelationList(getOuterUnionRelations(), AtomType.DEL, getBuiltInSchemas()), "PostDelClearOuterU"));
 		if(clearEdbIdbDels){
-			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.DEL, getBuiltInSchemas())));
-			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas())));
-			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getRej(), AtomType.DEL, getBuiltInSchemas())));
+			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.DEL, getBuiltInSchemas()), "PostDelClearEDBDel"));
+			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getIdbs(), AtomType.DEL, getBuiltInSchemas()), "PostDelClearIDBDel"));
+			ret.add(new NonRecursiveDatalogProgram(clearRelationList(getRej(), AtomType.DEL, getBuiltInSchemas()), "PostDelClearREJDel"));
 		}
 
 //		ret.add(new NonRecursiveDatalogProgram(clearRelationList(getEdbs(), AtomType.DEL, getBuiltInSchemas()), true));
 
 		if(!Config.getStratified()){
-			ret.add(cleanupRelations(AtomType.ALLDEL, getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas()));			ret.add(cleanupRelations(AtomType.ALLDEL, getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, getBuiltInSchemas()));
+			ret.add(cleanupRelations(AtomType.ALLDEL, getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas()));			
+			ret.add(cleanupRelations(AtomType.ALLDEL, getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, getBuiltInSchemas()));
 			ret.add(cleanupRelations(AtomType.ALLDEL, getOuterUnionRelations(), emptyList, emptyList, getBuiltInSchemas()));
 		}
 
 //		apply deltas if this is a real run, otherwise just discard NEW
 		if(applyDeltas){
-			ret.add(applyDeltasToBase(getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas()));
-			ret.add(applyDeltasToBase(getRej(), emptyList, emptyList, getBuiltInSchemas()));
-			ret.add(applyDeltasToBase(getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, getBuiltInSchemas()));
-			ret.add(applyDeltasToBase(getOuterUnionRelations(), emptyList, emptyList, getBuiltInSchemas()));
+			ret.add(applyDeltasToBase(getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas(), "Mapping"));
+			ret.add(applyDeltasToBase(getRej(), emptyList, emptyList, getBuiltInSchemas(), "Rejection"));
+			ret.add(applyDeltasToBase(getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, getBuiltInSchemas(), "IncrJoin"));
+			ret.add(applyDeltasToBase(getOuterUnionRelations(), emptyList, emptyList, getBuiltInSchemas(), "OuterUnion"));
 			
 //			Recompute real outer join ASRs
 	        ret.add(cleanupRelations(AtomType.NONE, getRealOuterJoinRelations(), emptyList, emptyList, getBuiltInSchemas()));
-	        ret.add(new NonRecursiveDatalogProgram(getRealOuterJoinRules(), false));
+	        ret.add(new NonRecursiveDatalogProgram(getRealOuterJoinRules(), false, "PostDelApplyDeltasToOJ"));
 		}else{
 			ret.add(cleanupRelations(AtomType.NEW, getMappingRelations(), getEdbs(), getIdbs(), getBuiltInSchemas()));
 			ret.add(cleanupRelations(AtomType.NEW, getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, getBuiltInSchemas()));
@@ -378,7 +385,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		return ret;
 	}
 
-	private List<Rule> provenanceTblDeletionRules(){
+	private List<Rule> provenanceTblDeletionRules(Map<String, Schema> builtInSchemas){
 		List<Rule> provenanceDels = new ArrayList<Rule>();
 		List<Rule> s2pRules = new ArrayList<Rule>();
 
@@ -408,15 +415,24 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 				body.add(mAllDel);
 			}
 
+			// Generate a sequence of rules, replacing a single atom with a _DEL relation
+			// in each of the rules
 			for (int i = 0; i < mapping_rule.getBodyWithoutSkolems().size(); i++) {
 				if(i > 0)
 					body.set(i-1, new Atom(body.get(i-1), AtomType.NONE));
-				body.set(i, new Atom(body.get(i), AtomType.DEL));
-
-				Rule newRule = new Rule(mapping_head, body, mapping_rule.getParentMapping(), 
-						true, getBuiltInSchemas());
-				//				newRule.setReplaceValsWithNullValues();
-				provenanceDels.add(newRule);
+				
+				// Skip if we already have a delta
+				if (DeltaRuleGen.hasDeltaRelationVersion(body.get(i), builtInSchemas))
+					continue;
+				
+				//if (!builtInSchemas.containsKey(body.get(i).getSchema().getSchemaId())) {
+					body.set(i, new Atom(body.get(i), AtomType.DEL));
+	
+					Rule newRule = new Rule(mapping_head, body, mapping_rule.getParentMapping(), 
+							true, getBuiltInSchemas());
+					//				newRule.setReplaceValsWithNullValues();
+					provenanceDels.add(newRule);
+				//}
 			}
 
 		}
@@ -524,18 +540,18 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 
 
-	private List<Datalog> reachabilityTestingProgram(){
+	private List<Datalog> reachabilityTestingProgram(Map<String, Schema> builtInSchemas){
 		List<Datalog> var = new ArrayList<Datalog>();
-		var.add(new NonRecursiveDatalogProgram(localDerivabilityHeuristicRules(), false));
+		var.add(new NonRecursiveDatalogProgram(localDerivabilityHeuristicRules(), false, "LocalDerivabilityHeur"));
 		var.get(0).setMeasureExecTime(true);
-		var.add(new RecursiveDatalogProgram(derivabilityRules(), true));
+		var.add(new RecursiveDatalogProgram(derivabilityRules(), true, "Derivability"));
 		var.get(1).setMeasureExecTime(true);
-		var.add(new RecursiveDatalogProgram(reachabilityTestingRules(), true));
+		var.add(new RecursiveDatalogProgram(reachabilityTestingRules(builtInSchemas), true, "ReachabilityTest"));
 		var.get(2).setMeasureExecTime(true);
 		return var;
 	}
 
-	private List<Rule> reachabilityTestingRules(){
+	private List<Rule> reachabilityTestingRules(Map<String, Schema> builtInSchemas){
 		List<Rule> vr = new ArrayList<Rule>();
 		//List<DatalogProgram> vr = new ArrayList<DatalogProgram>();
 
@@ -552,7 +568,8 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 			List<Atom> body = new ArrayList<Atom>();
 			
 			for(Atom a : r.getBody()){
-				body.add(new Atom(a, AtomType.INV));
+				if (!builtInSchemas.containsKey(a.getRelationContext().getSchema().getSchemaId()))
+					body.add(new Atom(a, AtomType.INV));
 			}
 			vr.add(new Rule(head, body, r.getParentMapping(), true, getBuiltInSchemas()));
 		}	
@@ -569,7 +586,10 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 					// Don't need to subtract deleted because inverse rules 
 					// now join with new versions of edbs
 
-					if(!a.isSkolem()){
+//					if(!a.isSkolem()
+//							&& !builtInSchemas.containsKey(a.getRelationContext().getSchema().getSchemaId())
+//							){
+					if (DeltaRuleGen.hasDeltaRelationVersion(a, builtInSchemas)) {
 						Atom foo = new Atom(a, AtomType.INV);
 						//ScMappingAtom bar = new ScMappingAtom(a, AtomType.DEL);
 						//bar.negate();
@@ -666,7 +686,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 	 * certain deltas for idbs and rules for computing the possibly affected idb
 	 * tuples (inv) that are then check for "reachability"/re-derivation
 	 */
-	private List<Rule> affectedSetRules(){
+	private List<Rule> affectedSetRules(Map<String, Schema> builtInSchemas){
 
 		List<Rule> vr = new ArrayList<Rule>();
 
@@ -681,7 +701,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 				if(!bar.isNeg()){
 					Atom foo = bar.deepCopy();
 
-					if(i > 0 || bar.isSkolem())
+					if(i > 0 || !DeltaRuleGen.hasDeltaRelationVersion(bar, builtInSchemas))//bar.isSkolem() || builtInSchemas.containsKey(bar.getSchema().getSchemaId()))
 						foo.setType(AtomType.NONE);
 					else
 						foo.setType(AtomType.DEL);
@@ -961,7 +981,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 
 		ret.addAll(clearRelationList(edbs/*getEdbs()*/, typ, builtInSchemas));
 
-		DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+		DatalogProgram p = new NonRecursiveDatalogProgram(ret,false, "CleanEDBs");
 		return p;
 	}
 	
@@ -995,7 +1015,7 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		}
 		//seq.add(new NonRecursiveDatalogProgram(vr));
 		//NonRecursiveDatalogProgram ret = new NonRecursiveDatalogProgram(vr);
-		return new NonRecursiveDatalogProgram(vr, false);//seq;
+		return new NonRecursiveDatalogProgram(vr, false, "ApplyEDBDeltas");//seq;
 		//return ret;
 	}
 	
@@ -1007,13 +1027,13 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 		for(RelationContext rel : rels){
 			copy.add(relCopy(rel, AtomType.ALLDEL, rel, AtomType.DEL, true, builtInSchemas));
 		}
-		ret.add(new NonRecursiveDatalogProgram(copy, false));
+		ret.add(new NonRecursiveDatalogProgram(copy, false, "CopyDelToAllDel"));
 
 		List<Rule> clean = new ArrayList<Rule>();
 		for(RelationContext rel : rels){
 			clean.add(relCleanup(rel, AtomType.DEL, builtInSchemas));
 		}
-		ret.add(new NonRecursiveDatalogProgram(clean, false));
+		ret.add(new NonRecursiveDatalogProgram(clean, false, "ClearDel"));
 
 		//DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
 		//return p;
@@ -1147,12 +1167,12 @@ public class DeletionDeltaRuleGen extends DeltaRuleGen {
 			if (Config.getAllowSideEffects()) {
 				ret.addAll(updatePolicyRules());
 			} else {
-				ret.addAll(sideEffectFreeUpdatePolicyRules());
+				ret.addAll(sideEffectFreeUpdatePolicyRules(builtInSchemas));
 
 			}
 		}
 		ret.add(preDeletionRules());
-		ret.add(deletionRules());
+		ret.add(deletionRules(builtInSchemas));
 		ret.add(postDeletionRules(true, true));
 		_deltaRules = new DeletionDeltaRules(ret, bidirectional);
 	}

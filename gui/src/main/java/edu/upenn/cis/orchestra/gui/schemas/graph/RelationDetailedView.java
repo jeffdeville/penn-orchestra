@@ -32,6 +32,7 @@ import javax.swing.JSeparator;
 import javax.swing.UIManager;
 
 import org.jgraph.JGraph;
+import org.jgraph.graph.AttributeMap;
 import org.jgraph.graph.CellView;
 import org.jgraph.graph.CellViewRenderer;
 import org.jgraph.graph.EdgeView;
@@ -129,7 +130,7 @@ public class RelationDetailedView extends GuiVertexView
 		 *            the cell view to retrieve the attribute values from.
 		 */
 		protected void installAttributes(CellView view) {
-			Map map = view.getAllAttributes();
+			AttributeMap map = view.getAllAttributes();
 			setOpaque(GraphConstants.isOpaque(map));
 			_fieldsPanel.setOpaque(isOpaque());
 			setBorder(GraphConstants.getBorder(map));

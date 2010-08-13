@@ -48,6 +48,26 @@ class InsertionDeltaRules extends DeltaRules {
 		super(code);
 	}
 
+	public void generate(DatalogEngine de) throws Exception {
+		try {
+			if (de._sql instanceof SqlDb)
+				((SqlDb) de._sql).activateRuleBasedOptimizer();
+
+			List<DatalogSequence> insProg = getCode();
+
+			de.generatePhysicalQuery(insProg.get(0));
+
+			de.generatePhysicalQuery(insProg.get(1));
+
+			de.generatePhysicalQuery(insProg.get(2));
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+			// return -1;
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

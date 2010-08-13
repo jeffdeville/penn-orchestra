@@ -133,7 +133,7 @@ public class BerkeleyDBStoreServer implements TransactionSource {
 
 	public BerkeleyDBStoreServer(Environment env, int port)
 	throws IOException, ClassNotFoundException, DatabaseException {
-
+		//Runtime.getRuntime().addShutdownHook(new ShutdownThread());
 		//Runtime.getRuntime().addShutdownHook(new ShutdownThread());
 		tg = new ThreadGroup("BerkeleyDBStoreServer on port " + port);
 		this.port = port;

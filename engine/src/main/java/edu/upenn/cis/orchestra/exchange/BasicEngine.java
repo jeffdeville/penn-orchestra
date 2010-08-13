@@ -19,7 +19,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import edu.upenn.cis.orchestra.Config;
+import edu.upenn.cis.orchestra.datalog.DatalogEngine;
 import edu.upenn.cis.orchestra.datalog.DatalogSequence;
 import edu.upenn.cis.orchestra.datalog.atom.Atom;
 import edu.upenn.cis.orchestra.datalog.atom.Atom.AtomType;
@@ -43,11 +46,11 @@ import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.Tuple;
 import edu.upenn.cis.orchestra.datamodel.exceptions.IncompatibleKeysException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.IncompatibleTypesException;
+import edu.upenn.cis.orchestra.datamodel.exceptions.RelationUpdateException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
 import edu.upenn.cis.orchestra.datamodel.iterators.ResultSetIterator;
+import edu.upenn.cis.orchestra.dbms.DbFactory;
 import edu.upenn.cis.orchestra.dbms.IDb;
-import edu.upenn.cis.orchestra.dbms.SqlDb;
-import edu.upenn.cis.orchestra.dbms.TukwilaDb;
 import edu.upenn.cis.orchestra.deltaRules.DeletionDeltaRuleGen;
 import edu.upenn.cis.orchestra.deltaRules.DeltaRuleGen;
 import edu.upenn.cis.orchestra.deltaRules.IDeltaRuleGen;
@@ -55,7 +58,6 @@ import edu.upenn.cis.orchestra.deltaRules.IDeltaRules;
 import edu.upenn.cis.orchestra.deltaRules.InsertionDeltaRuleGen;
 import edu.upenn.cis.orchestra.exchange.exceptions.MappingNotFoundException;
 import edu.upenn.cis.orchestra.exchange.flatfile.FileDb;
-import edu.upenn.cis.orchestra.exchange.sql.SqlEngine;
 import edu.upenn.cis.orchestra.mappings.MappingTopologyTest;
 import edu.upenn.cis.orchestra.mappings.Rule;
 import edu.upenn.cis.orchestra.provenance.ProvenanceRelation;
@@ -66,11 +68,12 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
 /**
  * 
  * @author gkarvoun
+ * 
+ * Basic abstraction of an update exchange engine, generally associated with a particular
+ * class of DBMS (e.g., Tukwila, XML engine, SQL engine).
  *
  */
 public abstract class BasicEngine implements IEngine {
-
-	protected CreateProvenanceStorage _provenancePrep;
 
 	private ITranslationState _state;
 
@@ -127,6 +130,13 @@ public abstract class BasicEngine implements IEngine {
 		return _insertionRules.serialize();
 	}
 	
+	/**
+	 * Constructor for update exchange engine 
+	 * 
+	 * @param mappingDb
+	 * @param system
+	 * @throws Exception
+	 */
 	public BasicEngine(IDb mappingDb, 
 //			IDb updateDb, 
 			OrchestraSystem system) throws Exception {
@@ -141,11 +151,14 @@ public abstract class BasicEngine implements IEngine {
 		if (!MappingTopologyTest.isWeaklyAcyclic(_system.getAllSystemMappings(true), true))
 			throw new RuntimeException("Mappings are not weakly acyclic!");
 		
+		syncTableSchemas(_system);
+		
 		ITranslationRuleGen transRuleGen = TranslationRuleGen.newInstance(_system
 				.getAllSystemMappings(true), _system.getAllUserRelations(),
 				_mappingDb.getBuiltInSchemas(), _system.isBidirectional());
-		transRuleGen.computeTranslationRules();
+		transRuleGen.computeTranslationRules(_system.getPeers(), _system.getTrustMapping());
 		_state = transRuleGen.getState();
+		
 		//DomUtils.write(_state.serialize(_mappingDb.getBuiltInSchemas()), new
 		//FileWriter("expectedTranslationRules.xml"));
 		computeDeltaRules(_state);
@@ -155,6 +168,64 @@ public abstract class BasicEngine implements IEngine {
 		//DomUtils.write(_deletionRules.serialize(), new
 		//FileWriter("expectedDeletionRules.xml"));
 		//write(_deletionRules.serializeAsCode(), new FileWriter("expectedDeletionCode.xml"));
+		
+		repairSchema();
+		
+		finishMappingSchemas(system);
+		//testMappingSchemas(system);
+	}
+	
+	protected abstract void syncTableSchemas(OrchestraSystem system) throws RelationUpdateException;
+	
+	public abstract void repairSchema() throws Exception;
+	
+	protected void finishMappingSchemas(OrchestraSystem system) throws RelationUpdateException {
+		/*
+		for (Mapping m : system.getAllSystemMappings(false)) {
+			for (Atom a : m.getMappingHead()) {
+				a.getRelation().markFinished();
+				a.getSchema().markFinished();
+			}
+
+			for (Atom a : m.getBody()) {
+				a.getRelation().markFinished();
+				a.getSchema().markFinished();
+			}
+		}*/
+		for (Schema s : system.getAllSchemas())
+			s.markFinished();
+	}
+	
+	/**
+	 * Ensure that all mappings and schemas have the correct number of columns
+	 * 
+	 * @param system
+	 * @throws RelationUpdateException
+	 */
+	protected void testMappingSchemas(OrchestraSystem system) throws RelationUpdateException {
+		for (Mapping m : system.getAllSystemMappings(false)) {
+			for (Atom a : m.getMappingHead())
+				if (a.getValues().size() != a.getRelation().getNumCols())
+					throw new RelationUpdateException("Mismatch in mapping " + m.getId() + ": " +
+							a.getValues() + " mis-aligned with " + a.getRelation().getRelationName());
+
+			for (Atom a : m.getBody())
+				if (a.getValues().size() != a.getRelation().getNumCols())
+					throw new RelationUpdateException("Mismatch in mapping " + m.getId() + ": " +
+							a.getValues() + " mis-aligned with " + a.getRelation().getRelationName());
+		}
+		/*
+		for (Mapping m : system.getAllSystemMappings(false)) {
+			for (Atom a : m.getMappingHead())
+				if (a.getValues().size() != a.getRelation().getNumCols())
+					throw new RelationUpdateException("Mismatch in mapping " + m.getId() + ": " +
+							a.getValues() + " mis-aligned with " + a.getRelation().getRelationName());
+
+			for (Atom a : m.getBody())
+				if (a.getValues().size() != a.getRelation().getNumCols())
+					throw new RelationUpdateException("Mismatch in mapping " + m.getId() + ": " +
+							a.getValues() + " mis-aligned with " + a.getRelation().getRelationName());
+		}*/
 	}
 
 	
@@ -162,8 +233,8 @@ public abstract class BasicEngine implements IEngine {
 	 * Creates the set of delta rules for the system
 	 */
 	public void computeDeltaRules() {
-		if (_provenancePrep == null)
-			_provenancePrep = createProvenanceStorage();
+		//if (_provenancePrep == null)
+		//	_provenancePrep = createProvenanceStorage();
 
 		IDeltaRuleGen insRuleGen = new InsertionDeltaRuleGen(_system, getState(), getMappingDb().getBuiltInSchemas());
 		_insertionRules = insRuleGen.getDeltaRules();
@@ -177,15 +248,57 @@ public abstract class BasicEngine implements IEngine {
 	 * Creates the set of delta rules for the system
 	 */
 	private void computeDeltaRules(ITranslationRules translationRules) {
-		if (_provenancePrep == null)
-			_provenancePrep = createProvenanceStorage();
+		//if (_provenancePrep == null)
+		//	_provenancePrep = createProvenanceStorage();
 
 		IDeltaRuleGen insRuleGen = new InsertionDeltaRuleGen(_system, translationRules, getMappingDb().getBuiltInSchemas());
 		_insertionRules = insRuleGen.getDeltaRules();
 
+		if (Config.getDebug()) {
+			try {
+				PrintWriter pw = new PrintWriter(new File("insert.txt"));
+				pw.println("** Insertion **");
+				for (DatalogSequence seq : _insertionRules.getCode())
+					pw.println(seq.toString());
+				
+				pw.println();
+				pw.close();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+		}
+
 		IDeltaRuleGen delRuleGen = new DeletionDeltaRuleGen(_system, translationRules, getMappingDb().getBuiltInSchemas(), _system.isBidirectional());
 		_deletionRules = delRuleGen.getDeltaRules();
 
+		if (Config.getDebug()) {
+			try {
+				PrintWriter pw = new PrintWriter(new File("delete.txt"));
+				pw.println("** Deletion **");
+				for (DatalogSequence seq : _deletionRules.getCode())
+					pw.println(seq.toString());
+				pw.println();
+				pw.close();
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+		}
+		
+		if (Config.getDebug()) {
+			DatalogEngine de = new DatalogEngine(getMappingDb());
+			try {
+				_insertionRules.generate(de);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				_deletionRules.generate(de);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void cleanupPreparedStmts() {
@@ -316,29 +429,18 @@ public abstract class BasicEngine implements IEngine {
 		finalize();
 	}
 
-	protected abstract CreateProvenanceStorage createProvenanceStorage();
+	//protected abstract CreateProvenanceStorage createProvenanceStorage();
 
+	//protected abstract CreateAuxiliaryStorage createAuxiliaryStorage();
+	
 	protected void computeProvenanceRelation(Mapping mapping, int i, List<RelationContext> mappingRels){
 
 	}
 
-	protected void createProvenanceTables(List<RelationContext> mappingRels) {
-//		if(_provenancePrep == null)
-		_provenancePrep = createProvenanceStorage();
+	protected abstract List<String> createProvenanceTables(List<RelationContext> mappingRels);	
+	protected abstract List<String> createPeerRelations(Schema sc);
 
-		for(RelationContext relCtx : mappingRels){
-
-			ProvenanceRelation rel = (ProvenanceRelation)relCtx.getRelation();
-//			if(!rel.getMappings().get(0).isFakeMapping()){
-			if(Config.getOuterUnion()){
-				_provenancePrep.createOuterUnionDbTable(rel, !Config.getAutocommit(), getMappingDb());
-			}else{
-				_provenancePrep.createProvenanceDbTable(rel, !Config.getAutocommit(), getMappingDb(), _system.isBidirectional());
-			}
-//			}
-		}
-
-	}
+	
 	/**
 	 * Computes the names of all of the tables in the Orchestra system.
 	 * Package-level because it's SQL-specific
@@ -388,7 +490,7 @@ public abstract class BasicEngine implements IEngine {
 				rels = syst.getMappingEngine().getMappingRelations();
 			}else{
 				try{
-					rels = TranslationRuleGen.computeProvenanceRelations(syst.getAllSystemMappings(true));
+					rels = TranslationRuleGen.computeProvenanceRelations(syst.getPeers(), syst.getAllSystemMappings(true));
 				}catch(IncompatibleTypesException e){
 					e.printStackTrace();
 				}catch(IncompatibleKeysException ke){
@@ -420,6 +522,13 @@ public abstract class BasicEngine implements IEngine {
 	}
 
 	public static List<String> getNamesOfAllTablesFromDeltas(/*DeltaRules deltas,*/ final OrchestraSystem syst, boolean allTypes, boolean includeMappings, boolean includeOJ){
+		List<String> names = new ArrayList<String>();
+		getNamesOfAllTablesFromDeltas(syst, allTypes, includeMappings, includeOJ, names);
+		return names;
+	}
+	
+	public static void getNamesOfAllTablesFromDeltas(/*DeltaRules deltas,*/ final OrchestraSystem syst, boolean allTypes, boolean includeMappings, boolean includeOJ,
+			Collection<String> names){
 //		ArrayList<RelationContext> tables = new ArrayList<RelationContext>();
 		HashMap<RelationContext, Integer> tables = new HashMap<RelationContext, Integer>();
 
@@ -462,7 +571,6 @@ public abstract class BasicEngine implements IEngine {
 			}
 		}
 
-		List<String> names = new ArrayList<String>();
 		for(RelationContext rel : tables.keySet()){
 
 			if(allTypes){
@@ -485,8 +593,6 @@ public abstract class BasicEngine implements IEngine {
 					names.add(rel.getRelation().getFullQualifiedDbId());
 			}		
 		}
-
-		return names;
 	}
 
 	protected List<RelationContext> getEdbs(){
@@ -586,23 +692,12 @@ public abstract class BasicEngine implements IEngine {
 //		}
 	}
 
-	protected static IDb deserializeDb(OrchestraSystem catalog, Map<String, Schema> builtInSchemas, Element el) throws XMLParseException {
-		String type = el.getAttribute("type");
-		if (type.compareToIgnoreCase("sql") == 0) {
-			return SqlDb.deserialize(catalog, builtInSchemas, el);
-		} else if (type.compareToIgnoreCase("tukwila") == 0) {
-			return TukwilaDb.deserialize(catalog, el);
-		} else {
-			throw new XMLParseException("Unknown database type: " + type, el);
-		}
-	}
-
 	public static BasicEngine deserialize(OrchestraSystem catalog, Map<String, Schema> builtInSchemas, Element el) throws Exception {
 		Element trans = DomUtils.getChildElementByName(el, "mappings");
 		if (trans == null) {
 			trans = el;
 		}
-		IDb db = deserializeDb(catalog, builtInSchemas, trans);
+		IDb db = DbFactory.deserializeDb(catalog, builtInSchemas, trans);
 		/*		Element update = DomUtils.getChildElementByName(el, "updates");
 		IDb updateDb;
 		if (update == null) {
@@ -610,13 +705,14 @@ public abstract class BasicEngine implements IEngine {
 		} else {
 			updateDb = deserializeDb(catalog, update);
 		}
-		 */		String type = trans.getAttribute("type");
-		 if (type.compareToIgnoreCase("sql") == 0) {
-			 return new SqlEngine((SqlDb)db, //updateDb, 
-					 catalog);
-		 } else {
-			 throw new XMLParseException("Unknown database type: " + type, el);
-		 }
+		 */
+		try {
+			return ExchangeEngineFactory.getEngine(catalog, trans.getAttribute("type"), db);
+		} catch (UnsupportedTypeException ut) { 
+			 throw new XMLParseException("Unknown database type: " + trans.getAttribute("type"), el);
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	public void importUpdates(Peer specificPeer, String dir, ArrayList<String> succeeded,

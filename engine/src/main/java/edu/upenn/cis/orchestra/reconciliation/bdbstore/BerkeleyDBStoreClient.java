@@ -796,6 +796,9 @@ public class BerkeleyDBStoreClient extends UpdateStore {
 			String serverDirectoryName, String workingDirectoryName)
 			throws IOException {
 		String[] pathToScript = Config.getUpdateStoreExecutable();
+		if (pathToScript == null) {
+			throw new IllegalStateException("Config option 'updateStoreExecutable' must be set with the path to an update store executable.");
+		}
 		List<String> cmdList = newArrayList(pathToScript);
 		cmdList.addAll(newArrayList( "-port",
 				Integer.toString(port), serverDirectoryName));

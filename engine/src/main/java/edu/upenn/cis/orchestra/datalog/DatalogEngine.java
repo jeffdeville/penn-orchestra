@@ -69,6 +69,30 @@ public class DatalogEngine {
 		_sql.commit();
 		_sql.disconnect();
 	}
+
+	/**
+	 * Generate the SQL or other underlying query for each rule in the program.
+	 * TODO: integrate this into the evaluatePrograms() code path so we can separate
+	 *       plan/query generation from execution.
+	 * 
+	 * @param prog
+	 */
+	public void generatePhysicalQuery(DatalogSequence prog) {
+		for (Datalog p: prog.getSequence()) {
+			if (p instanceof DatalogSequence) {
+				generatePhysicalQuery((DatalogSequence)p);
+			} else if (p instanceof RecursiveDatalogProgram || (p instanceof NonRecursiveDatalogProgram)){
+				DatalogProgram rule = (DatalogProgram)p;
+				rule.initialize(_sql.generateQuery(), 0, true);
+
+				// Prepare the statement?
+				if (Config.getPrepare() && !rule.isPrepared())
+					rule.prepare();
+				
+			} else
+				throw new RuntimeException("Unexpected type in datalog sequence");
+		}
+	}
 	
 	/*
 	public Connection connect() throws Exception{

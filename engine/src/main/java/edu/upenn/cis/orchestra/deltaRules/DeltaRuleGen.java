@@ -298,14 +298,14 @@ public abstract class DeltaRuleGen implements IDeltaRuleGen {
 	 * @return
 	 */
 	protected static DatalogProgram applyDeltasToBase(List<RelationContext> mappingRels,
-			List<RelationContext> edbs, List<RelationContext> idbs, Map<String, Schema> builtInSchemas) {
+			List<RelationContext> edbs, List<RelationContext> idbs, Map<String, Schema> builtInSchemas, String role) {
 		List<Rule> rules = new ArrayList<Rule>();
 		DatalogProgram p;
 
 		rules.addAll(moveRelationList(edbs/*getEdbs()*/, AtomType.NONE, AtomType.NEW, builtInSchemas));
 		rules.addAll(moveRelationList(idbs/*getIdbs()*/, AtomType.NONE, AtomType.NEW, builtInSchemas));
 		rules.addAll(moveRelationList(mappingRels/*getMappingRelations()*/, AtomType.NONE, AtomType.NEW, builtInSchemas));
-		p = new NonRecursiveDatalogProgram(rules, true);
+		p = new NonRecursiveDatalogProgram(rules, true, "MoveNewToOriginalRelations/" + role);
 
 
 		p.omitFromCount();
@@ -329,7 +329,7 @@ public abstract class DeltaRuleGen implements IDeltaRuleGen {
 		if (typ != AtomType.RCH)
 			ret.addAll(clearRelationList(mappingRels, typ, builtInSchemas));
 
-		DatalogProgram p = new NonRecursiveDatalogProgram(ret,false);
+		DatalogProgram p = new NonRecursiveDatalogProgram(ret,false,"CleanupRelations");
 		return p;
 	}
 
@@ -529,5 +529,16 @@ public abstract class DeltaRuleGen implements IDeltaRuleGen {
 //		return provUpdRules;
 	}
 
+	/**
+	 * Returns true if there is a delta-relation version of this atom; otherwise we
+	 * can ignore it in many rule expansions
+	 * 
+	 * @param a
+	 * @param builtInSchemas
+	 * @return
+	 */
+	public static boolean hasDeltaRelationVersion(Atom a, Map<String, Schema> builtInSchemas) {
+		return !(a.isSkolem() || a.isNeg() || builtInSchemas.containsKey(a.getSchema().getSchemaId()));
+	}
 	
 }

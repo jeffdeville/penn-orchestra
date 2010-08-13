@@ -17,12 +17,18 @@ package edu.upenn.cis.orchestra.sql.dtp;
 
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.datatools.modelbase.sql.query.ValueExpressionColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.upenn.cis.orchestra.datamodel.BoolType;
 import edu.upenn.cis.orchestra.sql.IColumnExpression;
 import edu.upenn.cis.orchestra.sql.ISqlConstant;
+import edu.upenn.cis.orchestra.sql.ISqlExp;
+import edu.upenn.cis.orchestra.sql.ISqlExpression;
 
 /**
  * A DTP-backed {@code ISqlConstant.getType() == OptimizerType.COLUMNNAME}.
@@ -31,7 +37,7 @@ import edu.upenn.cis.orchestra.sql.ISqlConstant;
  * 
  * @author Sam Donnelly
  */
-class ValueExpressionColumnConstant extends
+public class ValueExpressionColumnConstant extends
 		AbstractSQLQueryObject<ValueExpressionColumn> implements ISqlConstant {
 
 	/** Logger. */
@@ -46,13 +52,21 @@ class ValueExpressionColumnConstant extends
 	 * 
 	 * @param column the column, in {@code [table.]column]} form.
 	 */
-	ValueExpressionColumnConstant(final String column) {
+	public ValueExpressionColumnConstant(final String column) {
 		_logger.debug("value: {}", column);
 		IColumnExpression columnExp = _sqlFactory.newColumnExpression(column);
 		_valueExpressionColumn = getSQLQueryParserFactory()
 				.createColumnExpression(columnExp.getColumn(),
 						columnExp.getTableName());
-		_logger.debug("toString(): {}", toString());
+
+		/*
+		String str = toString();
+		if (!column.equals(str))
+			_logger.debug("toString(): {}", str);
+		
+		if  (!column.equals(str) && str.contains(")\""))
+			str = toString();
+			*/
 	}
 
 	/** {@inheritDoc} */
@@ -71,5 +85,19 @@ class ValueExpressionColumnConstant extends
 	@Override
 	public ValueExpressionColumn getSQLQueryObject() {
 		return _valueExpressionColumn;
+	}
+
+	public boolean isBoolean() { return getType().equals(BoolType.BOOL); }
+	
+	public ISqlExp addOperand(ISqlExp e) {
+		return null;
+	}
+	
+	public ISqlExp getOperand(int i) {
+		return null;
+	}
+	
+	public List<ISqlExp> getOperands() {
+		return new ArrayList<ISqlExp>();
 	}
 }

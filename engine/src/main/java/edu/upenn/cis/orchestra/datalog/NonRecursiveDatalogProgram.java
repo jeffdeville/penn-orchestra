@@ -28,17 +28,22 @@ import edu.upenn.cis.orchestra.mappings.Rule;
  *
  */
 public class NonRecursiveDatalogProgram extends DatalogProgram {
-	public NonRecursiveDatalogProgram(List<Rule> r, boolean c4f){
-		super(r, c4f);
+	public NonRecursiveDatalogProgram(List<Rule> r, boolean c4f, String desc){
+		super(r, c4f, desc);
 	}
 	
-	public NonRecursiveDatalogProgram(List<Rule> r){
-		super(r);
+	public NonRecursiveDatalogProgram(List<Rule> r, String desc){
+		super(r, desc);
 	}
 	
 	public String toString ()
 	{		
-		return "Non-Recursive Datalog Program { \n" + super.toString() + "} END Non-Recursive Datalog Program\n";
+		String str = super.toString();
+		
+		if (str.length() > 0)
+			return "Non-Recursive Datalog Program " + getDescription() + " { \n" + str + "} END Non-Recursive Datalog Program\n";
+		else
+			return "Non-Recursive Datalog Program " + getDescription() + " {}\n";
 	}
 
 	
@@ -46,6 +51,7 @@ public class NonRecursiveDatalogProgram extends DatalogProgram {
 	public Element serialize(Document document) {
 		Element e = super.serialize(document);
 		e.setAttribute("programType", "nonRecursiveDatalogProgram");
+		e.setAttribute("programName", getDescription());
 		return e;
 	}
 

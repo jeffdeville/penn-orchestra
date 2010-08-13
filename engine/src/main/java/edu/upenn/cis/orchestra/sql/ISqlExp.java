@@ -15,6 +15,8 @@
  */
 package edu.upenn.cis.orchestra.sql;
 
+import java.util.List;
+
 /**
  * An interface for all SQL Expressions ({@link ISqlSelect}s,
  * {@link ISqlExpression}s, and {@link ISqlConstant}s are {@link ISqlExp}s).
@@ -29,4 +31,31 @@ public interface ISqlExp {
 	 */
 	@Override
 	public String toString();
+
+	public boolean isBoolean();
+	
+	/**
+	 * Get this expression's operands.
+	 * 
+	 * @return the operands (as a <code>List</code> of <code>ISqlExp</code>
+	 *         objects).
+	 */
+	List<ISqlExp> getOperands();
+
+	/**
+	 * Add an operand to the current expression.
+	 * 
+	 * @param o the operand to add
+	 * @return this {@code ISqlExpression}
+	 */
+	ISqlExp addOperand(ISqlExp o);
+
+	/**
+	 * Get an operand according to its index (position).
+	 * 
+	 * @param pos the operand index, starting at 0.
+	 * @return the operand at the specified index, <code>null</code> if out of
+	 *         bounds.
+	 */
+	ISqlExp getOperand(int pos);
 }

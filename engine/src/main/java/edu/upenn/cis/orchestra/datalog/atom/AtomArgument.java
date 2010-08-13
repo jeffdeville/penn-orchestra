@@ -120,7 +120,8 @@ public abstract class AtomArgument
 	
 	
 	public abstract void renameVariable (String extension);
-
+	
+	public abstract void renameVariable (Map<String,String> renameTable);
 	
 	public void setType (Type type){
 		_type = type;

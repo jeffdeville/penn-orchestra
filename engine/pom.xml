@@ -8,7 +8,7 @@
 	<name>engine</name>
 	<version>0.2-SNAPSHOT</version>
 	<description>Orchestra engine</description>
-	<url>http://TO_UPDATE___orchestra.cis.upenn.edu
+	<url>http://www.cis.upenn.edu/~zives/orchestra/
 	</url>
 	<packaging>jar</packaging>
 
@@ -151,6 +151,20 @@
 			<name>dbappserv.cis.upenn.edu-releases
 			</name>
 			<url>http://dbappserv.cis.upenn.edu:8080/artifactory/ext-releases-local</url>
+		</repository>
+		<repository>
+			<id>sonatype-nexus</id>
+			<url>http://oss.sonatype.org/content/groups/public</url>
+			<releases>
+			  <enabled>true</enabled>
+      		<updatePolicy>daily</updatePolicy>
+      		<checksumPolicy>fail</checksumPolicy>
+    		</releases>
+    	    <snapshots>
+      		  <enabled>true</enabled>
+      		  <updatePolicy>always</updatePolicy>
+      		  <checksumPolicy>fail</checksumPolicy>
+    	    </snapshots>
 		</repository>
 		<repository>
 			<id>Mergere</id>
@@ -310,23 +324,23 @@
 		<dependency>
 			<groupId>org.eclipse.datatools</groupId>
 			<artifactId>modelbase.sql</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.datatools</groupId>
 			<artifactId>modelbase.sql.query</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.datatools</groupId>
 			<artifactId>sqltools.parsers.sql</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.datatools</groupId>
 			<artifactId>sqltools.parsers.sql.query
 			</artifactId>
-			<version>1.0.1</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>
@@ -374,6 +388,11 @@
 			<artifactId>xmlunit</artifactId>
 			<version>1.2</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.schemacrawler</groupId>
+			<artifactId>schemacrawler</artifactId>
+			<version>8.2</version>
 		</dependency>
 	</dependencies>
 	<properties>

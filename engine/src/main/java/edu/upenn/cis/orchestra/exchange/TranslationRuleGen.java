@@ -20,8 +20,11 @@ import static edu.upenn.cis.orchestra.util.DeserializationUtils.deserializeVerbo
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.w3c.dom.Document;
 
@@ -29,23 +32,34 @@ import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.Debug;
 import edu.upenn.cis.orchestra.OrchestraUtil;
 import edu.upenn.cis.orchestra.datalog.atom.Atom;
+import edu.upenn.cis.orchestra.datalog.atom.AtomAnnotation;
+import edu.upenn.cis.orchestra.datalog.atom.AtomAnnotationFactory;
 import edu.upenn.cis.orchestra.datalog.atom.AtomArgument;
+import edu.upenn.cis.orchestra.datalog.atom.AtomConst;
 import edu.upenn.cis.orchestra.datalog.atom.AtomVariable;
 import edu.upenn.cis.orchestra.datamodel.ITranslationState;
 import edu.upenn.cis.orchestra.datamodel.Mapping;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
+import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.RelationContext;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.TranslationState;
+import edu.upenn.cis.orchestra.datamodel.TrustConditions;
+import edu.upenn.cis.orchestra.datamodel.AbstractRelation.BadColumnName;
 import edu.upenn.cis.orchestra.datamodel.exceptions.IncompatibleKeysException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.IncompatibleTypesException;
+import edu.upenn.cis.orchestra.datamodel.exceptions.RelationNotFoundException;
+import edu.upenn.cis.orchestra.datamodel.exceptions.RelationUpdateException;
 import edu.upenn.cis.orchestra.exceptions.ConfigurationException;
+import edu.upenn.cis.orchestra.exchange.sql.SqlEngine;
+import edu.upenn.cis.orchestra.mappings.MappingTopologyTest;
 import edu.upenn.cis.orchestra.mappings.MappingsCompositionMgt;
 import edu.upenn.cis.orchestra.mappings.MappingsIOMgt;
 import edu.upenn.cis.orchestra.mappings.MappingsInversionMgt;
 import edu.upenn.cis.orchestra.mappings.MappingsTranslationMgt;
 import edu.upenn.cis.orchestra.mappings.Rule;
+import edu.upenn.cis.orchestra.provenance.ProvenanceGeneration;
 import edu.upenn.cis.orchestra.provenance.ProvenanceRelation;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -115,14 +129,19 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * Take the set of mappings, make sure Skolemization and renaming is applied,
+	 * create provenance relations, and create mappings through the provenance
+	 * relations.  Also creates the in/out relations.
 	 * 
 	 * @see
 	 * edu.upenn.cis.orchestra.exchange.ITranslationRuleGen#computeTranslationRules
 	 * ()
+	 * 
+	 * @param peers Set of peers
+	 * @param trustMapping Map from peer name -> schema name -> TrustConditions
 	 */
-
-	public List<Rule> computeTranslationRules() throws Exception {
+	public List<Rule> computeTranslationRules(Collection<Peer> peers,
+			Map<String, Map<String, TrustConditions>> trustMapping) throws Exception {
 
 		try {
 			List<Mapping> mappings = OrchestraUtil.newArrayList(systemMappings);
@@ -141,16 +160,28 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 
 			Calendar before = Calendar.getInstance();
 
-			List<Rule> source2targetRules;
-			List<Rule> local2peerRules = MappingsIOMgt.inOutTranslationL(
+			/*
+			 * Add simple mappings from base relations to peer relations
+			 * (of the form R_L to R)
+			 */
+			final List<Rule> local2peerRules = MappingsIOMgt.inOutTranslationL(
 					builtInSchemas, relations);
+
 			state.setLocal2PeerRules(local2peerRules);
+			
 			mappings.addAll(state.getLocal2PeerRules());
 
+			/*
+			 * Regularize the mappings with Skolems, unique names, etc.
+			 */
+			
 			// Make variables in each mapping different
 			int i = 0;
+			Set<String> seen = new HashSet<String>();
 			for (Mapping m : mappings) {
-				m.renameVariables("_M" + i);
+				//m.renameVariables("_M" + i);
+				
+				m.uniquifyVariables(seen, "_M" + i);
 				i++;
 			}
 			state.setMappings(mappings);
@@ -159,11 +190,20 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 			List<RelationContext> realMappingRels = new ArrayList<RelationContext>();
 
 			skolMappings = MappingsInversionMgt.skolemizeMappings(mappings);
+			
+			/*
+			 * Eliminate non-materialized mapping relations through composition
+			 */
+			
+			// TODO: add any trust conditions here relating to the eliminated relation!!!
 			MappingsCompositionMgt
 					.composeMappings(skolMappings, builtInSchemas);
 
-			allMappingRels = computeProvenanceRelations(skolMappings);
-
+			/*
+			 * Create provenance tables
+			 */
+			allMappingRels = computeProvenanceRelations(peers, skolMappings);
+			
 			// Need to change this - put it inside Provenance Relations
 			// mappings = expandBidirectionalMappings(mappings);
 
@@ -183,12 +223,64 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 			List<Rule> source2provRules = new ArrayList<Rule>();
 			List<Mapping> prov2targetMappings = new ArrayList<Mapping>();
 
+			/**
+			 * Add the sets of rules to/from the provenance tables
+			 */
 			computeProvRules(source2provRules, prov2targetMappings);
+			
+			// Re-propagate the labeled nulls here, to the new head atom
+			Set<Relation> rels = new HashSet<Relation>();
+			for (Mapping r : source2provRules) {
+				MappingTopologyTest.propagateLabeledNulls(r);
+				
+				for (Atom a : r.getMappingHead()) {
+					Relation rel = a.getRelation();
+					rels.add(rel);
+				}
+			}
+			for (Relation rel : rels)
+				try {
+					SqlEngine.addLabeledNulls(rel);
+				} catch (BadColumnName e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
-			source2targetRules = MappingsInversionMgt.splitMappingsHeads(
+			/*
+			 * Break mappings into multiple rules
+			 */
+			List<Rule> source2targetRules = MappingsInversionMgt.splitMappingsHeads(
 					skolMappings, builtInSchemas);
+			
+			/*
+			 * Add the rejection rule modifications
+			 */
 			source2targetRules = MappingsIOMgt.inOutTranslationR(
 					source2targetRules, true);
+
+			// Add the base trust values
+			if (Config.addTrustAnnotations()) {
+				for (Rule r : local2peerRules) {
+					setTrustAnnotationsFor(peers, trustMapping, r, true);
+				}
+			}
+			
+		if (Config.addTrustAnnotations()) {
+			for (Rule r : source2provRules) {
+				setTrustAnnotationsFor(peers, trustMapping, r, false);
+			}
+			for (Mapping m : prov2targetMappings)
+				setTrustAnnotationsFor(peers, trustMapping, m, false);
+		}
+		
+			// TODO: see if we can move this to the creation of skolMappings, which should
+			// then make the composition logic work.
+			if (Config.addTrustAnnotations()) {
+				for (Rule r : source2targetRules) {
+					setTrustAnnotationsFor(peers, trustMapping, r, false);
+				}
+			}
+			
 
 			state.setSource2TargetRules(source2targetRules);
 			state.setSource2ProvRules(source2provRules);
@@ -241,8 +333,16 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 		return newMappings;
 	}
 
+	/**
+	 * For each mapping, create a provenance relation
+	 * 
+	 * @param mappings
+	 * @return
+	 * @throws IncompatibleTypesException
+	 * @throws IncompatibleKeysException
+	 */
 	static List<RelationContext> computeProvenanceRelations(
-			List<Mapping> mappings) throws IncompatibleTypesException,
+			Collection<Peer> peers, List<Mapping> mappings) throws IncompatibleTypesException,
 			IncompatibleKeysException {
 
 		List<RelationContext> mappingRels = new ArrayList<RelationContext>();
@@ -250,11 +350,12 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 		for (int i = 0; i < mappings.size(); i++) {
 			final Mapping mapping = mappings.get(i);
 
+			/*
 			final List<AtomVariable> allVars = mapping.getAllBodyVariables();
 			final List<AtomArgument> allVarsCast = new ArrayList<AtomArgument>(
 					allVars.size());
 			for (final AtomVariable var : allVars)
-				allVarsCast.add(var);
+				allVarsCast.add(var);*/
 
 			if (mapping instanceof Rule) {
 				mapping.setDescription("+");
@@ -264,7 +365,7 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 
 			Relation rel = null;
 			try {
-				rel = CreateProvenanceStorage.computeProvenanceRelation(
+				rel = ProvenanceGeneration.computeProvenanceRelation(
 						mapping, i);
 			} catch (IncompatibleTypesException e) {
 				Debug.println("Creation of provenance relation for mapping:\n"
@@ -279,13 +380,29 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 			}
 
 			Atom pickOne = mapping.getMappingHead().get(0);
+			
+			for (Atom other : mapping.getMappingHead()) {
+				if (other.getSchema() != pickOne.getSchema() || other.getPeer() != pickOne.getPeer())
+					throw new RuntimeException("Illegal to have two peers or schemas as target of a single mapping");
+			}
+			
+			for (Peer p : peers) {
+				AtomAnnotation ann = AtomAnnotationFactory.createPeerTrustAnnotation(p.getId(), p.getId());
+				
+				try {
+					rel.addCol(ann.getLabel(), ann.getDataType());
+				} catch (BadColumnName e) {
+					throw new RuntimeException(e.getMessage());
+				}
 
+			}
 			RelationContext relCtx = new RelationContext(rel, pickOne
 					.getSchema(), pickOne.getPeer(), true);
 
 			mapping.setProvenanceRelation(relCtx);
 			mappingRels.add(relCtx);
 
+			Debug.println("Added provenance relation " + rel.getName() + rel.getFieldsInList());
 		}
 
 		return mappingRels;
@@ -396,4 +513,180 @@ public abstract class TranslationRuleGen implements ITranslationRuleGen {
 							+ " cannot be true since this Orchestra system contains bidirectional mappings");
 		}
 	}
+
+	/**
+	 * Create trust attributes for each of the peers, for a specific
+	 * mapping rule
+	 * 
+	 * @return
+	 */
+//	public void setTrustAnnotationsFor(Collection<Peer> peers, 
+//			Map<String, Map<String, TrustConditions>> tcs, Rule r, boolean isBase) throws RelationNotFoundException, BadColumnName {
+//		setTrustAnnotationsFor(peers, tcs, /*r.getHead(),*/ r, isBase);
+//	}
+	
+	private boolean isLocal(Relation r) {
+		return r.getName().endsWith(Relation.LOCAL) || r.getName().endsWith(Relation.REJECT);
+	}
+
+	/**
+	 * Create trust attributes for each of the peers, for a specific
+	 * mapping
+	 * 
+	 * @return
+	 */
+	public void setTrustAnnotationsFor(Collection<Peer> peers, 
+			Map<String, Map<String, TrustConditions>> tcs, Mapping m, boolean isBase) throws RelationNotFoundException, BadColumnName {
+
+		// Choose the first item with a real schema as the "representative" head for
+		// purposes of determining a trust condition
+		Atom head = null;
+		for (Atom h : m.getMappingHead())
+			if (head == null || head.getSchema() == null)
+				head = h;
+		
+//			setTrustAnnotationsFor(peers, tcs, h, m, isBase);
+		// Don't double-annotate the rule
+//		if (head.isAnnotated())
+//			return;
+		
+		//System.out.println("Adding annotations to " + m.toString());
+		
+		// See if we have any IDB atoms, from which we can get trust attributes (otherwise we get the default trust value)
+		boolean haveTrustValues = false;
+		for (Atom a : m.getBody())
+			haveTrustValues = haveTrustValues | !isLocal(a.getRelation());
+		
+		for (Peer p : peers) {
+			AtomAnnotation ann = AtomAnnotationFactory.createPeerTrustAnnotation(p.getId(),
+					Mapping.getFreshAutogenAnnotationName());
+
+			// We want to find this peer
+			// And the trust condition for this target schema
+
+			TrustConditions tc;
+			// If trustlevel [ mapping ] then set to this
+			if (tcs.get(p.getId()) != null && (tc = tcs.get(p.getId()).get(head.getSchema())) != null) {
+	
+				// Get the trust conditions for this particular relation
+				int relID = head.getRelation().getRelationID();
+				
+//				AtomVariable output = new AtomVariable(Mapping.getFreshAutogenVariableName());
+//				Atom at = ann.setTrustCondition(getMappingDb().getBuiltInSchemas(), output, 
+//						tc.getConditions().get(relID));
+				AtomConst output = ann.setTrustPriority(tc.getConditions().get(relID));
+				
+				output.setType(ann.getDataType());
+				
+//				r.addToBody(at);
+				for (Atom h : m.getMappingHead())
+					h.addArgument(output, false, true, ann.getLabel(), ann.getDataType());
+				
+				// elseif leaf then set to default value
+			} else if (isBase || !haveTrustValues) {
+				AtomConst c = new AtomConst(ann.getDefaultTrustValue());
+				c.setType(ann.getDataType());
+				
+				for (Atom h : m.getMappingHead())
+					h.addArgument(c, false, true, ann.getLabel(), ann.getDataType());
+				
+				// else set computation based on the annotations of the subgoals
+			} else {
+				// Add an annotation attribute to the atoms
+				AtomVariable output = new AtomVariable(Mapping.getFreshAutogenAnnotationName());
+				List<AtomArgument> newVariables = new ArrayList<AtomArgument>(); 
+				for (Atom a : m.getBody()) {
+					// Skip negated atoms (_R table) and any built-in predicates 
+					if (!a.isNeg() && a.getSchema() != null && !builtInSchemas.containsKey(a.getSchema().getSchemaId())) {
+						AtomVariable in = new AtomVariable(Mapping.getFreshAutogenAnnotationName());
+						newVariables.add(in);
+						a.addArgument(in, false, true, ann.getLabel(), ann.getDataType());
+					}
+				}
+				// If we have multiple atoms, we need to compute a semiring product
+				if (newVariables.size() > 1) {
+					Atom at = ann.setTrustDerivation(builtInSchemas, output, 
+							newVariables);
+					
+					m.addToBody(at);
+					for (Atom h : m.getMappingHead())
+						h.addArgument(output, false, true, ann.getLabel(), ann.getDataType());
+					
+				// else just carry forward the annotation
+				} else {
+					for (Atom h : m.getMappingHead())
+						h.addArgument(newVariables.get(0), false, true, ann.getLabel(), ann.getDataType());
+				}
+			}
+		}
+		Debug.println("Annotated mapping " + m.toString());
+	}
+	
+//	private void setTrustAnnotationsFor(Collection<Peer> peers, 
+//			Map<String, Map<String, TrustConditions>> tcs, Atom head, Mapping m, boolean isBase) throws RelationNotFoundException, BadColumnName {
+//		
+//		// Don't double-annotate the rule
+//		if (head.isAnnotated())
+//			return;
+//		
+//		//System.out.println("Adding annotations to " + m.toString());
+//		
+//		for (Peer p : peers) {
+//			AtomAnnotation ann = AtomAnnotationFactory.createPeerTrustAnnotation(p.getId(),
+//					Mapping.getFreshAutogenAnnotationName());
+//
+//			// We want to find this peer
+//			// And the trust condition for this target schema
+//
+//			TrustConditions tc;
+//			// If trustlevel [ mapping ] then set to this
+//			if (tcs.get(p.getId()) != null && (tc = tcs.get(p.getId()).get(head.getSchema())) != null) {
+//				// Get the trust conditions for this particular relation
+//				int relID = head.getRelation().getRelationID();
+//				
+////				AtomVariable output = new AtomVariable(Mapping.getFreshAutogenVariableName());
+////				Atom at = ann.setTrustCondition(getMappingDb().getBuiltInSchemas(), output, 
+////						tc.getConditions().get(relID));
+//				AtomConst output = ann.setTrustPriority(tc.getConditions().get(relID));
+//				
+//				output.setType(ann.getDataType());
+//				
+////				r.addToBody(at);
+//				head.addArgument(output, false, true, ann.getLabel(), ann.getDataType());
+//				
+//				// elseif leaf then set to default value
+//			} else if (isBase) {
+//				AtomConst c = new AtomConst(ann.getDefaultTrustValue());
+//				c.setType(ann.getDataType());
+//				
+//				head.addArgument(c, false, true, ann.getLabel(), ann.getDataType());
+//				
+//				// else set computation based on the annotations of the subgoals
+//			} else {
+//				// Add an annotation attribute to the atoms
+//				AtomVariable output = new AtomVariable(Mapping.getFreshAutogenAnnotationName());
+//				List<AtomArgument> newVariables = new ArrayList<AtomArgument>(); 
+//				for (Atom a : m.getBody()) {
+//					// Skip negated atoms (_R table) and any built-in predicates 
+//					if (!a.isNeg() && a.getSchema() != null && !builtInSchemas.containsKey(a.getSchema().getSchemaId())) {
+//						AtomVariable in = new AtomVariable(Mapping.getFreshAutogenAnnotationName());
+//						newVariables.add(in);
+//						a.addArgument(in, false, true, ann.getLabel(), ann.getDataType());
+//					}
+//				}
+//				// If we have multiple atoms, we need to compute a semiring product
+//				if (newVariables.size() > 1) {
+//					Atom at = ann.setTrustDerivation(builtInSchemas, output, 
+//							newVariables);
+//					
+//					m.addToBody(at);
+//					head.addArgument(output, false, true, ann.getLabel(), ann.getDataType());
+//					
+//				// else just carry forward the annotation
+//				} else
+//					head.addArgument(newVariables.get(0), false, true, ann.getLabel(), ann.getDataType());
+//			}
+//		}
+//		Debug.println("Annotated mapping " + m.toString());
+//	}
 }

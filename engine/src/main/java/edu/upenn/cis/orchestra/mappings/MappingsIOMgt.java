@@ -30,6 +30,7 @@ import edu.upenn.cis.orchestra.datamodel.Mapping;
 import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.RelationContext;
+import edu.upenn.cis.orchestra.datamodel.RelationField;
 import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.exceptions.RelationNotFoundException;
 
@@ -57,10 +58,28 @@ public class MappingsIOMgt
 
 //				RelationContext rlc = new RelationContext(rl, s, p);
 				RelationContext rrc = new RelationContext(rr, s, p, false);
-
+				
+				// Ensure we keep ONLY the fields that are not _LN... 
+				List<RelationField> fields = new ArrayList<RelationField>();
+				fields.addAll(rr.getFields());
+				int i = 0; 
+				
+				while (i < fields.size()) {
+					if (Config.useCompactNulls() && fields.get(i).getName().endsWith(RelationField.LABELED_NULL_EXT))
+						fields.remove(i);
+					else
+						i++;
+				}
+				List<AtomArgument> args = new ArrayList<AtomArgument>();
+				for (int j = 0; j < i; j++) {
+					args.add(head.getValues().get(j));
+				}
 
 //				Add \neg R_R in the body of every mapping with R in the head
-				Atom notrra = new Atom(rrc, head.getValues());
+				Atom notrra = new Atom(rrc, args);//head.getValues());
+				for (int j = 0; j < i; j++)
+					if (head.isNullable(j))
+						notrra.setIsNullable(j);
 				notrra.negate();
 
 				Rule mappR = r.deepCopy();
@@ -76,7 +95,8 @@ public class MappingsIOMgt
 		return ret;
 	}
 
-	public static List<Rule> inOutTranslationL(Map<String, Schema> builtInSchemas, List<RelationContext> rels) throws RelationNotFoundException {	
+	public static List<Rule> inOutTranslationL(Map<String, Schema> builtInSchemas, 
+			List<RelationContext> rels) throws RelationNotFoundException {	
 		List<Rule> ret = new ArrayList<Rule>();
 
 //		Create a new mapping from R_L to R			
@@ -89,7 +109,7 @@ public class MappingsIOMgt
 				rl = r.getSchema().getRelation(r.getRelation().getLocalInsDbName());//.getDbRelName() + "_L");
 			} catch (RelationNotFoundException rnf) {
 				// Skip if there's no _L relation
-				Debug.println("Don't create l2p rule because relation " + r.getRelation() + " has no local data");
+				Debug.println("Don't create l2p rule because relation " + r.getRelation().getRelationName() + " has no local data");
 				continue;
 			}
 
@@ -98,6 +118,7 @@ public class MappingsIOMgt
 			List<AtomArgument> l = new ArrayList<AtomArgument>();
 			List<AtomArgument> hl = new ArrayList<AtomArgument>();
 
+			/*
 			for(int k = 0; k < r.getRelation().getFields().size(); k++){
 				String v = Mapping.getFreshAutogenVariableName();
 				l.add(new AtomVariable(v));
@@ -108,6 +129,16 @@ public class MappingsIOMgt
 				}else{
 					hl.add(new AtomVariable(v));
 				}
+			}*/
+			for(int k = 0; k < rl.getFields().size(); k++){
+				String v = Mapping.getFreshAutogenVariableName();
+				l.add(new AtomVariable(v));
+				hl.add(new AtomVariable(v));
+			}
+			if (Config.getEdbbits()){
+				AtomConst c = new AtomConst("1");
+				c.setType(new IntType(false, true));
+				hl.add(c);
 			}
 
 

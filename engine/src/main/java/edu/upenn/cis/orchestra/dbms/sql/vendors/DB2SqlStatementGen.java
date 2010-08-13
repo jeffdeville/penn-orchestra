@@ -274,4 +274,8 @@ public class DB2SqlStatementGen extends AbstractSqlStatementGen {
 	public String getFirstRow() {
 		return "FETCH FIRST 1 ROWS ONLY";
 	}
+	public String reorg(String table) {
+		return "call sysproc.admin_cmd('REORG TABLE " + table + "')";
+	}
+	
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.repository.utils.baseConverter;
+package edu.upenn.cis.orchestra.obsolete;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -42,7 +42,6 @@ import edu.upenn.cis.orchestra.datamodel.Schema;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicatePeerIdException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateSchemaIdException;
 import edu.upenn.cis.orchestra.reconciliation.bdbstore.SchemaIDBinding;
-import edu.upenn.cis.orchestra.repository.utils.dbConverter.SchemaConverterJDBC;
 import edu.upenn.cis.orchestra.repository.utils.loader.exceptions.SchemaLoaderException;
 
 public class TestConverter extends TestCase {

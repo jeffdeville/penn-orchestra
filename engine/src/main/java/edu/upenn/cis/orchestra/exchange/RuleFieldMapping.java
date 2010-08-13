@@ -30,6 +30,7 @@ import edu.upenn.cis.orchestra.datamodel.RelationField;
  */
 public class RuleFieldMapping {
 	public boolean isIndex;
+	public boolean isNullable;
 	public RelationField outputField;
 	public Mapping rule;
 //	public List<String> srcColumns;
@@ -39,13 +40,14 @@ public class RuleFieldMapping {
 
 //	public RuleFieldMapping(RelationField f, List<String> src, List<String> trg, 
 	public RuleFieldMapping(RelationField f, List<RelationField> src, List<RelationField> trg,
-			AtomArgument arg, boolean inx, Mapping r) {
+			AtomArgument arg, boolean inx, Mapping r, boolean isNullable) {
 		outputField = f;
 		srcColumns = src;
 		trgColumns = trg;
 		srcArg = arg;
 		isIndex = inx;
 		rule = r;
+		this.isNullable = isNullable;
 	}
 
 	@Override

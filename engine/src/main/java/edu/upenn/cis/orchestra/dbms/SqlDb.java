@@ -32,11 +32,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.sql.DataSource;
@@ -75,6 +78,7 @@ import edu.upenn.cis.orchestra.datamodel.iterators.IteratorException;
 import edu.upenn.cis.orchestra.datamodel.iterators.ResultIterator;
 import edu.upenn.cis.orchestra.datamodel.iterators.ResultSetIterator;
 import edu.upenn.cis.orchestra.dbms.sql.generation.ISqlStatementGen;
+import edu.upenn.cis.orchestra.dbms.sql.generation.RuleSqlGen;
 import edu.upenn.cis.orchestra.dbms.sql.generation.SqlRuleQuery;
 import edu.upenn.cis.orchestra.dbms.sql.generation.SqlStatementGenFactory;
 import edu.upenn.cis.orchestra.exchange.RuleQuery;
@@ -391,6 +395,8 @@ public class SqlDb implements IDb {
 	protected ISqlStatementGen _sqlString = null;
 	
 	private ISqlFactory _sqlFactory = SqlFactories.getSqlFactory();
+	
+	private static final Logger _logger = LoggerFactory.getLogger(SqlDb.class);
 
 	public SqlDb(String server, String dbuser, String pwd,
 			List<String> allTables, List<Schema> schemas, OrchestraSystem system, Map<String, Schema> builtInSchemas) {
@@ -558,6 +564,10 @@ public class SqlDb implements IDb {
 	protected Statement getStatement() {
 		return _stmt;
 	}
+	
+	public Connection getConnection() {
+		return _con;
+	}
 
 	protected Statement getNewStatement() throws SQLException {
 		for (Statement s : _statementResults.keySet()) {
@@ -679,7 +689,7 @@ public class SqlDb implements IDb {
 		}
 	}
 
-	public void runStatsOnTables(List<String> tables, boolean detailed)
+	public void runStatsOnTables(Collection<String> tables, boolean detailed)
 	{
 		try{
 			for(String table : tables){
@@ -693,7 +703,9 @@ public class SqlDb implements IDb {
 	public void runStatsOnAllTables(OrchestraSystem catalog)
 	{
 		//		The first misses on _L_*, _R_* ...
-				List<String> allTables = SqlEngine.getNamesOfAllTablesFromDeltas(catalog, true, true, true);
+				Set<String> allTables = new HashSet<String>();
+				
+				SqlEngine.getNamesOfAllTablesFromDeltas(catalog, true, true, true, allTables);
 //		runStatsOnTables(allTables, true);
 		runStatsOnTables(allTables, false);
 
@@ -706,9 +718,11 @@ public class SqlDb implements IDb {
 	public void turnOffLoggingAndResetStats()
 	throws SQLException {
 		List<String> statements = new ArrayList<String>();
-		List<String> tables = SqlEngine.getNamesOfAllTablesFromDeltas(_system, true, true, true);
+		Set<String> allTables = new HashSet<String>();
+		
+		SqlEngine.getNamesOfAllTablesFromDeltas(_system, true, true, true, allTables);
 
-		for (String tab : tables) {
+		for (String tab : allTables) {
 			statements.addAll(getSqlTranslator().turnOffLoggingAndResetStats(
 					tab));
 		}
@@ -723,11 +737,11 @@ public class SqlDb implements IDb {
 
 	}
 
-	public void runstats(List<String> tables) {
+	public void runstats(Collection<String> tables) {
 		if (Config.getRunStatistics()) {
 			try {
 				Calendar before = Calendar.getInstance();
-				Debug.println("Refresh statistics between datalog programs");
+				Debug.println("Refresh statistics between datalog programs on " + tables);
 				runStatsOnTables(tables, false);
 				if(!Config.getAutocommit()){ 
 					_con.commit();
@@ -939,8 +953,7 @@ public class SqlDb implements IDb {
 			Debug.println(str);
 			ret = _stmt.execute(str);
 		} catch (java.sql.SQLException s) {
-			System.err.println(str);
-			s.printStackTrace();
+			_logger.error("SQL Exception evaluating: " + str, s);
 			return false;
 		}
 		return ret;
@@ -1297,7 +1310,7 @@ public class SqlDb implements IDb {
 		// Go through the Relation and make a PreparedStatement
 		// with the appropriate types
 		StringBuffer insStatement = new StringBuffer("INSERT INTO "
-				+ baseTable.getFullQualifiedDbId() + "_INS " + "(");
+				+ baseTable.getFullQualifiedDbId() + "_INS " + "\n(");
 
 		boolean first = true;
 		for (int i = 0; i < baseTable.getNumCols(); i++) {
@@ -1406,7 +1419,7 @@ public class SqlDb implements IDb {
 		// Go through the Relation and make a PreparedStatement
 		// with the appropriate types
 		StringBuffer insStatement = new StringBuffer("INSERT INTO "
-				+ r.getFullQualifiedDbId() + targetSuffix + " (");
+				+ r.getFullQualifiedDbId() + targetSuffix + " " + " \n(");
 
 		boolean first = true;
 		for (int i = 0; i < r.getNumCols(); i++) {
@@ -1817,18 +1830,9 @@ public class SqlDb implements IDb {
 		return 0;
 	}
 
-	public List<String> createSQLTableCode(final String suffix, final Relation rel, boolean addMRule,
-			boolean addStratum,
-			boolean normalizeNames, boolean withLogging) {
-		return createSQLTableCode(rel.getName(), suffix, rel, addMRule, addStratum, rel.hasLabeledNulls(),
-				normalizeNames, withLogging);
-	}
-	
 	/**
 	 * Create a SQL table
 	 * 
-	 * @param tableName
-	 *            physical table name prefix
 	 * @param suffix
 	 *            suffix to add, e.g., "_RCH"
 	 * @param rel
@@ -1837,26 +1841,26 @@ public class SqlDb implements IDb {
 	 *            whether to add a physical MRULE column
 	 * @param addStratum
 	 *            whether to add a physical STRATUM column
-	 * @param addLabeledNulls
-	 *            whether to add labeled null columns
 	 * @param normalizeNames
 	 *            whether to use rel names or C0, C1, ...
 	 * @param withLogging
 	 *            whether to add to DB transaction log
 	 * @return
 	 */
-	public List<String> createSQLTableCode(final String tableName,
-			final String suffix, final Relation rel, boolean addMRule,
-			boolean addStratum, boolean addLabeledNulls,
-			boolean normalizeNames, boolean withLogging) {
+	public List<String> createSQLTableCode(final String suffix, final Relation rel, boolean addMRule,
+			boolean addStratum, boolean normalizeNames, boolean withLogging) {
 		final List<String> statements = new ArrayList<String>();
 
+		boolean addLabeledNulls = !Config.useCompactNulls() && rel.hasLabeledNulls();
+		final String tableName = rel.getDbRelName();
+			
+		
 		//		final String qualifiedRelName = (Config.getUseTempTables() ? "SESSION." :
 		//		(rel.getDbSchema() != null ? (rel .getDbSchema() + ".") : "") ) 
-		String qualifiedRelName = (rel.getDbSchema() != null ? (rel
-				.getDbSchema() + ".") : "")
-				+ tableName;
-
+		String qualifiedRelName = rel.getQualifiedName("");//(rel.getDbSchema() != null ? (rel
+				//.getDbSchema() + ".") : "")
+				//+ tableName;
+		
 		// String typ;
 		// //if (Config.isHsql())
 		// // typ = "CACHED ";
@@ -1868,7 +1872,8 @@ public class SqlDb implements IDb {
 		List<ISqlColumnDef> labNullCols = newArrayList();
 		// StringBuffer labeledNulls = new StringBuffer();
 		// boolean first = true;
-		if (addStratum) {
+		//if (addStratum && Config.getStratified()) {
+		if ((addStratum /*|| tableName.endsWith(Relation.INSERT) || tableName.endsWith(Relation.DELETE*/) && Config.getStratified()) {
 			// buffStat.append("STRATUM INTEGER");
 			cols.add(_sqlFactory.newColumnDef("STRATUM", "INTEGER", "0"));
 			// first = false;
@@ -1924,25 +1929,77 @@ public class SqlDb implements IDb {
 		) {
 			//			Debug.println("* Adding non-temp table " + qualifiedRelName + suffix);
 			statements.addAll(getSqlTranslator().createTable(
-					qualifiedRelName + suffix, cols, !withLogging));
+					rel.getQualifiedName(suffix), cols, !withLogging));
 
 		} else {
 			Debug.println("* Adding temp table " + qualifiedRelName + suffix);
 			statements.addAll(getSqlTranslator().createTempTable(
-					qualifiedRelName + suffix, cols));
+					rel.getQualifiedName(suffix), cols));
 		}
 
 		return statements;
 	}
 
 	
-	public List<String> createSQLIndexCode(
-			final String suffix, final Relation rel,
-			final List<RelationField> indexes,
+	/**
+	 * Updated SQL table definition, which takes the relation physical fields (including
+	 * default value) as guidelines.  Any labeled nulls, extra columns, etc., must be present
+	 * already.
+	 * 
+	 * @param suffix
+	 * @param rel
+	 * @param normalizeNames
+	 * @param withLogging
+	 * @return
+	 */
+	public List<String> createSQLTableCode(final String suffix, final Relation rel,
 			boolean normalizeNames, boolean withLogging) {
-		return createSQLIndexCode(rel.getName(), suffix, rel, indexes, rel.hasLabeledNulls(),
-				normalizeNames, withLogging);
+		final List<String> statements = new ArrayList<String>();
+
+		String qualifiedRelName = rel.getQualifiedName("");
+
+		List<ISqlColumnDef> cols = newArrayList();
+		
+		int indCol = 0;
+		int inx = 0;
+		for (RelationField f : rel.getFields()) {
+			String nam;
+			if (normalizeNames)
+				nam = "C" + indCol++;
+			else
+				nam = f.getName();
+			
+			if (f.getDefaultValueAsString() != null)
+				cols.add(_sqlFactory.newColumnDef(nam, f.getSQLType(), f.getDefaultValueAsString()));
+			else if(Config.getValueProvenance() && Relation.valueAttrName.equals(nam))
+				cols.add(_sqlFactory.newColumnDef(nam, f.getSQLType(), "1"));
+			else
+				cols.add(_sqlFactory.newColumnDef(nam, f.getSQLType(), null));
+
+			inx++;
+		}
+
+		// zives
+		if (!Config.getTempTables() 
+				|| !(qualifiedRelName.startsWith(ISqlStatementGen.sessionSchema) 
+						//						|| qualifiedRelName.endsWith("_DEL") || qualifiedRelName.endsWith("_INS") 
+						//						|| qualifiedRelName.endsWith("_RCH") || qualifiedRelName.endsWith("_INV")
+						//						|| qualifiedRelName.endsWith("_NEW") || qualifiedRelName.endsWith("_D")
+				)
+		) {
+			//			System.out.println("* Adding non-temp table " + qualifiedRelName + suffix);
+			statements.addAll(getSqlTranslator().createTable(
+					rel.getQualifiedName(suffix), cols, !withLogging));
+
+		} else {
+			System.out.println("* Adding temp table " + rel.getQualifiedName(suffix));
+			statements.addAll(getSqlTranslator().createTempTable(
+					rel.getQualifiedName(suffix), cols));
+		}
+
+		return statements;
 	}
+
 	/**
 	 * This is only used for Outer union ...
 	 * 
@@ -1955,15 +2012,13 @@ public class SqlDb implements IDb {
 	 * @param withLogging
 	 * @return
 	 */
-	public List<String> createSQLIndexCode(final String tableName,
+	public List<String> createSQLIndexCode(
 			final String suffix, final Relation rel,
-			final List<RelationField> indexes, boolean addLabeledNulls,
+			final List<RelationField> indexes,
 			boolean normalizeNames, boolean withLogging) {
 		final List<String> statements = new ArrayList<String>();
-
-		final String qualifiedRelName = (rel.getDbSchema() != null ? (rel
-				.getDbSchema() + ".") : "")
-				+ tableName;
+		final boolean addLabeledNulls = rel.hasLabeledNulls() && !Config.useCompactNulls();
+		final String tableName = rel.getDbRelName();
 
 		// StringBuffer buff = new StringBuffer();
 		Vector<ISqlColumnDef> cols = new Vector<ISqlColumnDef>();
@@ -2013,11 +2068,21 @@ public class SqlDb implements IDb {
 
 		boolean cluster = true;
 		statements.add(getSqlTranslator().createIndex(
-				qualifiedRelName + suffix + "_INDX", qualifiedRelName + suffix, cols, cluster,
+				rel.getPreferredIndexName(suffix), rel.getQualifiedName(suffix), cols, cluster,
 				!withLogging));
 		return statements;
 	}
 
+	public String dropSQLTableCode(final String suffix, final Relation rel) {
+		
+		return getSqlTranslator().dropTable(rel + suffix);
+	}
+	
+	public String dropSQLIndexCode(final String suffix, final Relation rel) {
+		
+		return getSqlTranslator().dropIndex(rel.getPreferredIndexName(suffix));
+	}
+	
 	/**
 	 * Go through the local _INS, _DEL tables and add each tuple as an
 	 * independent transaction to the global update store.
@@ -2130,6 +2195,16 @@ public class SqlDb implements IDb {
 		ResultSetIterator<Tuple> result = null;
 		try { 
 			result = evalQueryRule(rul);
+			//The updates have to come after the query since evalUpdateRule(rul) modifies rul.
+			int updateCount = 0;
+			if (typ == AtomType.INS && rc.getRelation().isInternalRelation()) {
+				updateCount = evalUpdateRule(rul);
+				RelationContext baseRelation = new RelationContext(rc.getPeer(), rc.getSchema(), log);
+				Atom updateHead = new Atom(baseRelation, a, AtomType.NONE);
+				Rule updateRule = new Rule(updateHead, b, null, this.getBuiltInSchemas());
+				evalUpdateRule(updateRule);
+			}
+
 			int count = 0;
 			while (result != null && result.hasNext()) {
 				Tuple tuple = result.next();

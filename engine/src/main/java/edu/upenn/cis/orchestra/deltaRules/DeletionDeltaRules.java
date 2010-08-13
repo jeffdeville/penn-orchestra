@@ -52,6 +52,79 @@ class DeletionDeltaRules extends DeltaRules {
 		bidirectional = containsBidirectionalMappings;
 	}
 
+	public void generate(DatalogEngine de) throws Exception {
+		// Map to each field it's database datatype. This is necessary
+		// because DB2 needs to cast null values!!!
+		try {
+			if (de._sql instanceof SqlDb)
+				((SqlDb) de._sql).activateRuleBasedOptimizer();
+
+			List<DatalogSequence> delProg = getCode();
+
+			DatalogSequence delPrep;
+			DatalogSequence delMaint;
+			DatalogSequence delPost;
+
+			if (!bidirectional) {
+				delPrep = delProg.get(0);
+				delMaint = delProg.get(1);
+				delPost = delProg.get(2);
+			} else {
+				if (Config.getAllowSideEffects()) {
+					DatalogSequence updPolPrep = delProg.get(0);
+					DatalogSequence updPolicy = delProg.get(1);
+					DatalogSequence updPolPost = delProg.get(2);
+
+					de.generatePhysicalQuery(updPolPrep);
+
+					de.generatePhysicalQuery(updPolicy);
+
+					de.generatePhysicalQuery(updPolPost);
+				} else {
+					DatalogSequence prep = delProg.get(0);
+					DatalogSequence upd = delProg.get(1);
+					DatalogSequence post1 = delProg.get(2);
+					DatalogSequence seDetectPrep = delProg.get(3);
+					DatalogSequence seDetectMaint = delProg.get(4);
+					DatalogSequence seDetectPost = delProg.get(5);
+					DatalogSequence subtract1 = delProg.get(6);
+					DatalogSequence lineagePrep = delProg.get(7);
+					DatalogSequence lineage = delProg.get(8);
+					DatalogSequence lineagePost = delProg.get(9);
+					DatalogSequence subtract2 = delProg.get(10);
+					DatalogSequence post2 = delProg.get(11);
+
+					de.generatePhysicalQuery(prep);
+
+					de.generatePhysicalQuery(upd);
+
+					de.generatePhysicalQuery(post1);
+					de.generatePhysicalQuery(seDetectPrep);
+
+					de.generatePhysicalQuery(seDetectMaint);
+					de.generatePhysicalQuery(seDetectPost);
+					de.generatePhysicalQuery(subtract1);
+					de.generatePhysicalQuery(lineagePrep);
+					de.generatePhysicalQuery(lineage);
+					de.generatePhysicalQuery(lineagePost);
+					de.generatePhysicalQuery(subtract2);
+					de.generatePhysicalQuery(post2);
+				}
+				delPrep = delProg.get(delProg.size() - 3);
+				delMaint = delProg.get(delProg.size() - 2);
+				delPost = delProg.get(delProg.size() - 1);
+			}
+
+			de.generatePhysicalQuery(delPrep);
+
+			de.generatePhysicalQuery(delMaint);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
+			// return -1;
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

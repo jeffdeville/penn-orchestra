@@ -213,6 +213,15 @@ public interface ISqlFactory {
 	ISqlDropSchema newDropSchema(String schema);
 
 	/**
+	 * Create a new {@code DROP INDEX} statement.
+	 * 
+	 * @param index
+	 *            the name of the index we're dropping.
+	 * @return the new {@code DROP INDEX} statement.
+	 */
+	ISqlDropIndex newDropIndex(String index);
+
+	/**
 	 * Create an SQL Expression given the operator.
 	 * 
 	 * @param code
@@ -263,6 +272,16 @@ public interface ISqlFactory {
 	ISqlExpression newExpression(String functionName, ISqlExp... o1);
 
 	/**
+	 * Create an SQL Expression given the operator and a set of operands.
+	 * 
+	 * @param code the operator.
+	 * @param exprs the list of expressions
+	 * 
+	 * @return see description.
+	 */
+	ISqlExpression newSqlExpression(ISqlExpression.Code code, List<ISqlExp> exprs);
+	
+	/**
 	 * Construct a join-type {@code FROM} clause.
 	 * 
 	 * @param type
@@ -311,7 +330,18 @@ public interface ISqlFactory {
 	 * @return a new <code>ISqlInsert</code> object
 	 */
 	ISqlInsert newInsert(String tableName);
-
+	
+	/**
+	 * Create a new <code>ISqlInsert</code> object.
+	 * 
+	 * @param table
+	 *            the name of the table we're inserting into
+	 * @param cols the names of the columns we're inserting into
+	 * 
+	 * @return a new <code>ISqlInsert</code> object
+	 */
+	ISqlInsert newInsert(String table, List<String> cols);
+	
 	/**
 	 * Move the rows from the table {@code source} to the table {@code dest}.
 	 * 
@@ -485,7 +515,12 @@ public interface ISqlFactory {
 			ISqlOrderByItem.OrderType orderType,
 			ISqlOrderByItem.NullOrderType nullOrderType);
 	
+	/**
+	 * Construct an {@ISqlSimpleExpression}.
+	 * 
+	 * @param value
+	 * @return the new {@ISqlSimpleExpression}
+	 */
 	ISqlSimpleExpression newSimpleExpression(String value);
-		
 
 }

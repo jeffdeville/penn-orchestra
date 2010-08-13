@@ -40,7 +40,7 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
 public abstract class Type implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final boolean nullable;
-	private final boolean labeledNullable;
+	private boolean labeledNullable;
 	private final Class<?> classObj;
 	
 	/**
@@ -94,6 +94,14 @@ public abstract class Type implements Serializable {
 	 */
 	public boolean isLabeledNullable() {
 		return labeledNullable;
+	}
+	
+	public void setLabeledNullable() {
+		setLabeledNullable(true);
+	}
+	
+	public void setLabeledNullable(boolean l) {
+		labeledNullable = l;
 	}
 	
 	/**

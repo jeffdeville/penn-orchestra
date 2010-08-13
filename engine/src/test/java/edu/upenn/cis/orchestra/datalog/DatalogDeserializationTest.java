@@ -66,6 +66,7 @@ public class DatalogDeserializationTest {
 		in.close();
 	}
 
+	
 	/**
 	 * Checks that a round trip from serialized to deserialized to serialized is
 	 * OK.

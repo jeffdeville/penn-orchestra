@@ -154,16 +154,25 @@ public class DatalogSequence extends Datalog {
 		
 		int cnt = 0;
 		
+		if (_programs.size() == 0) {
+			if(isRecursive())
+				return ("Recursive Sequence { }");
+			else
+				return ("Non-Recursive Sequence { }");
+		}
+		
 		if(isRecursive())
 			b.append("Recursive Sequence { \n");
 		else
 			b.append("Non-Recursive Sequence { \n");
 			
-		for (Object o : _programs) {
+		for (Datalog d : _programs) {
+			
 			if (cnt++ > 0)
 				b.append("\n");
-			
-			b.append(o.toString());
+
+			String str = d.toString(); 
+			b.append(str);
 		}
 		
 		b.append("} END Sequence \n");

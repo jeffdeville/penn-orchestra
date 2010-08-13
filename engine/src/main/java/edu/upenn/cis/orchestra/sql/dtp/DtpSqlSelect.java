@@ -18,6 +18,7 @@ package edu.upenn.cis.orchestra.sql.dtp;
 import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -243,5 +244,19 @@ class DtpSqlSelect extends AbstractSQLQueryObject<QuerySelectStatement>
 					dtpOrderByItem.getSQLQueryObject());
 		}
 		return this;
+	}
+
+	public boolean isBoolean() { return false; }
+
+	public ISqlExp addOperand(ISqlExp e) {
+		return null;
+	}
+	
+	public ISqlExp getOperand(int i) {
+		return null;
+	}
+	
+	public List<ISqlExp> getOperands() {
+		return new ArrayList<ISqlExp>();
 	}
 }

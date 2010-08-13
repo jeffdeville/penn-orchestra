@@ -18,8 +18,10 @@ package edu.upenn.cis.orchestra.dbms.sql.generation;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.Debug;
@@ -85,9 +87,10 @@ public class SqlRuleQuery extends RuleQuery {
 					try{
 						boolean execute = true;
 						if(!rules.get(j).getDeleteFromHead() && !rules.get(j).clearNcopy()){
-							SqlEmptyTables empty = new SqlEmptyTables(bodyTables.get(rules.get(j)));
+							//SqlEmptyTables empty = new SqlEmptyTables(bodyTables.get(rules.get(j)));
 
-							if(empty.emptyTables(getDatabase())){
+							//if(empty.emptyTables(getDatabase())){
+							if (SqlTableManipulation.areTablesEmpty(getDatabase(), bodyTables.get(rules.get(j)))) {
 								execute = false;
 							}
 							j++;
@@ -151,7 +154,8 @@ public class SqlRuleQuery extends RuleQuery {
 			}
 
 //			Run statistics on tables that have changed by the execution of this program
-			List<String> headTbls = new ArrayList<String>();
+//			List<String> headTbls = new ArrayList<String>();
+			Set<String> headTbls = new HashSet<String>();
 			for(Rule r : rules){
 				for(String s : headTables.get(r))
 					if(!headTbls.contains(s))
@@ -162,7 +166,7 @@ public class SqlRuleQuery extends RuleQuery {
 		} catch (Exception e) {
 			System.err.println("Error with:");
 			for (int i = 0; i <= st; i++)
-				System.err.println(_statements.get(st));
+				System.err.println(_statements.get(i));
 			e.printStackTrace();
 			throw new RuntimeException("Aborting: " + e.getMessage());
 		}

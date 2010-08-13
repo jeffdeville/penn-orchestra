@@ -30,5 +30,5 @@ public interface ISqlDelete extends ISqlStatement {
 	 * @param w an SQL expression compatible with a {@code WHERE} clause.
 	 * @return this {@code ISqlDelete}
 	 */
-	ISqlDelete addWhere(ISqlExpression w);
+	ISqlDelete addWhere(ISqlExp w);
 }
