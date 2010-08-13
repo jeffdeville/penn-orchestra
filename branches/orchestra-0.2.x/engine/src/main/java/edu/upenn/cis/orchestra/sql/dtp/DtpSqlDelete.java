@@ -22,6 +22,7 @@ import org.eclipse.datatools.modelbase.sql.query.QuerySearchCondition;
 import org.eclipse.datatools.modelbase.sql.query.TableInDatabase;
 
 import edu.upenn.cis.orchestra.sql.ISqlDelete;
+import edu.upenn.cis.orchestra.sql.ISqlExp;
 import edu.upenn.cis.orchestra.sql.ISqlExpression;
 import edu.upenn.cis.orchestra.sql.ITable;
 
@@ -89,7 +90,7 @@ class DtpSqlDelete extends AbstractSQLQueryObject<QueryDeleteStatement>
 
 	/** {@inheritDoc} */
 	@Override
-	public ISqlDelete addWhere(final ISqlExpression where) {
+	public ISqlDelete addWhere(final ISqlExp where) {
 		@SuppressWarnings("unchecked")
 		final ISQLQueryObject<QuerySearchCondition> querySearchConditionWhere = (ISQLQueryObject<QuerySearchCondition>) where;
 		QuerySearchCondition whereClause = getSQLQueryParserFactory()

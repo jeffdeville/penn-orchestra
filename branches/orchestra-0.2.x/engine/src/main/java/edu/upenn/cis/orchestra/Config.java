@@ -709,6 +709,26 @@ public class Config {
 		setBoolean("compactNulls", cns);
 	}
 	
+	public static boolean useIntegerTrust() {
+		return getBoolean("useIntegerTrust");
+	}
+	
+	public static boolean addTrustAnnotations() {
+		return getBoolean("addTrust");
+	}
+	
+	public static boolean getDropExtraColumns() {
+		return getBoolean("dropExtraColumns");
+	}
+	
+	public static boolean useProQL() {
+		return getBoolean("useProQL");
+	}
+	
+	public static boolean queryDatalog() {
+		return getBoolean("queryDatalog");
+	}
+
 	public static void setUpdateStoreExecutable(String[] executable) {
 		setStringArray("updateStoreExecutable", executable);
 	}

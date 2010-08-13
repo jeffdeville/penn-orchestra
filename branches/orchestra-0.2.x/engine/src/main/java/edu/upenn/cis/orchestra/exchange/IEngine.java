@@ -100,7 +100,7 @@ public interface IEngine {
 	
 	public void clean() throws Exception;
 	
-	public CreateProvenanceStorage getProvenancePrepInfo();
+	//public CreateProvenanceStorage getProvenancePrepInfo();
 	
 	public List<RelationContext> getMappingRelations();
 	

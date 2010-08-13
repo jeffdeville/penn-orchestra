@@ -19,6 +19,7 @@ import static edu.upenn.cis.orchestra.OrchestraUtil.newArrayList;
 import static edu.upenn.cis.orchestra.TestUtil.DEV_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.TestUtil.SLOW_TESTNG_GROUP;
+import static edu.upenn.cis.orchestra.TestUtil.REQUIRES_DATABASE_TESTNG_GROUP;
 import static edu.upenn.cis.orchestra.util.DomUtils.getChildElements;
 
 import java.io.File;

@@ -83,6 +83,7 @@ public class Mapping {
 	protected List<Atom> _body = new Vector<Atom> ();
 	
 	private static int _nextAutogenVarFreshId=1;
+	private static int _nextAutogenAnnotationFreshId=1;
 	
 	private RelationContext _provRel = null;
 	
@@ -534,6 +535,43 @@ public class Mapping {
 		
 	}
 	
+	public synchronized void uniquifyVariables (Set<String> seen, String extension)
+	{
+		Map<String,String> renameMap = new HashMap<String,String>();
+
+		for (Atom atom : getMappingHead())
+			for (AtomVariable v : atom.getVariables()) {
+				String nam = v.getName();
+				while (seen.contains(nam))
+					nam = nam + extension;
+				renameMap.put(v.getName(), nam);
+			}
+					
+		for (Atom atom : getBody())
+			for (AtomVariable v : atom.getVariables()) {
+				String nam = v.getName();
+				if (!renameMap.containsKey(nam)) {
+					while (seen.contains(nam))
+						nam = nam + extension;
+					renameMap.put(v.getName(), nam);
+				}
+			}
+		
+		for (Atom atom : getMappingHead())
+			atom.renameVariables(renameMap);
+		for (Atom atom : getBody())
+			atom.renameVariables(renameMap);
+		
+		for (Atom atom : getMappingHead())
+			for (AtomVariable v : atom.getVariables())
+				seen.add(v.getName());
+		
+		for (Atom atom : getBody())
+			for (AtomVariable v : atom.getVariables())
+				seen.add(v.getName());
+	}
+	
+	
 	public synchronized void renameExistentialVars(){
 		Map<String, String> renamedVarNames = new HashMap<String, String>();
 		List<Atom> allAtoms = new ArrayList<Atom>();
@@ -693,6 +731,10 @@ public class Mapping {
         return "X" + _nextAutogenVarFreshId++;
     }    
 
+    public static String getFreshAutogenAnnotationName() {
+        return "a" + _nextAutogenAnnotationFreshId++;
+    }    
+    
     protected static void serializeAtoms(Document doc, Element list, List<Atom> atoms) {
     	for (Atom atom : atoms) {
     		Element a = DomUtils.addChild(doc, list, "atom");
@@ -831,28 +873,34 @@ public class Mapping {
 		List<RelationField> trgFields = new ArrayList<RelationField>();
 		final Set<String> trgRelations = new HashSet<String> ();
 		final List<String> checkedFields = new ArrayList<String>();
+		final List<Boolean> nullableFields = new ArrayList<Boolean>();
 		int j = 0;
 		int k = 0;
 		
 		for (final AtomArgument var : allArgs)
 		{
+			nullableFields.clear();
 			if(!checkedFields.contains(var.toString())){
 				// Get the target columns from the head of the rule
 				boolean fndTrg = findArgInAtoms(var, getMappingHead(), allTrgFields, trgFields, trgColumns, trgRelations, 
-						indexes, true);
+						indexes, nullableFields, true);
 				boolean indTrg = (indexes.size() != 0);
 
 				// Get the source columns from the body of the rule
 				boolean fndSrc = findArgInAtoms(var, getBody(), allSrcFields, srcFields, srcColumns, srcRelations, 
-						indexes, true);
+						indexes, nullableFields, true);
 				boolean indSrc = (indexes.size() != 0);
+				
+				boolean isNullable = false;
+				for (Boolean b : nullableFields)
+					isNullable |= b.booleanValue();
 
 				try {
 					
 					if(fndSrc){
 						RuleFieldMapping m = new RuleFieldMapping(new 
 								RelationField("C" + j, "C" + j, true, allSrcFields.get(j).getSQLTypeName()),
-								srcFields, trgFields, var, (indSrc || indTrg), this);
+								srcFields, trgFields, var, (indSrc || indTrg), this, isNullable);
 //								srcFields, trgColumns, var, (indexes.size() != 0), this);
 //								srcColumns, trgColumns, var, (indexes.size() != 0), this);
 						fields.add (m);
@@ -862,7 +910,7 @@ public class Mapping {
 					}else if(fndTrg){
 						RuleFieldMapping m = new RuleFieldMapping(new 
 								RelationField("CH" + k, "CH" + k, true, allTrgFields.get(k).getSQLTypeName()),
-								srcFields, trgFields, var, (indTrg), this);
+								srcFields, trgFields, var, (indTrg), this, isNullable);
 //								trgFields, trgColumns, var, (indexes.size() != 0), this);
 //								trgColumns, trgColumns, var, (indexes.size() != 0), this);
 						fields.add (m);
@@ -873,6 +921,10 @@ public class Mapping {
 				} catch (UnsupportedTypeException ute) {
 					// Should never happen
 					ute.printStackTrace();
+					throw (new RuntimeException(ute.getMessage()));
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+					throw new RuntimeException("While trying to find alignment of " + var.toString() + ":\n" + e.getMessage());
 				}
 
 				srcColumns = new ArrayList<String>();
@@ -926,22 +978,28 @@ public class Mapping {
 		final List<RelationField> allTrgFields = new ArrayList<RelationField>();
 		List<RelationField> trgFields = new ArrayList<RelationField>();
 		final Set<String> trgRelations = new HashSet<String> ();
+		final List<Boolean> nullableFields = new ArrayList<Boolean>();
 		int j = 0;
 		for (final AtomArgument var : allArgs)
 		{
+			nullableFields.clear();
 			// Get the target columns from the head of the rule
 			findArgInAtoms(var, getMappingHead(), allTrgFields, trgFields, trgColumns, trgRelations, 
-					indexes, true);
+					indexes, nullableFields, true);
 			
 			// Get the source columns from the body of the rule
 			findArgInAtoms(var, getBody(), allSrcFields, srcFields, srcColumns, srcRelations, 
-					indexes, true);
+					indexes, nullableFields, true);
 			boolean indSrc = (indexes.size() != 0);
 			
+			boolean isNullable = false;
+			for (Boolean b : nullableFields)
+				isNullable |= b.booleanValue();
+
 			try {
 				RuleFieldMapping m = new RuleFieldMapping(new 
 						RelationField("C" + j, "C" + j, true, allSrcFields.get(j).getSQLTypeName()),
-						srcFields, trgFields, var, indSrc, this);
+						srcFields, trgFields, var, indSrc, this, isNullable);
 //						srcFields, trgColumns, var, (indexes.size() != 0), this);
 //						srcColumns, trgColumns, var, (indexes.size() != 0), this);
 				
@@ -1006,6 +1064,7 @@ public class Mapping {
 			final List<String> srcColumns,
 			final Set<String> srcRelations,
 			final Set<Integer> indexes,
+			final List<Boolean> nullableValues,
 			boolean fndAll) throws IncompatibleTypesException 
 	{
 		boolean fnd = false;
@@ -1059,6 +1118,9 @@ public class Mapping {
 						}else{
 
 						}
+						
+						//System.out.println("Attribute " + ind + " in " + atom + (atom.isNullable(ind) ? " is nullable" : "is not nullable"));
+						nullableValues.add(new Boolean(atom.isNullable(ind)));
 					}
 					ind++;
 				}
@@ -1075,12 +1137,13 @@ public class Mapping {
 			final List<String> srcColumns,
 			final Set<String> srcRelations,
 			final Set<Integer> indexes,
+			final List<Boolean> nullableValues,
 			boolean fndAll) throws IncompatibleTypesException 
 	{
 		final List<Atom> atoms = new ArrayList<Atom> (1);
 		atoms.add(atom);
 		return findArgInAtoms(var, atoms, allSrcFields, srcFields, srcColumns, srcRelations, indexes,
-				fndAll);
+				nullableValues, fndAll);
 	}
 
 	protected static List<Atom> deserializeAtoms(OrchestraSystem catalog, Element parent, Holder<Integer> counter) 

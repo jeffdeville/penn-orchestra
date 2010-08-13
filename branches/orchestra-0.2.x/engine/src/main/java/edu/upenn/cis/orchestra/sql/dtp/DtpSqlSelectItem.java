@@ -17,6 +17,7 @@ package edu.upenn.cis.orchestra.sql.dtp;
 
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.datatools.modelbase.sql.query.QueryResultSpecification;
@@ -24,6 +25,8 @@ import org.eclipse.datatools.modelbase.sql.query.QueryValueExpression;
 import org.eclipse.datatools.modelbase.sql.query.ResultColumn;
 import org.eclipse.datatools.modelbase.sql.query.ResultTableAllColumns;
 import org.eclipse.datatools.modelbase.sql.query.ValueExpressionColumn;
+import org.eclipse.datatools.modelbase.sql.query.ValueExpressionSimple;
+import org.eclipse.datatools.modelbase.sql.query.helper.DataTypeHelper;
 import org.eclipse.datatools.modelbase.sql.query.helper.StatementHelper;
 
 import edu.upenn.cis.orchestra.sql.IColumnExpression;
@@ -66,6 +69,8 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 	 * {@code skolemstr(...)} udf's, {@code cast} expressions, numeral
 	 * expressions, (as in {@code SELECT 1}), and string constants ({@code '}
 	 * delimited strings) to be passed in through {@code fullname}.
+	 * <p>
+	 * For expediency, we allow {@code count} functions here.
 	 * 
 	 * @param fullname
 	 *            a string that represents a column name or wildcard (example:
@@ -76,6 +81,7 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 	 */
 	DtpSqlSelectItem(final String fullname) {
 		final String fullnameTrimmed = fullname.trim();
+		/*
 		final String fullnameTrimmedLowerCase = fullnameTrimmed.toLowerCase();
 		final String fullnameTrimmedLowerCaseNoSpaces = fullnameTrimmedLowerCase
 				.replace(" ", "");
@@ -84,10 +90,20 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 				|| fullnameTrimmedLowerCaseNoSpaces.startsWith("cast(")
 				|| (fullnameTrimmed.startsWith("'") && fullnameTrimmed
 						.endsWith("'")) || numeralPattern.matcher(fullnameTrimmed).matches()) {
+		 */
+		final String fnName = getFunctionNameLC(fullnameTrimmed);
+		if ((fnName != null && (fnName.startsWith("skolem") || fnName.equals("cast") || fnName.equals("count")
+				|| fnName.equals("least") || fnName.equals("greatest")))
+				|| (fullnameTrimmed.startsWith("'") && fullnameTrimmed
+						.endsWith("'")) || numeralPattern.matcher(fullnameTrimmed).matches()) {
+			ValueExpressionSimple vs = getSQLQueryParserFactory().createSimpleExpression(
+					fullnameTrimmed);
+			if (numeralPattern.matcher(fullnameTrimmed).matches())
+				vs.setDataType(getSQLQueryParserFactory()
+						.createDataType(DataTypeHelper.TYPENAME_NUMERIC));
 			_queryResultSpecification = getSQLQueryParserFactory()
 					.createResultColumn(
-							getSQLQueryParserFactory().createSimpleExpression(
-									fullnameTrimmed), null);
+							vs, null);
 			return;
 		}
 
@@ -115,9 +131,32 @@ class DtpSqlSelectItem extends AbstractSQLQueryObject<QueryResultSpecification>
 		}
 	}
 
-	DtpSqlSelectItem() {
-	}
+	public DtpSqlSelectItem() {	}
 
+	/**
+	 * Returns a function name, lowercased, if the string represents a function invocation
+	 *
+	 * @author Zack Ives
+	 * @param str Select item name, optionally padded with whitespace
+	 * @return
+	 */
+	private String getFunctionNameLC(String str) {
+		Pattern p = Pattern.compile("\\s*([\\x2e\\w]+)\\s*\\(.*\\).*");
+		Matcher m = p.matcher(str);
+		
+		if (!m.matches())
+			return null;
+		else
+			return m.group(1).toLowerCase();
+		
+//		final String[] result = p.split(str);
+//		
+//		if (result.length < 2)
+//			return null;
+//		
+//		return result[0].toLowerCase();
+	}
+	
 	/**
 	 * Return {@code true} if this is a wildcard ({@code "[table.]*"}), {@code
 	 * false} otherwise.

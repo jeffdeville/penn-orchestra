@@ -237,12 +237,19 @@ public class ProvenanceRelation extends Relation {
 		List<AtomArgument> allArgs = new ArrayList<AtomArgument>();
 		List<RuleFieldMapping> rf = mapping.getAppropriateRuleFieldMapping();
 
+		List<Boolean> nullables = new ArrayList<Boolean>();
 		for(RuleFieldMapping rfm : rf){
 			allArgs.add(rfm.srcArg);
+			nullables.add(new Boolean(rfm.isNullable));
 		}
 
 		RelationContext relCtx = mapping.getProvenanceRelation();
-		return new Atom(relCtx, allArgs);
+		Atom a = new Atom(relCtx, allArgs);
+		
+		for (int i = 0; i < nullables.size(); i++)
+			a.setIsNullable(i, nullables.get(i).booleanValue());
+		
+		return a;
 	}
 
 	public static void splitSkolemizedMappingSingle(Mapping mapping, List<Rule> source2prov, List<Mapping> prov2target, Map<String, Schema> builtInSchemas) throws IncompatibleTypesException{
@@ -1522,7 +1529,7 @@ public class ProvenanceRelation extends Relation {
 		// Hack to add MRULE to the key ...
 		if(rel.getType().equals(ProvRelType.OUTER_UNION)){
 			indexes.add(0);
-			indexFields.add("MRULE");
+			indexFields.add(MRULECOLNAME);
 			//		}else if(rel.getType().equals(ProvRelType.OUTER_JOIN) || rel.getType().equals(ProvRelType.LEFT_OUTER_JOIN) || rel.getType().equals(ProvRelType.INNER_JOIN)){
 		}else if(isOuterJoinRel(rel.getType())){
 			for(int j = 0; j < numMappings; j++){

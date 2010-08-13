@@ -152,6 +152,10 @@ public interface ISqlExpression extends ISqlExp {
 
 		/** SQL {@code #}. */
 		POUND("#"),
+		
+		LEAST("least"),
+		
+		GREATEST("greatest"),
 
 		/** No operator. */
 		EMPTY(""),

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,11 @@ public class Schema implements Serializable, AbstractTuple.TupleFactory<Relation
 	private HashMap<Integer,Integer> IDToIndex;
 	private ArrayList<String> relationNames;
 	private ArrayList<Relation> relationSchemas;
+	private HashMap<String,Relation> _peerRelations;
+	private HashMap<String,Relation> _localRelations;
+	private HashMap<String,Relation> _rejectRelations;
 	private boolean finished;
-	private static final Logger logger = LoggerFactory.getLogger(Schema.class);
+	private static final Logger _logger = LoggerFactory.getLogger(Schema.class);
 	
 	//	private int relOffset;
 
@@ -244,7 +248,7 @@ public class Schema implements Serializable, AbstractTuple.TupleFactory<Relation
 
 		rel.setSchema(this, ID);//ID + relOffset);
 
-		Debug.println("Adding schema " + rel.getName() + " with ID " + ID+" with fields "+rel.getFields());
+		_logger.debug("Adding schema " + rel.getName() + " with ID " + ID+" with fields "+rel.getFields());
 
 		return rel.getRelationID();//ID + relOffset;
 	}
@@ -544,7 +548,50 @@ public class Schema implements Serializable, AbstractTuple.TupleFactory<Relation
 		}
 	}
 
+	/**
+	 * Checks for _L, _R relations, and categorizes all tables
+	 */
 	public void createMissingRelations() {
+		_peerRelations = new HashMap<String,Relation>();
+		_localRelations = new HashMap<String,Relation>();
+		_rejectRelations = new HashMap<String,Relation>();
+
+		for (Relation rel : getRelations()) {
+			if (rel.getDbRelName().endsWith(Relation.LOCAL))
+				_localRelations.put(rel.getDbRelName(), rel);
+			else if (rel.getDbRelName().endsWith(Relation.REJECT))
+				_rejectRelations.put(rel.getDbRelName(), rel);
+			else {
+				_peerRelations.put(rel.getDbRelName(), rel);
+			}
+		}
+		
+		for (Relation rel: _peerRelations.values()) {
+			if (rel.hasLocalData() && !_localRelations.containsKey(rel.getLocalName())) {
+				if(rel.hasLocalData()){
+					Relation rel2 = rel.deepCopy(rel.getLocalName(),
+							rel.getLocalInsDbName(), rel.getDbSchema());
+					try {
+						_logger.debug("* {}", rel2.getName() + rel2.getFieldsInList());
+						addRelation(rel2);
+
+					} catch (DuplicateRelationIdException de) {
+
+					}
+				}
+			}
+			if (!_rejectRelations.containsKey(rel.getRejectName())) {
+				Relation rel2 = rel.deepCopy(rel.getRejectName(),
+						rel.getLocalRejDbName(), rel.getDbSchema());
+				try {
+					_logger.debug("* {}", rel2.getName() + rel2.getFieldsInList());
+					addRelation(rel2);
+				} catch (DuplicateRelationIdException de) {
+
+				}
+			}				
+		}
+		/*
 		boolean needLocals = true;
 		boolean needRejects = true;
 		for (Relation rel : getRelations()) {
@@ -584,6 +631,7 @@ public class Schema implements Serializable, AbstractTuple.TupleFactory<Relation
 				}
 			}
 		}
+		*/
 	}
 
 	public static Schema deserialize(Element schema, boolean builtinFunction) throws DuplicateRelationIdException, UnknownRefFieldException, XMLParseException, UnsupportedTypeException, RelationNotFoundException {
@@ -602,11 +650,12 @@ public class Schema implements Serializable, AbstractTuple.TupleFactory<Relation
 		for (Element key : DomUtils.getChildElementsByName(schema, "foreignkey")) {
 			ForeignKey fk = ForeignKey.deserialize(s, key);
 			String rel = fk.getRelation();
-			s.getRelation(rel).finished = false;
+//			s.getRelation(rel).finished = false;
 			s.getRelation(rel).addForeignKey(fk);
-			s.getRelation(rel).finished = true;
+//			s.getRelation(rel).finished = true;
 		}
-		s.createMissingRelations();
+		if (!Config.addTrustAnnotations())
+			s.createMissingRelations();
 		s.markFinished();
 		return s;
 	}
@@ -669,7 +718,7 @@ public class Schema implements Serializable, AbstractTuple.TupleFactory<Relation
 
 		if (s == null) {
 			s = new Schema(id, desc);
-			logger.debug("Created new schema " + id + " for " + peerID + ".");
+			_logger.debug("Created new schema " + id + " for " + peerID + ".");
 			save = true;
 		}
 		ArrayList<String> existingRelations = s.getRelationNames();
@@ -677,7 +726,7 @@ public class Schema implements Serializable, AbstractTuple.TupleFactory<Relation
 			if (!existingRelations.contains(rel.getAttribute("name"))) {
 				Relation r = Relation.deserialize(rel, builtinFunction);
 				s.addRelation(r);
-				logger.debug("Created new relation " + r.getName()
+				_logger.debug("Created new relation " + r.getName()
 						+ " for peer " + peerID + ", schema " + id + ".");
 				save = true;
 			}
@@ -687,13 +736,48 @@ public class Schema implements Serializable, AbstractTuple.TupleFactory<Relation
 				.getChildElementsByName(schema, "foreignkey")) {
 			ForeignKey fk = ForeignKey.deserialize(s, key);
 			String rel = fk.getRelation();
-			s.getRelation(rel).finished = false;
+//			s.getRelation(rel).finished = false;
 			s.getRelation(rel).addForeignKey(fk);
-			s.getRelation(rel).finished = true;
+//			s.getRelation(rel).finished = true;
 		}
-		s.createMissingRelations();
+//		s.createMissingRelations();
 		// TODO persist to schemaIDBinding if any changes?
 		return s;
 	}
-	
+
+	public Collection<Relation> getLocalRelations() {
+		if (_localRelations == null)
+			throw new RuntimeException("Error: must call createMissingRelations first!");
+		return _localRelations.values();
+	}
+
+	public Collection<Relation> getRejectRelations() {
+		if (_rejectRelations == null)
+			throw new RuntimeException("Error: must call createMissingRelations first!");
+		return _rejectRelations.values();
+	}
+
+	public Collection<Relation> getPeerRelations() {
+		if (_peerRelations == null)
+			throw new RuntimeException("Error: must call createMissingRelations first!");
+		return _peerRelations.values();
+	}
+
+	public Set<String> getLocalRelationNames() {
+		if (_localRelations == null)
+			throw new RuntimeException("Error: must call createMissingRelations first!");
+		return _localRelations.keySet();
+	}
+
+	public Set<String> getRejectRelationNames() {
+		if (_rejectRelations == null)
+			throw new RuntimeException("Error: must call createMissingRelations first!");
+		return _rejectRelations.keySet();
+	}
+
+	public Set<String> getPeerRelationNames() {
+		if (_peerRelations == null)
+			throw new RuntimeException("Error: must call createMissingRelations first!");
+		return _peerRelations.keySet();
+	}
 }

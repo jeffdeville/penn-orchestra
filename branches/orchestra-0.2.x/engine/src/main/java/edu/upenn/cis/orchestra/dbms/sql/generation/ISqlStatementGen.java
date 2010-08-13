@@ -29,6 +29,22 @@ import edu.upenn.cis.orchestra.sql.ISqlColumnDef;
  *
  */
 public interface ISqlStatementGen {
+	/**
+	 * Specification for an attribute to add to a table
+	 * @author zives
+	 *
+	 */
+	public class AttribSpec {
+		/** Name */
+		public String attribName;
+		/** SQL type */
+		public String attribType;
+		/** Default value (as string literal) */
+		public String attribDefault;
+		/** Nullability */
+		public boolean isNullable;
+	}
+
 
 	public static final String sessionSchema = "SESSION";
 
@@ -64,6 +80,8 @@ public interface ISqlStatementGen {
 	public List<String> createTempTable(String tabName,
 			List<? extends ISqlColumnDef> cols);
 
+	public String dropIndex(String indName);
+	
 	public String createIndex(String indName, String tabName,
 			List<? extends ISqlColumnDef> cols, boolean cluster,
 			boolean noLogging);
@@ -85,4 +103,19 @@ public interface ISqlStatementGen {
 
 	public String getFirstRow();
 
+	public String addAttribute(String table, String attribName, String attribType, String attribDefault, boolean isNullable);
+	
+	public String addAttributeList(String table, List<AttribSpec> attribList);
+
+	public String dropAttribute(String table, String attribName);
+	
+	public String dropAttributeList(String table, List<String> attribList);
+	
+	public String createSchema(String schemaName);
+
+	public String disableConstraints(String table);
+
+	public String enableConstraints(String table);
+
+	public String reorg(String table);
 }

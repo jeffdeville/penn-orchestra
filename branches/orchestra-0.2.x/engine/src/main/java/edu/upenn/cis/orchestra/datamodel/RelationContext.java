@@ -127,8 +127,11 @@ public class RelationContext
 	public int hashCode() {
 		int code = 17;
 		code = 31 * code + getRelation().getName().hashCode();
-		code = 31 * code + getSchema().getSchemaId().hashCode();
-		code = 31 * code + getPeer().getId().hashCode();
+		if (getSchema() != null)
+			code = 31 * code + getSchema().getSchemaId().hashCode();
+		
+		if (getPeer() != null)
+			code = 31 * code + getPeer().getId().hashCode();
 		return code;
 		//return getRelation().hashCode() ^ getSchema().hashCode();
 	}

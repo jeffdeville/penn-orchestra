@@ -18,8 +18,12 @@ package edu.upenn.cis.orchestra.sql.dtp;
 
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.datatools.modelbase.sql.query.ValueExpressionSimple;
 
+import edu.upenn.cis.orchestra.sql.ISqlExp;
 import edu.upenn.cis.orchestra.sql.ISqlSimpleExpression;
 
 /**
@@ -50,4 +54,21 @@ class ValueExpressionSimpleExpression implements ISqlSimpleExpression,
 		return valueExpressionSimple;
 	}
 
+	@Override
+	public boolean isBoolean() { return false; }
+	
+	@Override
+	public ISqlExp addOperand(ISqlExp e) {
+		return null;
+	}
+	
+	@Override
+	public ISqlExp getOperand(int i) {
+		return null;
+	}
+	
+	@Override
+	public List<ISqlExp> getOperands() {
+		return new ArrayList<ISqlExp>();
+	}
 }

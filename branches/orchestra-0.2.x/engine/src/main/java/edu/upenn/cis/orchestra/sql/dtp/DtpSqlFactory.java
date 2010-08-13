@@ -15,6 +15,8 @@
  */
 package edu.upenn.cis.orchestra.sql.dtp;
 
+import java.util.List;
+
 import org.eclipse.datatools.modelbase.sql.query.QueryValueExpression;
 
 import edu.upenn.cis.orchestra.sql.AbstractSqlFactory;
@@ -64,10 +66,26 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
+	public ISqlExpression newSqlExpression(final ISqlExpression.Code code, List<ISqlExp> exprs) {
+		ISqlExpression x = newExpression(code);
+		for (ISqlExp i: exprs)
+			x = x.addOperand(i);
+		
+		return x;
+	}
+
+	/** {@inheritDoc} */
+	@Override
 	public ISqlInsert newInsert(final String tableName) {
 		return new DtpSqlInsert(tableName);
 	}
 
+	/** {@inheritDoc} */
+	@Override
+	public ISqlInsert newInsert(final String table, final List<String> cols) {
+		return new DtpSqlInsert(table, cols);
+	}
+	
 	/** {@inheritDoc} */
 	@Override
 	public ISqlSelect newSelect() {
@@ -127,6 +145,10 @@ public class DtpSqlFactory extends AbstractSqlFactory {
 		case MULTSIGN:
 		case DIVSIGN:
 		case PIPESSIGN:
+			return new ValueExpressionCombinedExpression(code);
+		case LEAST:
+			return new ValueExpressionCombinedExpression(code);
+		case GREATEST:
 			return new ValueExpressionCombinedExpression(code);
 		case IS_NULL:
 			return new PredicateIsNullSqlExpression();

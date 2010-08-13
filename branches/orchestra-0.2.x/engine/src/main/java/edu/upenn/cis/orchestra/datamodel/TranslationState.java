@@ -190,7 +190,7 @@ public class TranslationState implements ITranslationState, Serializable {
 			mr.addAll(getSource2ProvRules());
 			mr.addAll(prov2targetRules);
 			mr.addAll(getLocal2PeerRules());
-			extractEdbsIdbs(mr, _rels, edbsTemp, idbsTemp);
+			extractEdbsIdbs(mr, _rels, edbsTemp, idbsTemp, builtInSchemas);
 			_edbs = Collections.unmodifiableList(edbsTemp);
 			_idbs = Collections.unmodifiableList(idbsTemp);
 			if(returnEdbs) {
@@ -308,7 +308,7 @@ public class TranslationState implements ITranslationState, Serializable {
 	 * @param rules Rules from which to extract edb/idb relations
 	 */
 	private synchronized void extractEdbsIdbs (List<Mapping> rules, List<RelationContext> rels,
-			List<RelationContext> edbs, List<RelationContext> idbs)
+			List<RelationContext> edbs, List<RelationContext> idbs, Map<String, Schema> builtInSchemas)
 	{
 		// In this map a relation viewed in at least one rule head has value false, true otherwise
 		Map<AbstractRelation, Boolean> edbsMap = new HashMap<AbstractRelation, Boolean> ();
@@ -326,7 +326,8 @@ public class TranslationState implements ITranslationState, Serializable {
 			}
 			
 			for (Atom atom : r.getBody()){
-				if(!atom.isSkolem() && !_mappingRels.contains(atom.getRelationContext())){
+				if(!atom.isSkolem() && !_mappingRels.contains(atom.getRelationContext()) &&
+						!builtInSchemas.containsKey(atom.getSchema().getSchemaId())){
 					if (!edbsMap.containsKey(atom.getRelation()))
 					{
 						edbsMap.put(atom.getRelation(), true);
@@ -350,7 +351,8 @@ public class TranslationState implements ITranslationState, Serializable {
 				if(!entry.getKey().getName().endsWith(Relation.REJECT))
 					edbs.add (contextMap.get(entry.getKey()));
 			}else{
-				idbs.add (contextMap.get(entry.getKey()));
+				if (!builtInSchemas.containsKey(contextMap.get(entry.getKey()).getSchema().getSchemaId()))
+					idbs.add (contextMap.get(entry.getKey()));
 			}
 	}
 	

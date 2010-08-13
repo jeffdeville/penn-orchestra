@@ -77,6 +77,7 @@ public class TranslationRuleGenTest {
 		in.close();
 	}
 	
+	
 	/**
 	 * Verifies the translation state produced by {@code TranslationRuleGen}.
 	 * 
@@ -86,7 +87,8 @@ public class TranslationRuleGenTest {
 		ITranslationRuleGen ruleGen = TranslationRuleGen.newInstance(
 				systemMappings, userRelations, builtInSchemas, system);
 
-		List<Rule> sourceToTarget = ruleGen.computeTranslationRules();
+		List<Rule> sourceToTarget = ruleGen.computeTranslationRules(system.getPeers(), 
+				system.getTrustMapping());
 		assertNotNull(sourceToTarget);
 		assertFalse(sourceToTarget.isEmpty());
 		// ruleGen.getState();

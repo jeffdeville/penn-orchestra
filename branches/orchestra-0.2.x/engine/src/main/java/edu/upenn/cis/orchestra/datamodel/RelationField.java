@@ -40,6 +40,9 @@ public class RelationField implements Serializable {
 	private String _description;
 	/** Orchestra type */
 	private Type _type;
+	
+	/** A default value, if the column is to be added */
+	private String _defaultValueAsString = null;
 
 	private AbstractRelation _rel;
 
@@ -47,6 +50,12 @@ public class RelationField implements Serializable {
 	 * The extension used for labeled null columns.
 	 */
 	public static String LABELED_NULL_EXT = "_LN";
+	public static String ANN_EXT = "_TRUST";
+	
+	/**
+	 * The default value for a non-null attribute's _LN column
+	 */
+	public static String LABELED_NULL_DEFAULT = "1";
 
 	/**
 	 * Creates a new field
@@ -103,6 +112,26 @@ public class RelationField implements Serializable {
 	 */
 	public String getName() {
 		return _name;
+	}
+	
+	/**
+	 * If we have to add this column into the DBMS,
+	 * what's its default value (in string form for SQL gen)
+	 * 
+	 * @return
+	 */
+	public String getDefaultValueAsString() {
+		return _defaultValueAsString;
+	}
+	
+	/**
+	 * Set the default value (in string form) for SQL gen, in
+	 * case we need to add this column
+	 * 
+	 * @param s
+	 */
+	public void setDefaultValueAsString(String s) {
+		_defaultValueAsString = s;
 	}
 
 	/**

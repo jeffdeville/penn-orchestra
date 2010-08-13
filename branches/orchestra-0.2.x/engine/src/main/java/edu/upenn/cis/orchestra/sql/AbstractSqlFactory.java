@@ -80,6 +80,12 @@ public abstract class AbstractSqlFactory implements ISqlFactory {
 
 	/** {@inheritDoc} */
 	@Override
+	public ISqlDropIndex newDropIndex(final String index) {
+		return new SqlDropIndex(index);
+	}
+	
+	/** {@inheritDoc} */
+	@Override
 	public ISqlDropSchema newDropSchema(final String schema) {
 		return new SqlDropSchema(schema);
 	}

@@ -89,7 +89,7 @@ public class UDFunctions{
 		_depRelations.put(mappedRel, function.getName());
 	}
 	
-	protected static boolean isUDF(String function)
+	public static boolean isUDF(String function)
 	{
 		if(function==null)
 			return false;
@@ -113,7 +113,7 @@ public class UDFunctions{
 		
 		return rfc._rel;
 	}
-	protected static List<Relation> getDependenciesFor(String fn)
+	public static List<Relation> getDependenciesFor(String fn)
 	{
 		if(!_dependencies.containsKey(fn))
 			throw new RuntimeException("Function "+fn + " was not registered as a UDF.");
@@ -122,7 +122,7 @@ public class UDFunctions{
 		
 		return rm.getAllRelations();
 	}
-	protected static String isDependentRelation(Relation r){
+	public static String isDependentRelation(Relation r){
 		if(r==null || _depRelations==null)
 			return null;
 		return _depRelations.get(r);

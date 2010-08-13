@@ -41,6 +41,7 @@ import javax.swing.event.ChangeListener;
 import org.jgraph.event.GraphSelectionEvent;
 import org.jgraph.event.GraphSelectionListener;
 
+import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datamodel.Mapping;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.datamodel.Peer;
@@ -50,6 +51,7 @@ import edu.upenn.cis.orchestra.gui.graphs.GraphPanel;
 import edu.upenn.cis.orchestra.gui.peers.graph.IPeerMapping;
 import edu.upenn.cis.orchestra.gui.peers.graph.PeerGraph;
 import edu.upenn.cis.orchestra.gui.peers.graph.PeerVertex;
+import edu.upenn.cis.orchestra.gui.proql.ProQLEditorPanel;
 import edu.upenn.cis.orchestra.gui.query.QueryEditorPanel;
 import edu.upenn.cis.orchestra.gui.schemas.RelationDataEditorFactory;
 
@@ -70,7 +72,7 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 	private final static String TAB_CONSOLE = "Console";
 	
 	private final static String TAB_QUERY = "Query";
-//	final static String TAB_PROQL = "Provenance";
+	final static String TAB_PROQL = "Provenance";
 
 	
 	/** The name of contained {@code JTabbedPane} (for testibility). */
@@ -100,6 +102,7 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 	private Schema _schema;
 	private ConsolePanel _console;
 	private QueryEditorPanel _query;
+	private ProQLEditorPanel _provquery;
 	
 	private String _catalogPath;
 
@@ -172,8 +175,15 @@ public class PeersMgtPanel extends JPanel implements IPeerBrowsingContext {
 		//_query = new QueryEditorPanel(_system);
 		//_tabbedPane.addTab(TAB_QUERY, _query);
 		
-//		_provquery = new ProQLEditorPanel(_system);
-//		_tabbedPane.addTab(TAB_PROQL, _provquery);
+		if (Config.queryDatalog()) {
+			_query = new QueryEditorPanel(_system);
+			_tabbedPane.addTab(TAB_QUERY, _query);
+		}
+
+		if (Config.useProQL()) {
+			_provquery = new ProQLEditorPanel(_system);
+			_tabbedPane.addTab(TAB_PROQL, _provquery);
+		}
 		
 		// Add a change listener to the tabbed pane so that we can initialize 
 		// the peer panels when needed

@@ -17,12 +17,14 @@ package edu.upenn.cis.orchestra.sql.dtp;
 
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.datatools.modelbase.sql.query.QueryInsertStatement;
 import org.eclipse.datatools.modelbase.sql.query.QuerySelectStatement;
 import org.eclipse.datatools.modelbase.sql.query.ValueExpressionColumn;
 
+import edu.upenn.cis.orchestra.sql.IColumnExpression;
 import edu.upenn.cis.orchestra.sql.ISqlConstant;
 import edu.upenn.cis.orchestra.sql.ISqlExp;
 import edu.upenn.cis.orchestra.sql.ISqlExpression;
@@ -57,11 +59,40 @@ class DtpSqlInsert extends AbstractSQLQueryObject<QueryInsertStatement>
 	 * 
 	 * @param table the target of the {@code INSERT} statement
 	 */
+	DtpSqlInsert(final String qualifiedTable, final List<String> cols) {
+		this(_sqlFactory.newTable(qualifiedTable), cols);
+	}
+
+	/**
+	 * Create an {@code INSERT} statement who's target is {@code table}.
+	 * 
+	 * @param table the target of the {@code INSERT} statement
+	 */
 	DtpSqlInsert(final ITable table) {
 		_insertStatement = getSQLQueryParserFactory().createInsertStatement(
 				getSQLQueryParserFactory().createSimpleTable(
 						table.getSchemaName(), table.getName()),
 				(List<?>) null, (List<?>) null);
+	}
+
+	/**
+	 * Create an {@code INSERT} statement who's target is {@code table}.
+	 * 
+	 * @param table the target of the {@code INSERT} statement
+	 */
+	DtpSqlInsert(final ITable table, final List<String> cols) {
+		List<ValueExpressionColumn> vc = new ArrayList<ValueExpressionColumn>();
+		for (String c : cols) {
+			IColumnExpression ic = _sqlFactory.newColumnExpression(c);
+			vc.add(getSQLQueryParserFactory()
+					.createColumnExpression(ic.getColumn(),
+							ic.getTableName()));
+		}
+
+		_insertStatement = getSQLQueryParserFactory().createInsertStatement(
+				getSQLQueryParserFactory().createSimpleTable(
+						table.getSchemaName(), table.getName()),
+				vc, (List<?>) null);
 	}
 
 	/**

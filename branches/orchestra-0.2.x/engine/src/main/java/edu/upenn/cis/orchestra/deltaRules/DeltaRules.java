@@ -96,7 +96,7 @@ public abstract class DeltaRules implements IDeltaRules {
 	 */
 	@Override
 	abstract public long execute(DatalogEngine de) throws Exception;
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 

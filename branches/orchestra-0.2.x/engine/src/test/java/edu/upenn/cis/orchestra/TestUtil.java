@@ -36,6 +36,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import edu.upenn.cis.orchestra.reconciliation.bdbstore.BerkeleyDBStoreServer;
 import edu.upenn.cis.orchestra.sql.ISqlDrop;
 import edu.upenn.cis.orchestra.sql.ISqlDropSchema;
 import edu.upenn.cis.orchestra.sql.ISqlFactory;
@@ -327,5 +328,56 @@ public class TestUtil {
 			state.setAttribute("workdir", workdirPrefix + "_" + localPeerName);
 		}
 		return document;
+	}
+
+	/**
+	 * Returns the {@code Process} resulting from the attempt to start a {@code
+	 * BerkeleyDBStoreServer} in a new process. The class path is {@code
+	 * java.class.path}.
+	 * 
+	 * @param port the port the server should listen on
+	 * @param serverDirectoryName the directory where the Berkeley database files should be kept
+	 * @param workingDirectoryName the working directory of the process.
+	 * 
+	 * @return a {@code BerkeleyDBStoreServer} {@code Process}
+	 * 
+	 * @throws IOException
+	 */
+	public static Process startUpdateStoreServerExec(int port,
+			String serverDirectoryName, String workingDirectoryName)
+			throws IOException {
+		String cp = System.getProperty("java.class.path");
+		String[] cmdarray = new String[] {
+				"java",
+				"-cp",
+				cp,
+				BerkeleyDBStoreServer.class.getCanonicalName(),
+				"-port", Integer.toString(port), serverDirectoryName };
+		ProcessBuilder builder = new ProcessBuilder();
+		builder.command(cmdarray);
+		//builder.redirectErrorStream(true);
+		builder.directory(new File(workingDirectoryName));
+		final Process process = builder.start();
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
+		/*new Thread() {
+			@Override
+			public void run() {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+				String line = null;
+				try {
+					while ((line = reader.readLine()) != null) {
+						logger.debug(line);
+					}
+				} catch (IOException e) {
+					logger.error("Error reading output from update store process.", e);
+				}
+			}
+			
+		}.start();*/
+		return process;
 	}
 }

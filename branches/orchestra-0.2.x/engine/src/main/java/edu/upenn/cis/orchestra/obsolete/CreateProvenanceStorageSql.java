@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.exchange.sql;
+package edu.upenn.cis.orchestra.obsolete;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -33,14 +33,18 @@ import edu.upenn.cis.orchestra.datalog.atom.Atom;
 import edu.upenn.cis.orchestra.datalog.atom.Atom.AtomType;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.RelationField;
+import edu.upenn.cis.orchestra.datamodel.exceptions.IncompatibleRelationException;
+import edu.upenn.cis.orchestra.datamodel.exceptions.RelationUpdateException;
+import edu.upenn.cis.orchestra.datamodel.exceptions.SchemaNotFoundException;
 import edu.upenn.cis.orchestra.dbms.IDb;
 import edu.upenn.cis.orchestra.dbms.SqlDb;
-import edu.upenn.cis.orchestra.exchange.CreateProvenanceStorage;
+import edu.upenn.cis.orchestra.dbms.sql.generation.SqlTableManipulation;
 import edu.upenn.cis.orchestra.provenance.ProvenanceRelation;
 
 /**
  * 
  * @author gkarvoun
+ * @deprecated
  *
  */
 //WARNING: This can only work if everything is in the same db instance!!!!
@@ -48,13 +52,9 @@ public class CreateProvenanceStorageSql extends CreateProvenanceStorage {
 	
 	//private JdbcTemplate _jt;
 	private boolean _indexAll;
-	private DataSource _ds;
 	
-	public CreateProvenanceStorageSql(final SqlDb db)//DataSource ds)
+	public CreateProvenanceStorageSql()//DataSource ds)
 	{
-	//	_jt = new JdbcTemplate (ds);
-		_db = db;
-		_ds = ((SqlDb)_db).getDataSource();
 		_indexAll = Config.getIndexAllFields();
 	}
 	
@@ -147,7 +147,7 @@ public class CreateProvenanceStorageSql extends CreateProvenanceStorage {
 
 		if (Config.getApply()) {
 			for (final String s: toApply) {
-				((SqlDb)_db).evaluate(s);
+				((SqlDb)db).evaluate(s);
 			}
 		}
 		
@@ -296,20 +296,43 @@ public class CreateProvenanceStorageSql extends CreateProvenanceStorage {
 	
 	public void createProvenanceDbTable (final Relation rel, boolean withLogging, IDb db, boolean containsBidirectionalMappings)
 	{
+		// TODO: replace with createAuxiliaryDbTable
+		
 		final List<String> toApply = new ArrayList<String>();
 		SqlDb d = (SqlDb)db;
 		List<RelationField> indexes =  rel.getPrimaryKey().getFields();
 
 		boolean relExists = false;
-		final MetaExistsTable loader = new MetaExistsTable (rel.getDbCatalog(),
-				rel.getDbSchema(), rel.getDbRelName());
-		try{
-			relExists = (Boolean) JdbcUtils.extractDatabaseMetaData(_ds, loader);
-		} catch (final MetaDataAccessException ex)
-		{
-			//TODO: Actually deal with exceptions here!
-			assert (false) : "not implemented yet";			
-		}			
+		
+		try {
+			relExists = SqlTableManipulation.ensureRelationExists(db, rel);
+		} catch (SchemaNotFoundException e) {
+			e.printStackTrace();
+
+			assert (false) : "Missing RDBMS schema / fix not implemented";
+			
+		} catch (IncompatibleRelationException e) {
+			e.printStackTrace();
+
+			assert (false) : "Incompatible RDBMS schema / non-destructive fix not implemented";
+			
+			System.exit(1);
+
+			// TODO: how do we ensure we avoid losing data???
+			// Drop the tables since they have the wrong schema
+			for (final Atom.AtomType type : Atom.AtomType.values()){
+				String suffix = Atom.typeToString(type);
+				if(type != AtomType.RCH && (!Config.getStratified() || type != AtomType.ALLDEL)
+						&& (containsBidirectionalMappings || type != AtomType.D)
+						){
+					if(!suffix.equals("")){
+						suffix = "_" + suffix;
+					}
+					toApply.add(d.dropSQLTableCode(suffix, rel));
+				}
+			}
+			
+		}
 		if (!relExists)
 		{
 			for (final Atom.AtomType type : Atom.AtomType.values()){
@@ -347,44 +370,8 @@ public class CreateProvenanceStorageSql extends CreateProvenanceStorage {
 
 		if (Config.getApply()) {
 			for (final String s: toApply) {
-				((SqlDb)_db).evaluate(s);
+				((SqlDb)db).evaluate(s);
 			}
 		}
 	}
-
-	
-	/**
-	 * @author Olivier Biton
-	 */
-	private class MetaExistsTable implements DatabaseMetaDataCallback  
-	{
-		String _catalog;
-		String _schema;
-		String _tableName;
-		
-		public MetaExistsTable (final String catalog, final String schema, 
-								final String tableName)
-		{
-			_catalog = catalog;
-			_schema = schema;
-			_tableName = tableName;
-		}
-		
-		/**
-		 * @return If there are incorrect labeled null fields already
-		 * defined in the database: list of those fields names
-		 */
-		public Object processMetaData(final DatabaseMetaData dbmd) 
-							throws  SQLException,
-									MetaDataAccessException 
-		{
-			boolean res;
-			final ResultSet rs  = dbmd.getTables(_catalog, _schema, _tableName, null);
-			res = (rs.next());
-			return Boolean.valueOf(res);
-		}
-	}	
-	
-
-	
 }

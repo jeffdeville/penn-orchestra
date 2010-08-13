@@ -198,6 +198,14 @@ public abstract class AbstractRelation implements Serializable {
 	public AbstractRelation(String name, String description,
 			List<RelationField> fields, String pkName,
 			Collection<String> pkFieldNames) throws UnknownRefFieldException {
+		
+		this (name, description, fields, pkName, pkFieldNames, true);
+
+	}
+
+	public AbstractRelation(String name, String description,
+			List<RelationField> fields, String pkName,
+			Collection<String> pkFieldNames, boolean finishNow) throws UnknownRefFieldException {
 		_columnNum = new HashMap<String,Integer>();
 		finished = false;
 
@@ -215,10 +223,11 @@ public abstract class AbstractRelation implements Serializable {
 			_pk = new PrimaryKey(pkName,this,pkFieldNames);
 		}
 
-		markFinished();
+		if (finishNow)
+			markFinished();
 
 	}
-
+	
 	/**
 	 * Deep copy of the relation
 	 * Use the method deepCopy to benefit from polymorphism
@@ -242,9 +251,11 @@ public abstract class AbstractRelation implements Serializable {
 		for(int j = 0; j < relation._columnTypes.length; j++)
 			_columnTypes[j] = relation.getColType(j);
 
-		_columnLengths = new int[relation._columnLengths.length];
-		for(int j = 0; j < relation._columnLengths.length; j++)
-			_columnLengths[j] = relation._columnLengths[j];
+		if (relation._columnLengths != null) {
+			_columnLengths = new int[relation._columnLengths.length];
+			for(int j = 0; j < relation._columnLengths.length; j++)
+				_columnLengths[j] = relation._columnLengths[j];
+		}
 
 		setFieldsRelRef();
 		initFieldsByNamesMap ();
@@ -261,6 +272,16 @@ public abstract class AbstractRelation implements Serializable {
 	public int getNumCols() {
 		return _fields.size();
 	}
+	
+	/*
+	public int getNumColsIncludingLNs() {
+		int lns = 0;
+		for (int col = 0; col < _columnTypes.length; col++)
+			if (_columnTypes[col].isLabeledNullable())
+				lns++;
+		
+		return lns + getNumCols();
+	}*/
 
 	/**
 	 * Get the name of a column.
@@ -295,11 +316,14 @@ public abstract class AbstractRelation implements Serializable {
 	 * @return					The <CODE>OptimizerType</CODE> of the column
 	 */
 	public Type getColType(int whichCol) {
-		if (_columnTypes[whichCol] != null)
+		if (whichCol >= _fields.size()){
+			return null;
+		} else if (_columnTypes[whichCol] != null)
 			return _columnTypes[whichCol];
-		else {
+		else if (whichCol < _fields.size()){
 			return _fields.get(whichCol).getType();
-		}
+		} else
+			return null;
 	}
 
 	/**
@@ -340,6 +364,10 @@ public abstract class AbstractRelation implements Serializable {
 
 	RelationMapping identityMapping;
 
+	public boolean isNullable(int inx) {
+		return false;
+	}
+	
 	public void markFinished() {
 		if (finished) {
 			throw new IllegalStateException("Already finished");
@@ -401,7 +429,7 @@ public abstract class AbstractRelation implements Serializable {
 			if (_columnTypes[col].isNullable()) {
 				keyTupleNullFlags[col] = numKeyFlags++;
 			}
-			if (_columnTypes[col].isLabeledNullable()) {
+			if (isNullable(col)) {
 				keyTupleLabeledNullFlags[col] = numKeyFlags++;
 			}
 		}
@@ -411,7 +439,7 @@ public abstract class AbstractRelation implements Serializable {
 			if (t.isNullable()) {
 				nullFlags[col] = numFlags++;
 			}
-			if (t.isLabeledNullable()) {
+			if (isNullable(col)) {
 				labeledNullFlags[col] = numFlags++;
 			}
 		}
@@ -431,7 +459,7 @@ public abstract class AbstractRelation implements Serializable {
 			Type t = _columnTypes[col];
 			int bytesLength = t.bytesLength();
 			if (bytesLength >= 0) {
-				if (t.isLabeledNullable() && bytesLength < IntType.bytesPerInt) {
+				if (isNullable(col) && bytesLength < IntType.bytesPerInt) {
 					bytesLength = IntType.bytesPerInt;
 				}
 			} else {
@@ -455,7 +483,7 @@ public abstract class AbstractRelation implements Serializable {
 			Type t = _columnTypes[col];
 			int bytesLength = t.bytesLength();
 			if (bytesLength >= 0) {
-				if (t.isLabeledNullable() && bytesLength < IntType.bytesPerInt) {
+				if (isNullable(col) && bytesLength < IntType.bytesPerInt) {
 					bytesLength = IntType.bytesPerInt;
 				}
 			} else {
@@ -603,7 +631,25 @@ public abstract class AbstractRelation implements Serializable {
 	 * @throws Exception	If the column name is reserved
 	 */
 	public void addCol(String name, Type se) throws BadColumnName {
+//		Type[] temp = _columnTypes;
+//		_columnTypes = new Type[temp.length + 1];
+//		int i;
+//		for (i = 0; i < temp.length; i++)
+//			_columnTypes[i] = temp[i];
 		addCol(name, "column", se);
+//		_columnTypes[i] = se;
+	}
+
+	public void addCol(String name, Type se, String def) throws BadColumnName {
+		int inx = getNumCols();
+//		Type[] temp = _columnTypes;
+//		_columnTypes = new Type[temp.length + 1];
+//		int i;
+//		for (i = 0; i < temp.length; i++)
+//			_columnTypes[i] = temp[i];
+		addCol(name, "column", se);
+//		_columnTypes[i] = se;
+		this.getField(inx).setDefaultValueAsString(def);
 	}
 
 	/**
@@ -687,6 +733,8 @@ public abstract class AbstractRelation implements Serializable {
 	 */
 	public RelationField getField (int index)
 	{
+		if (index >= _fields.size())
+			throw new RuntimeException("Illegal attribute request, index " + index + " in " + getName());
 		//	TODO:LOW error if ind KO
 		return _fields.get(index);
 	}
@@ -969,7 +1017,7 @@ public abstract class AbstractRelation implements Serializable {
 		retval.append(")\n");
 		return retval.toString();
 	}
-
+	
 	public void serialize(Document doc, Element schema) {
 		schema.setAttribute("name", _name);
 		if (_description != null) {

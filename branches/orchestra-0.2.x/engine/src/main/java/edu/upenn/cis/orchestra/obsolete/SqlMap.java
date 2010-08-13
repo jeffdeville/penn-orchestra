@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra;
+package edu.upenn.cis.orchestra.obsolete;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import edu.upenn.cis.orchestra.Config;
+import edu.upenn.cis.orchestra.Debug;
 import edu.upenn.cis.orchestra.datalog.DatalogSequence;
 import edu.upenn.cis.orchestra.datamodel.Mapping;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
