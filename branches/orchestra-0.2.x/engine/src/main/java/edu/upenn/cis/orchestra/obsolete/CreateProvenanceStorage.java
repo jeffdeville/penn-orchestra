@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.exchange;
+package edu.upenn.cis.orchestra.obsolete;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.upenn.cis.orchestra.datalog.atom.Atom;
+import edu.upenn.cis.orchestra.datalog.atom.AtomArgument;
 import edu.upenn.cis.orchestra.datamodel.AbstractRelation;
 import edu.upenn.cis.orchestra.datamodel.Mapping;
 import edu.upenn.cis.orchestra.datamodel.Relation;
@@ -31,6 +32,7 @@ import edu.upenn.cis.orchestra.datamodel.exceptions.IncompatibleTypesException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnknownRefFieldException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
 import edu.upenn.cis.orchestra.dbms.IDb;
+import edu.upenn.cis.orchestra.exchange.RuleFieldMapping;
 import edu.upenn.cis.orchestra.mappings.Rule;
 import edu.upenn.cis.orchestra.provenance.ProvenanceRelation;
 
@@ -53,8 +55,6 @@ public abstract class CreateProvenanceStorage {
 		int pos;
 		AbstractRelation rel;
 	}
-
-	protected IDb _db;
 
 	/**
 	 * Returns a hash table with a field mapping for each mapping rule
@@ -273,153 +273,6 @@ public abstract class CreateProvenanceStorage {
 	public abstract void createOuterUnionDbTable(ProvenanceRelation rel,  
 			boolean withLogging, IDb Db); 
 
-//	/**
-//	 * @deprecated
-//	 * @param rule
-//	 * @param ruleIndice
-//	 * @param create
-//	 * @param withLogging
-//	 * @return
-//	 */
-//	public Relation OLDcreateProvenanceRelationKeys (final Rule rule, final int ruleIndice, final boolean create,
-//				boolean withLogging) throws IncompatibleTypesException
-//		{
-//			final List<AtomVariable> allVars = rule.getAllBodyVariables();
-//			
-//			final List<AtomArgument> allVarsCast = new ArrayList<AtomArgument> (allVars.size());
-//			for (final AtomVariable var : allVars)
-//				allVarsCast.add(var);	
-//	
-//			// Assume for now that the datatypes in the mappings are coherent. The first column 
-//			// found for each variable will be used to choose the type in the provenance relation
-//			// Assume also that the labeled null columns exist
-//			// Creates the provenance relation in the same schema as the head of the atom...
-//	
-//			final List<RelationField> srcFields = new ArrayList<RelationField> (allVars.size());
-//			final List<String> srcColumns = new ArrayList<String> (allVars.size()*2);
-//			final Set<String> srcRelations = new HashSet<String> ();
-//			final Set<Integer> indexes = new HashSet<Integer> (); 
-//			for (final AtomVariable var : allVars)
-//			{
-//				boolean fnd;
-//				fnd = Rule.findArgInAtoms(var, rule.getHead(), srcFields, srcColumns, 
-//						srcRelations, indexes, false);
-//				if (!fnd)
-//					Rule.findArgInAtoms(var, rule.getBody(), srcFields, srcColumns, srcRelations, 
-//							indexes, false);
-//				if(!indexes.contains(srcColumns.size()-1)){
-//					Rule.checkIfVarInKey(var, rule.getBody(), srcFields, srcColumns, 
-//							srcRelations, indexes);
-//				}
-//			}
-//	
-//			final List<RelationField> fields = new ArrayList<RelationField> ();    		
-//			for (int j = 0 ; j < allVars.size() ; j++){
-//				fields.add (new RelationField("C" + j, "C" + j, srcFields.get(j).getType()));
-//			}
-//	
-//			String description = rule.getDescription();
-//	
-//			final List<String> indexFields = new ArrayList<String> ();
-//			for (final Integer index : indexes)
-//				indexFields.add (fields.get(index).getName());
-//	
-//			try
-//			{
-//	
-//				final Relation rel = new Relation(rule.getHead().getRelation().getDbCatalog(), 
-//						rule.getHead().getRelation().getDbSchema(), 
-//						"M"+ruleIndice, "M"+ruleIndice, 
-//	//					"Cache relation for M" + ruleIndice,
-//						description,
-//						true,
-//						fields,
-//						"M"+ruleIndice + "_PK",
-//						indexFields
-//				);
-//	
-//	//			final ScPrimaryKey key = new ScPrimaryKey ("M"+ruleIndice + "_PK",
-//	//			rel,
-//	//			indexFields);
-//	//			rel.setPrimaryKey(key);
-//	
-//	
-//				return rel;
-//			}catch (final UnknownRefFieldException ex){
-//				ex.printStackTrace();
-//			}
-//			return null;
-//		}
-
-
-	
-	public static ProvenanceRelation computeProvenanceRelation (final Mapping mapping, final int ruleIndice) throws IncompatibleTypesException, IncompatibleKeysException
-	{
-		final List<String> indexFields = new ArrayList<String> ();
-		List<RuleFieldMapping> rf = mapping.getAppropriateRuleFieldMapping();
-		
-		final List<RelationField> fields = new ArrayList<RelationField> ();
-		for(RuleFieldMapping rfm : rf){
-			fields.add(rfm.outputField);
-			if(rfm.isIndex || rfm.srcColumns.size() > 1){
-				indexFields.add(rfm.outputField.getName());
-				StringBuffer srcFieldBuf = new StringBuffer();
-				for(RelationField f : rfm.srcColumns){
-					srcFieldBuf.append(f.getRelation().getName() + "." + f.getName() + " ");
-				}
-				
-// ZI: BUG: Is this correct?  What we really need is that the mapping has a key in it...
-				for(RelationField f : rfm.srcColumns){
-					if(!f.getRelation().getPrimaryKey().getFields().contains(f)){
-						throw new IncompatibleKeysException("Field: " + rfm.outputField.getName() + " (source: " + srcFieldBuf + ") is a key in the mapping:\n" + mapping.toString() +
-								"\nbut not in the source (" + f.getRelation().getName() + "." + f.getName() + ")");
-					}
-				}
-				for(RelationField f : rfm.trgColumns){
-					if(!f.getRelation().getPrimaryKey().getFields().contains(f)){
-						throw new IncompatibleKeysException("Field: " + rfm.outputField.getName() + " (source: " + srcFieldBuf + ") is a key in the body of the mapping:\n" + mapping.toString() +
-								"\nbut not a subset of the key of the target (" + f.getRelation().getName() + "." + f.getName() + ")");
-					}
-				}
-			}
-		}
-		
-		String description = mapping.getDescription();
-
-		try
-		{
-			final Relation r = mapping.getMappingHead().get(0).getRelation();
-			final ProvenanceRelation rel = new ProvenanceRelation(r.getDbCatalog(), 
-					r.getDbSchema(), 
-					"M"+ruleIndice, "M"+ruleIndice, 
-					description,
-					true,
-					fields,
-					"M"+ruleIndice + "_PK",
-					indexFields
-			);
-			boolean noNulls = true;
-			
-			List<Atom> temp = new ArrayList<Atom>();
-			temp.addAll(mapping.getMappingHead());
-			temp.addAll(mapping.getBodyWithoutSkolems());
-			
-			rel.deriveLabeledNullsFromAtoms(temp);
-			
-			List<Mapping> pm = new ArrayList<Mapping>();
-			pm.add(mapping);
-			rel.setMappings(pm);
-        	ProvenanceRelation urel = ProvenanceRelation.createSingleProvRelSchema(rel);
-        	
-			return urel;
-		}catch (final UnknownRefFieldException ex){
-			ex.printStackTrace();
-		}catch (final UnsupportedTypeException ex){
-			ex.printStackTrace();
-		}
-		return null;
-	}
-
 	public abstract void createProvenanceDbTable (final Relation rel, boolean withNoLogging, IDb db, boolean containsBidirectionalMappings);
 
 	/**
@@ -428,6 +281,7 @@ public abstract class CreateProvenanceStorage {
 	 * 
 	 * @param r
 	 * @return
+	 * @deprecated
 	 */
 	public Map<RelPos,Set<RelPos>> getEquivalenceClasses(Rule r) {
 		Map<RelPos,Set<RelPos>> ret = new HashMap<RelPos,Set<RelPos>>();

@@ -40,6 +40,8 @@ public interface IDeltaRules {
 	 */
 	public long execute(DatalogEngine de) throws Exception;
 
+	public void generate(DatalogEngine de) throws Exception;
+
 	/**
 	 * Performs any necessary cleanup of prepared statements.
 	 * 

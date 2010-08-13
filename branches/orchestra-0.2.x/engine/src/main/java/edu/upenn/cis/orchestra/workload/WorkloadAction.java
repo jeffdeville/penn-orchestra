@@ -20,6 +20,10 @@ import java.util.Map;
 import edu.upenn.cis.orchestra.reconciliation.Db;
 
 public abstract class WorkloadAction implements java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int peer;
 	WorkloadAction(int peer) {
 		this.peer = peer;

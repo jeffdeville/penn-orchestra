@@ -45,6 +45,7 @@ import edu.upenn.cis.orchestra.util.XMLParseException;
 public abstract class DatalogProgram extends Datalog {
 	protected RuleQuery _stmts;
 	String _queryString;
+	String _desc;
 	boolean preparedFlag = false;
 
 	public List<Rule> _rules;
@@ -53,25 +54,28 @@ public abstract class DatalogProgram extends Datalog {
 //	public boolean _c4f;
 //	public boolean _measureExecTime;
 	
-	public DatalogProgram(List<Rule> r, boolean c4f){
+	public DatalogProgram(List<Rule> r, boolean c4f, String desc){
 		_rules = r;
 		_c4f = c4f;
+		_desc = desc;
 		_measureExecTime = false;
 		_bodyTables = new HashMap<Rule, List<String>>();
 		_headTables = new HashMap<Rule, List<String>>();
 	}
 
-	public DatalogProgram(List<Rule> r, boolean c4f, boolean t){
+	public DatalogProgram(List<Rule> r, boolean c4f, boolean t, String desc){
 		_rules = r;
 		_c4f = c4f;
+		_desc = desc;
 		_measureExecTime = t;
 		_bodyTables = new HashMap<Rule, List<String>>();
 		_headTables = new HashMap<Rule, List<String>>();
 	}
 	
-	public DatalogProgram(List<Rule> r){
+	public DatalogProgram(List<Rule> r, String desc){
 		_rules = r;
 		_c4f = true;
+		_desc = desc;
 		_bodyTables = new HashMap<Rule, List<String>>();
 		_headTables = new HashMap<Rule, List<String>>();
 	}
@@ -142,18 +146,29 @@ public abstract class DatalogProgram extends Datalog {
 	public String toString ()
 	{
 		StringBuffer buffer = new StringBuffer ();
+		boolean lf = false;
 		for (Rule r : getRules()) {
-			buffer.append("\n" + r.toString() + "\n");
+			if (!lf)
+				buffer.append('\n');
+			buffer.append(" " + r.toString() + "\n");
+			lf = true;
 		}
 
 		return buffer.toString();
 	}
 	
 	public void printString() {
+		if (getRules().isEmpty()) {
+			Debug.println("Recursive " + getDescription() + " {}");
+			return;
+		} else {
+			Debug.println("Non-Recursive " + getDescription() + " {}");
+		}
+		
 		if(this instanceof RecursiveDatalogProgram){
-			Debug.println("Recursive{ ");
+			Debug.println("Recursive " + getDescription() + " { ");
 		}else{
-			Debug.println("Non-Recursive{ ");
+			Debug.println("Non-Recursive " + getDescription() + " { ");
 		}
 //		int count = 0;
 		for (Rule r : getRules()){
@@ -162,17 +177,18 @@ public abstract class DatalogProgram extends Datalog {
 			
 			r.printString();
 		}
-		if(this instanceof RecursiveDatalogProgram){
-			edu.upenn.cis.orchestra.Debug.println("} END Recursive");
-		}else{
-			Debug.println("} END Non-Recursive");
-		}
+		//if(this instanceof RecursiveDatalogProgram){
+			edu.upenn.cis.orchestra.Debug.println("} END " + getDescription());
+		//}else{
+		//	Debug.println("} END Non-Recursive");
+		//}
 	}
 
 	@Override
 	public Element serialize(Document document) {
 		Element e = super.serialize(document);
 		e.setAttribute("type", "datalogProgram");
+		e.setAttribute("programName", getDescription());
 		for (Rule r : getRules()) {
 			e.appendChild(r.serializeVerbose(document));
 		}
@@ -205,13 +221,14 @@ public abstract class DatalogProgram extends Datalog {
 		boolean measureExecTime = DomUtils.getBooleanAttribute(datalog,
 				"measureExecTime");
 		String programType = datalog.getAttribute("programType");
+		String desc = datalog.getAttribute("programName");
 		List<Rule> rules = deserializeVerboseRules(datalog, system);
 		DatalogProgram program = null;
 		if ("nonRecursiveDatalogProgram".equals(programType)) {
-			program = new NonRecursiveDatalogProgram(rules, countForFixpoint);
+			program = new NonRecursiveDatalogProgram(rules, countForFixpoint, desc);
 			program.setMeasureExecTime(measureExecTime);
 		} else if ("recursiveDatalogProgram".equals(programType)) {
-			program = new RecursiveDatalogProgram(rules, countForFixpoint);
+			program = new RecursiveDatalogProgram(rules, countForFixpoint, desc);
 			program.setMeasureExecTime(measureExecTime);
 		} else if ("".equals(programType)) {
 			throw new XMLParseException(
@@ -338,4 +355,8 @@ public abstract class DatalogProgram extends Datalog {
 		return preparedFlag;
 	}
 
+	public String getDescription() {
+		return _desc;
+	}
+	
 }

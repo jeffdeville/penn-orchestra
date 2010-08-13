@@ -31,7 +31,10 @@ import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.RelationContext;
+import edu.upenn.cis.orchestra.datamodel.RelationField;
 import edu.upenn.cis.orchestra.datamodel.Schema;
+import edu.upenn.cis.orchestra.datamodel.Type;
+import edu.upenn.cis.orchestra.datamodel.AbstractRelation.BadColumnName;
 import edu.upenn.cis.orchestra.datamodel.exceptions.RelationNotFoundException;
 import edu.upenn.cis.orchestra.mappings.RuleEqualityAtom;
 import edu.upenn.cis.orchestra.mappings.exceptions.CompositionException;
@@ -63,6 +66,8 @@ public class Atom {
 	 */
 	private List<Boolean> _isNullable = new Vector<Boolean> ();
 	
+	private List<AtomAnnotation> _annotations = new ArrayList<AtomAnnotation>();
+	
 	/**
 	 * Atom type used for delta rules. When a rule is not a delta rule, type will be AtomType.NONE
 	 */
@@ -71,6 +76,11 @@ public class Atom {
 	 * Is this atom negated
 	 */
 	private boolean _neg=false;
+	
+	/**
+	 * Is this atom one that has had annotations applied
+	 */
+	private boolean _isAnnotated=false;
 	
 	/**
 	 * This atom is part of a bidirectional mapping and should be deleted as part 
@@ -142,6 +152,10 @@ public class Atom {
 		if(Config.getEdbbits())
 			realSize -= 1;
 		
+		if (getValues().size() < realSize) {
+			realSize = getValues().size();
+		}
+		
 		for (int i = 0 ; i < realSize ; i++)
 		{
 			getValues().get(i).setType(getRelation().getField(i).getType());
@@ -193,6 +207,7 @@ public class Atom {
 		_neg = atom.isNeg();
 		_del = atom.getDel();
 		_allStrata = atom.allStrata();
+		_annotations.addAll(atom.getAnnotations());
 		setValuesTypes();
 		
 	}
@@ -247,6 +262,8 @@ public class Atom {
 		_neg = atom.isNeg();
 		_del = atom.getDel();
 		_allStrata = atom.allStrata();
+		
+		_annotations.addAll(atom.getAnnotations());
 		
 		setValuesTypes();
 		
@@ -527,8 +544,8 @@ public class Atom {
 			strRes = strRes + "_" + getType().toString();
 		return strRes;
 	}
-	
-/*
+
+	/*
  * 	 @return RelName only
  */	
 	public synchronized String toString4() {
@@ -601,6 +618,12 @@ public class Atom {
 			val.renameVariable(extension);
 	}
 
+	public synchronized void renameVariables (Map<String,String> renameTable)
+	{
+		for (AtomArgument val : getValues())
+			val.renameVariable(renameTable);
+	}
+	
 	public synchronized Map<String, AtomArgument> varHomomorphism(Atom other){
 		HashMap<String, AtomArgument> varmap = new HashMap<String, AtomArgument> ();
 		if(getRelationContext().equals(other.getRelationContext())){
@@ -879,4 +902,30 @@ public class Atom {
     public void replaceRelationContext(RelationContext newCx) {
     	_relationContext = newCx;
     }
+    
+    public void addArgument(AtomArgument a, boolean isNullable, boolean isAnnotation,
+    		String label, Type dataType) throws BadColumnName {
+    	getValues().add(a);
+    	//getRelation().addCol(label, dataType)
+    	_isNullable.add(isNullable);
+    	_isAnnotated = _isAnnotated || isAnnotation;
+//    	if (getRelation().getNumCols() < getValues().size())
+//    		getRelation().addField(new RelationField(label, label, dataType));
+    }
+    
+    public boolean isAnnotated() {
+    	return _isAnnotated;
+    }
+
+	public List<AtomAnnotation> getAnnotations() {
+		return _annotations;
+	}
+	
+	public void setAnnotations(List<AtomAnnotation> ann) {
+		_annotations = ann;
+	}
+	
+	public void addAnnotation(AtomAnnotation ann) {
+		_annotations.add(ann);
+	}
 }

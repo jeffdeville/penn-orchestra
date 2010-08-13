@@ -21,6 +21,7 @@ import java.util.List;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.datamodel.RelationContext;
+import edu.upenn.cis.orchestra.datamodel.RelationField;
 import edu.upenn.cis.orchestra.datamodel.Tuple;
 import edu.upenn.cis.orchestra.datamodel.Update;
 import edu.upenn.cis.orchestra.datamodel.exceptions.ValueMismatchException;
@@ -153,6 +154,22 @@ public class RelationDataModel extends RelationDataModelAbs
 	
 	public void setEditable(boolean isEditable) {
 		_isEditable = isEditable;
+	}
+	
+	/**
+	 * Return a column count that ignores labeled nulls and annotations
+	 * 
+	 * @return
+	 */
+	public int getColumnCount() {
+		//int count = _relCtx.getRelation().getNumCols();
+		
+		int count = 0;
+		for (int i = 0; i < _relCtx.getRelation().getNumCols(); i++)
+			if (!(_relCtx.getRelation().getField(i).getName().endsWith(RelationField.LABELED_NULL_EXT)) && 
+					!(_relCtx.getRelation().getField(i).getName().endsWith(RelationField.ANN_EXT)))
+				count++;
+		return count;
 	}
 	
 	

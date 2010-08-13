@@ -15,9 +15,13 @@
  */
 package edu.upenn.cis.orchestra.exchange;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import edu.upenn.cis.orchestra.datamodel.ITranslationState;
+import edu.upenn.cis.orchestra.datamodel.Peer;
+import edu.upenn.cis.orchestra.datamodel.TrustConditions;
 import edu.upenn.cis.orchestra.mappings.Rule;
 
 /**
@@ -36,7 +40,8 @@ public interface ITranslationRuleGen {
 	 * @throws Exception
 	 */
 
-	public List<Rule> computeTranslationRules() throws Exception;
+	public List<Rule> computeTranslationRules(Collection<Peer> peers,
+			Map<String, Map<String, TrustConditions>> trustMapping) throws Exception;
 
 	/**
 	 * Returns the translation state of this rule generator.

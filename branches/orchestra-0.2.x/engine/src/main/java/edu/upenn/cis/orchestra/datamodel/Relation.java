@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.datatools.modelbase.sql.query.ValueExpressionColumn;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -29,6 +30,7 @@ import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateRelationIdException
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnknownRefFieldException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
 import edu.upenn.cis.orchestra.mappings.MappingsTranslationMgt;
+import edu.upenn.cis.orchestra.sql.dtp.ValueExpressionColumnConstant;
 import edu.upenn.cis.orchestra.util.DomUtils;
 import edu.upenn.cis.orchestra.util.XMLParseException;
 
@@ -99,8 +101,8 @@ public class Relation extends AbstractRelation {
 		
 		//_nullableFields = new ArrayList<Boolean>(schema.getRelationSchema(relationID).getNumCols());
 		_nullableFields = new ArrayList<Boolean>();
-		for (int i = 0; i < _nullableFields.size(); i++)
-			_nullableFields.set(i, new Boolean(false));
+		for (int i = 0; i < getNumCols(); i++)
+			_nullableFields.add(i, new Boolean(false));
 	}
 
 	public Relation(Schema schema, int relationID, AbstractRelation tab, boolean materialized, boolean hasLocalData) {
@@ -110,11 +112,14 @@ public class Relation extends AbstractRelation {
 
 		if (tab instanceof Relation) {
 			_hasLNs = ((Relation)tab)._hasLNs;
-			_nullableFields.addAll(((Relation)tab)._nullableFields);
+			int siz = ((Relation)tab)._nullableFields.size();
+			_nullableFields = new ArrayList<Boolean>(siz);
+			for (int i = 0; i < siz; i++)
+				_nullableFields.add(((Relation)tab)._nullableFields.get(i));
 		} else {
 			_nullableFields = new ArrayList<Boolean>(schema.getRelationSchema(relationID).getNumCols());
 			for (int i = 0; i < _nullableFields.size(); i++)
-				_nullableFields.set(i, new Boolean(false));
+				_nullableFields.add(i, new Boolean(false));
 		}
 
 		//		if (Config.getTempTables())
@@ -160,11 +165,14 @@ public class Relation extends AbstractRelation {
 
 		if (tab instanceof Relation) {
 			_hasLNs = ((Relation)tab)._hasLNs;
-			_nullableFields.addAll(((Relation)tab)._nullableFields);
+			int siz = ((Relation)tab)._nullableFields.size();
+			_nullableFields = new ArrayList<Boolean>(siz);
+			for (int i = 0; i < siz; i++)
+				_nullableFields.add(((Relation)tab)._nullableFields.get(i));
 		} else {
 			_nullableFields = new ArrayList<Boolean>(tab.getNumCols());
 			for (int i = 0; i < _nullableFields.size(); i++)
-				_nullableFields.set(i, new Boolean(false));
+				_nullableFields.add(new Boolean(false));
 		}
 		_name = nam;
 		_dbRelName = dbName;
@@ -218,7 +226,7 @@ public class Relation extends AbstractRelation {
 			field.setRelation(this);
 		_nullableFields = new ArrayList<Boolean>(fields.size());
 		for (int i = 0; i < _nullableFields.size(); i++)
-			_nullableFields.set(i, new Boolean(false));
+			_nullableFields.add(new Boolean(false));
 		_dbCatalog = dbCatalog;
 		_dbSchema = dbSchema;
 		_dbRelName = dbRelName;
@@ -237,20 +245,32 @@ public class Relation extends AbstractRelation {
 	 * @throws UnknownRefFieldException 
 	 */
 	public Relation (String dbCatalog, String dbSchema, String dbRelName, String name, 
-			String description, boolean materialized, boolean hasLocalData, List<RelationField> fields, String pkName,
-			List<String> pkFieldNames) throws UnknownRefFieldException 
+			String description, boolean materialized, boolean hasLocalData, List<RelationField> fields, 
+			String pkName, List<String> pkFieldNames) throws UnknownRefFieldException 
 			{
-		super (name, description, fields, pkName, pkFieldNames);
+		this (dbCatalog, dbSchema, dbRelName, name, description, materialized, hasLocalData,
+				fields, pkName, pkFieldNames, true);
+			}
+	
+	public Relation (String dbCatalog, String dbSchema, String dbRelName, String name, 
+			String description, boolean materialized, boolean hasLocalData, List<RelationField> fields, 
+			String pkName, List<String> pkFieldNames, boolean finishNow) throws UnknownRefFieldException 
+			{
+		super (name, description, fields, pkName, pkFieldNames, false);
 
 		_nullableFields = new ArrayList<Boolean>(fields.size());
 		for (int i = 0; i < _nullableFields.size(); i++)
-			_nullableFields.set(i, new Boolean(false));
+			_nullableFields.add(new Boolean(false));
 		_dbCatalog = dbCatalog;
 		_dbSchema = dbSchema;
 		_dbRelName = dbRelName;
 		_materialized = materialized;
 		_hasLocalData = hasLocalData;
+		
+		if (finishNow)
+			markFinished();
 			}	
+
 	/**
 	 * Deep copy of the relation
 	 * Use the method deepCopy to benefit from polymorphism
@@ -265,8 +285,10 @@ public class Relation extends AbstractRelation {
 //			_dbSchema = SqlStatementGen.sessionSchema;
 		
 		_hasLNs = relation._hasLNs;
-		_nullableFields.clear();
-		_nullableFields.addAll(relation._nullableFields);
+		int siz = relation._nullableFields.size();
+		_nullableFields = new ArrayList<Boolean>(siz);
+		for (int i = 0; i < siz; i++)
+			_nullableFields.add(relation._nullableFields.get(i));
 
 		_dbCatalog = relation.getDbCatalog();
 		_dbSchema = relation.getDbSchema();
@@ -345,7 +367,33 @@ public class Relation extends AbstractRelation {
 	{
 		return new Relation(_schema, this, newName, newDbName, newDbSchema, _materialized, _hasLocalData);
 
-	}   
+	}
+
+	/**
+	 * Complete deep copy
+	 * @return
+	 */
+	public synchronized Relation deepCopyFull()
+	{
+		Relation rel = deepCopy();
+		rel.finished = false;
+		//rel.deepCopyFks(this, null);
+		rel._hasLNs = _hasLNs;
+		
+		for (RelationField f : _skolemizedFields)
+			rel._skolemizedFields.add(f);
+		
+		for (Boolean b : _nullableFields)
+			rel._nullableFields.add(b);
+		
+		rel._dbCatalog = _dbCatalog;
+		rel._dbSchema = _dbSchema;
+		rel._dbRelName = _dbRelName;
+		rel._materialized = _materialized;
+		rel._hasLocalData = _hasLocalData;
+		
+		return rel;
+	}
 
 	public synchronized void deepCopyFks (AbstractRelation relation, Schema schema)
 	{
@@ -453,7 +501,9 @@ public class Relation extends AbstractRelation {
 			pkFieldNames.add(f.getName());
 		}
 
-		Relation rel = new Relation(dbcatalog, dbschema, dbtable, name, descr, mat, hasLocal, fields, pkName, pkFieldNames);
+		// Mark as finished IF we aren't in trust-annotation-adding mode
+		Relation rel = new Relation(dbcatalog, dbschema, dbtable, name, descr, mat, hasLocal, fields, 
+				pkName, pkFieldNames, !Config.addTrustAnnotations());
 		
 		if (noNulls.equals("true"))
 			rel._hasLNs = false;
@@ -461,8 +511,8 @@ public class Relation extends AbstractRelation {
 			rel._hasLNs = true;
 		
 		rel._nullableFields = new ArrayList<Boolean>(fields.size());
-		for (int i = 0; i < rel._nullableFields.size(); i++)
-			rel._nullableFields.set(i, new Boolean(false));
+		for (int i = 0; i < fields.size(); i++)
+			rel._nullableFields.add(new Boolean(false));
 		
 		int inx = 0;
 		for (Element field : DomUtils.getChildElementsByName(relElt, "labeledNull")) {
@@ -723,6 +773,15 @@ public class Relation extends AbstractRelation {
 		buf.append(")");
 		return buf.toString();
 	}
+	
+	public synchronized List<String> getFieldsInList() {
+		List<String> ret = new ArrayList<String>();
+		for (RelationField f : getFields()) {
+			ret.add(f.getName());
+		}
+	
+		return ret;
+	}
 
 	/**
 	 * Is this relation materialized or virtual
@@ -752,8 +811,34 @@ public class Relation extends AbstractRelation {
 			_nullableFields.add(new Boolean(false));
 		
 		_nullableFields.set(inx, nul);
+		
+		Type t = getColType(inx); 
+		if (t != null)
+			t.setLabeledNullable(nul);
 	}
 	
+	public String getColumnsAsString() {
+		StringBuffer retval = new StringBuffer("(");
+		int size = _columnTypes.length;//_fields.size();
+		for (int i = 0; i < size; ++i) {
+			String name = getField(i).getName();
+			if (isNullable(i))
+				name = name + "*";
+			retval.append(name);
+			if (i != (size - 1)) {
+				retval.append(",");
+			}
+		}
+		retval.append(")");
+		return retval.toString();
+	}
+
+	/**
+	 * Can have labeled null field
+	 * 
+	 * @param inx
+	 * @return
+	 */
 	public boolean isNullable(int inx) {
 		if (inx >= _nullableFields.size())
 			return false;
@@ -820,5 +905,32 @@ public class Relation extends AbstractRelation {
 		if(noNulls){
 			setLabeledNulls(false);
 		}
+	}
+	
+	public String getPreferredIndexName(String suffix) {
+		final String tableName = getDbRelName();
+		
+		String ext = suffix;
+		if (!suffix.isEmpty())
+			ext = "_" + ext;
+
+
+		final String qualifiedRelName = (getDbSchema() != null ? (getDbSchema() + ".") : "")
+				+ tableName;
+		
+		return qualifiedRelName + ext + "_INDX";
+	}
+
+	public String getQualifiedName(String suffix) {
+		final String tableName = getDbRelName();
+
+		String ext = suffix;
+		if (!suffix.isEmpty())
+			ext = "_" + ext;
+
+		final String qualifiedRelName = (getDbSchema() != null ? (getDbSchema() + ".") : "")
+				+ tableName;
+		
+		return qualifiedRelName + ext;
 	}
 }

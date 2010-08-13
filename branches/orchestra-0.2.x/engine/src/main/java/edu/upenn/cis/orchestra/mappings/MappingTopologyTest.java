@@ -103,15 +103,15 @@ public class MappingTopologyTest {
 			// refer to whom
 			for (Atom a : m.getBody()) {
 				RelationContext cx = a.getRelationContext();
-				if (!bodyAtoms.containsKey(a)) 
-					bodyAtoms.put(cx, new HashSet<Atom>());
-				bodyAtoms.get(cx).add(a);
+					if (!bodyAtoms.containsKey(a)) 
+						bodyAtoms.put(cx, new HashSet<Atom>());
+					bodyAtoms.get(cx).add(a);
 			}
 			for (Atom a : m.getMappingHead()) {
 				RelationContext cx = a.getRelationContext();
-				if (!headAtoms.containsKey(a)) 
-					headAtoms.put(cx, new HashSet<Atom>());
-				headAtoms.get(cx).add(a);
+					if (!headAtoms.containsKey(a)) 
+						headAtoms.put(cx, new HashSet<Atom>());
+					headAtoms.get(cx).add(a);
 			}
 			
 			for (Atom a: m.getMappingHead()) {
@@ -133,26 +133,26 @@ public class MappingTopologyTest {
 			for (Mapping m : mappings) {
 				for (Atom a: m.getMappingHead()) {
 					int inx = 0;
-					
-					for (AtomArgument arg : a.getValues()) {
-						if (a.isNullable(inx)) {
-							// Look up other mappings with same
-							// atom, set the same position to nullable
-							for (Atom a2: headAtoms.get(a.getRelationContext()))
-								if (a2 != null && !a2.isNullable(inx)) {
-									a2.setIsNullable(inx);
-									changed = true;
-								}
-							
-							if (bodyAtoms.get(a.getRelationContext()) != null)
-								for (Atom a2: bodyAtoms.get(a.getRelationContext()))
+
+						for (AtomArgument arg : a.getValues()) {
+							if (a.isNullable(inx)) {
+								// Look up other mappings with same
+								// atom, set the same position to nullable
+								for (Atom a2: headAtoms.get(a.getRelationContext()))
 									if (a2 != null && !a2.isNullable(inx)) {
 										a2.setIsNullable(inx);
 										changed = true;
 									}
+	
+								if (bodyAtoms.get(a.getRelationContext()) != null)
+									for (Atom a2: bodyAtoms.get(a.getRelationContext()))
+										if (a2 != null && !a2.isNullable(inx)) {
+											a2.setIsNullable(inx);
+											changed = true;
+										}
+							}
+							inx++;
 						}
-						inx++;
-					}
 				}
 			}
 					
@@ -186,5 +186,36 @@ public class MappingTopologyTest {
 		for (Mapping m : mappings) {
 			Debug.println(m.toString());
 		}
+	}
+	
+	public static void propagateLabeledNulls(Collection<Mapping> mappings) {
+		for (Mapping m : mappings)
+			propagateLabeledNulls(m);
+	}
+
+	public static void propagateLabeledNulls(Mapping m) {
+		
+//		System.out.println("Propagating nulls in " + m);
+		// Propagate the labeled-nullable-ness from body to head
+			for (Atom a: m.getBody()) {
+				int inx = 0;
+				
+				for (AtomArgument arg : a.getValues()) {
+					if (a.isNullable(inx)) {
+						
+						// Find any uses of this variable in the head
+						AtomArgument arg2 = a.getVariables().get(inx);
+						for (Atom headAtom : m.getMappingHead()) {
+							int inx2 = headAtom.getVariables().indexOf(arg2);
+							
+							if (inx2 != -1 && !headAtom.isNullable(inx2)) {
+								headAtom.setIsNullable(inx2);
+							}
+								
+						}
+					}
+					inx++;
+				}
+			}
 	}
 }

@@ -17,13 +17,18 @@ package edu.upenn.cis.orchestra.sql.dtp;
 
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.datatools.modelbase.sql.datatypes.PrimitiveType;
 import org.eclipse.datatools.modelbase.sql.query.ValueExpressionSimple;
 import org.eclipse.datatools.modelbase.sql.query.helper.DataTypeHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.upenn.cis.orchestra.datamodel.BoolType;
 import edu.upenn.cis.orchestra.sql.ISqlConstant;
+import edu.upenn.cis.orchestra.sql.ISqlExp;
 
 /**
  * An {@code ISqlConstant} implemented with a {@code ValueExpressionSimple}.
@@ -108,6 +113,9 @@ class ValueExpressionSimpleConstant extends
 		_type = type;
 	}
 
+
+	public boolean isBoolean() { return getType().equals(BoolType.BOOL); }
+	
 	/** {@inheritDoc} */
 	@Override
 	public String getValue() {
@@ -139,4 +147,16 @@ class ValueExpressionSimpleConstant extends
 	// return _val;
 	// }
 	// }
+
+	public ISqlExp addOperand(ISqlExp e) {
+		return null;
+	}
+	
+	public ISqlExp getOperand(int i) {
+		return null;
+	}
+	
+	public List<ISqlExp> getOperands() {
+		return new ArrayList<ISqlExp>();
+	}
 }

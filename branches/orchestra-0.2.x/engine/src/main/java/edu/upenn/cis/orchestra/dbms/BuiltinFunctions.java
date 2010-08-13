@@ -27,6 +27,7 @@ import edu.upenn.cis.orchestra.datalog.atom.AtomConst;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.RelationField;
 import edu.upenn.cis.orchestra.datamodel.Schema;
+import edu.upenn.cis.orchestra.dbms.sql.generation.RuleSqlGen;
 import edu.upenn.cis.orchestra.sql.ISqlConstant;
 import edu.upenn.cis.orchestra.sql.ISqlExp;
 import edu.upenn.cis.orchestra.sql.ISqlExpression;
@@ -34,7 +35,11 @@ import edu.upenn.cis.orchestra.sql.ISqlFactory;
 import edu.upenn.cis.orchestra.sql.SqlFactories;
 
 /**
- * SQL expressions corresponding to "built in functions"
+ * SQL expressions corresponding to "built in functions".
+ * Requires accompanying file resources/edu/upenn/cis/orchestra/functions.schema
+ * 
+ * TODO: add support for bound/free variables, and a test to ensure that this
+ * is complied with.
  * 
  * @author zives
  *
@@ -97,7 +102,7 @@ public class BuiltinFunctions {
 		return BuiltinFunctions.isBuiltInAtom(a, _builtIns);
 	}
 	
-	public static ISqlExpression getExpression(String sch, String fn, List<ISqlExp> args) {
+	public static ISqlExp getExpression(String sch, String fn, List<ISqlExp> args) {
 		if (sch.equals("COMPARE")) {
 			if (fn.equals("INTLESS")) {
 				return _sqlFactory.newExpression(ISqlExpression.Code.LT, args.get(0), args.get(1));
@@ -113,7 +118,20 @@ public class BuiltinFunctions {
 				return _sqlFactory.newExpression(ISqlExpression.Code.NEQ, args.get(0), args.get(1));
 			} else if (fn.equals("STRLIKE")) {
 				return _sqlFactory.newExpression(ISqlExpression.Code.LIKE, args.get(0), args.get(1));
-			}  
+			} else if (fn.equals("DBLLESS")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.LT, args.get(0), args.get(1));
+			} else if (fn.equals("DBLLESSEQUAL")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.LTE, args.get(0), args.get(1));
+			} else if (fn.equals("DBLGREATER")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.GT, args.get(0), args.get(1));
+			} else if (fn.equals("DBLGREATEREQUAL")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.GTE, args.get(0), args.get(1));
+			} else if (fn.equals("DBLEQUAL")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.EQ, args.get(0), args.get(1));
+			} else if (fn.equals("DBLNOTEQUAL")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.NEQ, args.get(0), args.get(1));
+			}
+
 		} else if (sch.equals("ARITH")) {
 			if (fn.equals("INTADD")) {
 				return _sqlFactory.newExpression(ISqlExpression.Code.PLUSSIGN, args.get(0), args.get(1));
@@ -123,7 +141,36 @@ public class BuiltinFunctions {
 				return _sqlFactory.newExpression(ISqlExpression.Code.MULTSIGN, args.get(0), args.get(1));
 			} else if (fn.equals("INTDIV")) {
 				return _sqlFactory.newExpression(ISqlExpression.Code.DIVSIGN, args.get(0), args.get(1));
-			}  
+			} else if (fn.equals("DBLADD")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.PLUSSIGN, args.get(0), args.get(1));
+			} else if (fn.equals("DBLSUB")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.MINUSSIGN, args.get(0), args.get(1));
+			} else if (fn.equals("DBLMUL")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.MULTSIGN, args.get(0), args.get(1));
+			} else if (fn.equals("DBLDIV")) {
+				return _sqlFactory.newExpression(ISqlExpression.Code.DIVSIGN, args.get(0), args.get(1));
+			}  else if (fn.startsWith("DBLLEAST") || fn.startsWith("INTLEAST")) {
+				StringBuffer str = new StringBuffer();
+				boolean second = false;
+				for (ISqlExp ex : args) {
+					if (second)
+						str.append(",");
+					second = true;
+					str.append(ex.toString());
+				}
+				return _sqlFactory.newSimpleExpression("least(" + str.toString() + ")");
+			}  else if (fn.startsWith("DBLGREATEST") || fn.startsWith("INTGREATEST")) {
+				StringBuffer str = new StringBuffer();
+				boolean second = false;
+				for (ISqlExp ex : args) {
+					if (second)
+						str.append(",");
+					second = true;
+					str.append(ex.toString());
+				}
+				return _sqlFactory.newSimpleExpression("greatest(" + str.toString() + ")");
+			}
+			
 		} else if (sch.equals("STRING")) {
 			if (fn.equals("STRCAT")) {
 				return _sqlFactory.newExpression(ISqlExpression.Code.PIPESSIGN, args.get(0), args.get(1));
@@ -143,7 +190,8 @@ public class BuiltinFunctions {
 			return s;
 			
 		}
-		return null;
+		throw new RuntimeException("Unimplemented built-in function " + fn);
+		//return null;
 	}
 	
 	public static String getResultString(String sch, String fn, List<String> args) {
@@ -162,7 +210,19 @@ public class BuiltinFunctions {
 				return "(" + args.get(0) + " <> " + args.get(1) + ")";
 			} else if (fn.equals("STRLIKE")) {
 				return args.get(0) + " LIKE '" + args.get(1) + "'";
-			}  
+			} else if (fn.equals("DBLLESS")) {
+				return "(" + args.get(0) + " < " + args.get(1) + ")";
+			} else if (fn.equals("DBLLESSEQUAL")) {
+				return "(" + args.get(0) + " <= " + args.get(1) + ")";
+			} else if (fn.equals("DBLGREATER")) {
+				return "(" + args.get(0) + " > " + args.get(1) + ")";
+			} else if (fn.equals("DBLGREATEREQUAL")) {
+				return "(" + args.get(0) + " >= " + args.get(1) + ")";
+			} else if (fn.equals("DBLEQUAL")) {
+				return "(" + args.get(0) + " = " + args.get(1) + ")";
+			} else if (fn.equals("DBLNOTEQUAL")) {
+				return "(" + args.get(0) + " <> " + args.get(1) + ")";
+			}
 		} else if (sch.equals("ARITH")) {
 			if (fn.equals("INTADD")) {
 				return "(" + args.get(0) + " + " + args.get(1) + ")";
@@ -172,7 +232,35 @@ public class BuiltinFunctions {
 				return "(" + args.get(0) + " * " + args.get(1) + ")";
 			} else if (fn.equals("INTDIV")) {
 				return "(" + args.get(0) + " / " + args.get(1) + ")";
-			}  
+			} else if (fn.equals("DBLADD")) {
+				return "(" + args.get(0) + " + " + args.get(1) + ")";
+			} else if (fn.equals("DBLSUB")) {
+				return "(" + args.get(0) + " - " + args.get(1) + ")";
+			} else if (fn.equals("DBLMUL")) {
+				return "(" + args.get(0) + " * " + args.get(1) + ")";
+			} else if (fn.equals("DBLDIV")) {
+				return "(" + args.get(0) + " / " + args.get(1) + ")";
+			} else if (fn.startsWith("INTLEAST") || fn.startsWith("DBLLEAST")) {
+				int count = Integer.valueOf(fn.substring(8));
+				StringBuffer ret = new StringBuffer("LEAST(");
+				for (int i = 0; i < count; i++) {
+					if (i > 0)
+						ret.append(",");
+					ret.append(args.get(i));
+				}
+				ret.append(")");
+				return ret.toString();
+			} else if (fn.startsWith("INTGREATEST") || fn.startsWith("DBLGREATEST")) {
+				int count = Integer.valueOf(fn.substring(11));
+				StringBuffer ret = new StringBuffer("GREATEST(");
+				for (int i = 0; i < count; i++) {
+					if (i > 0)
+						ret.append(",");
+					ret.append(args.get(i));
+				}
+				ret.append(")");
+				return ret.toString();
+			}
 		} else if (sch.equals("STRING")) {
 			if (fn.equals("STRCAT")) {
 				return "(" + args.get(0) + " || " + args.get(1) + ")";
@@ -194,11 +282,12 @@ public class BuiltinFunctions {
 			arglist.append(")");
 			return fn +arglist.toString();
 		}
-		return "";
+		throw new RuntimeException("Unimplemented built-in function " + fn);
+//		return "";
 	}
 
 	public static String evaluateBuiltIn(Atom atom, Map<String,String> varmap,
-			Map<String,ISqlExpression> whereExpressions, Set<ISqlExpression> whereRoots, List<Atom> allAtoms) {
+			Map<String,ISqlExp> whereExpressions, Set<ISqlExp> whereRoots, List<Atom> allAtoms) {
 		String sch = atom.getSchema().getSchemaId();
 		String fn = atom.getRelation().getName();
 		
@@ -236,7 +325,7 @@ public class BuiltinFunctions {
 			}
 		}
 		
-		ISqlExpression newExpr = BuiltinFunctions.getExpression(sch, fn, children);
+		ISqlExp newExpr = BuiltinFunctions.getExpression(sch, fn, children);
 		
 		if (newExpr.isBoolean())
 			whereRoots.add(newExpr);
@@ -267,4 +356,5 @@ public class BuiltinFunctions {
 		else
 			return 1;
 	}
+
 }

@@ -26,6 +26,7 @@ import edu.upenn.cis.orchestra.sql.ISqlCreateIndex;
 import edu.upenn.cis.orchestra.sql.ISqlCreateTempTable;
 import edu.upenn.cis.orchestra.sql.ISqlDelete;
 import edu.upenn.cis.orchestra.sql.ISqlDrop;
+import edu.upenn.cis.orchestra.sql.ISqlDropIndex;
 import edu.upenn.cis.orchestra.sql.ISqlExpression;
 import edu.upenn.cis.orchestra.sql.ISqlFactory;
 import edu.upenn.cis.orchestra.sql.ISqlMove;
@@ -68,6 +69,88 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 	//		ret.add(vol);
 		}
 
+	/**
+	 * Add a column to a table
+	 * 
+	 * @param table
+	 * @param attribName
+	 * @param attribType
+	 * @param attribDefault
+	 * @param isNullable
+	 * @return
+	 */
+	public String addAttribute(String table, String attribName, String attribType, String attribDefault, boolean isNullable) {
+		return "ALTER TABLE " + table + " ADD COLUMN " + attribName + " " + attribType + 
+		((attribDefault != null) ? " default " + attribDefault : "") + 
+		((!isNullable) ? " not null" : "");
+	}
+	
+	/**
+	 * Add a list of columns to a table
+	 * @param table
+	 * @param attribList
+	 * @return
+	 */
+	public String addAttributeList(String table, List<AttribSpec> attribList) {
+		StringBuffer ret = new StringBuffer("ALTER TABLE " + table);
+		
+		boolean isFirst = true;
+		for (AttribSpec att : attribList) {
+			if (isFirst) {
+				isFirst = false;
+				ret.append(" ADD COLUMN ");
+			} else
+				ret.append("\n ADD COLUMN ");
+		
+			ret.append(att.attribName + " " + att.attribType);
+			if  (att.attribDefault != null)
+				ret.append(" default " + att.attribDefault);
+			//if (!att.isNullable)
+			//	ret.append(" set not null");
+		}
+		
+		if (isFirst)
+			return "";
+		
+		return ret.toString();
+	}
+	
+	public String dropAttribute(String table, String attribName) {
+		return "ALTER TABLE " + table + " DROP COLUMN " + attribName;
+	}
+	
+	public String dropAttributeList(String table, List<String> attribList) {
+		StringBuffer ret = new StringBuffer("ALTER TABLE " + table);
+		
+		boolean isFirst = true;
+		for (String att : attribList) {
+			if (isFirst) {
+				isFirst = false;
+				ret.append(" DROP COLUMN ");
+			} else
+				ret.append("\n DROP COLUMN ");
+			
+			ret.append(att);
+		}
+		
+		if (isFirst)
+			return "";
+		
+		return ret.toString();
+	}
+	
+	public String disableConstraints(String table) {
+		return "SET INTEGRITY FOR " + table + " OFF";
+	}
+	
+	public String enableConstraints(String table) {
+		return "SET INTEGRITY FOR " + table + " IMMEDIATE CHECKED";
+	}
+	
+	public String reorg(String table) {
+		return "REORG TABLE " + table;
+	}
+	
 	public String compareTables(String table1, String table2) {return "";}
 
 	public String subtractTables(String pos, String neg, String joinAtt) {
@@ -85,6 +168,10 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 	}
 
 	public String copyTable(String oldName, String newName) {return "";}
+	
+	public String createSchema(String schemaName) {
+		return "CREATE SCHEMA " + schemaName;
+	}
 
 	public String createIndex(String indName, String tabName, List<? extends ISqlColumnDef> cols,
 			boolean cluster, boolean noLogging) {
@@ -93,6 +180,12 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 					cr = sqlFactory.newCreateIndex(indName, tabName, cols);
 				else
 					cr = sqlFactory.newCreateIndex(indName, tabName, cols);
+				return cr.toString();
+			}
+
+	public String dropIndex(String indName) {
+				ISqlDropIndex cr;
+				cr = sqlFactory.newDropIndex(indName);
 				return cr.toString();
 			}
 
@@ -108,11 +201,11 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 		ISqlDelete d = sqlFactory.newSqlDelete(tabName);
 		return d.toString();
 	}
-
+	
 	public String dropTable(String tabName) {
 		ISqlDrop d = sqlFactory.newDrop(tabName);
 		return d.toString();
-	}
+	}	
 
 	public String getFirst128Chars(String var) {
 		if(Config.getDBMSversion() >= 9.5)
@@ -159,6 +252,5 @@ public abstract class AbstractSqlStatementGen implements ISqlStatementGen {
 	//		Is this DB2 specific?
 			return "ADD " + col + " " + type + " DEFAULT " + def;
 	}
-	
 	
 }

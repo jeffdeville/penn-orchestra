@@ -193,6 +193,14 @@ public class AtomVariable extends AtomArgument {
 	{
 		_name = _name + extension;
 	}
+
+	public synchronized void renameVariable (Map<String,String> renameTable)
+	{
+		String newName = renameTable.get(_name);
+		
+		if (newName != null)
+			_name = newName;
+	}
 	
 	/*
 	 * If this variable is existentially quantified in the head of a mapping,

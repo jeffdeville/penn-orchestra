@@ -25,31 +25,40 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.support.MetaDataAccessException;
 
 import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.Debug;
 import edu.upenn.cis.orchestra.datalog.DatalogEngine;
 import edu.upenn.cis.orchestra.datalog.DatalogSequence;
+import edu.upenn.cis.orchestra.datalog.atom.Atom;
+import edu.upenn.cis.orchestra.datalog.atom.AtomAnnotation;
+import edu.upenn.cis.orchestra.datalog.atom.AtomAnnotationFactory;
 import edu.upenn.cis.orchestra.datalog.atom.Atom.AtomType;
-import edu.upenn.cis.orchestra.datamodel.AbstractRelation;
+import edu.upenn.cis.orchestra.datamodel.IntType;
+import edu.upenn.cis.orchestra.datamodel.Mapping;
 import edu.upenn.cis.orchestra.datamodel.OrchestraSystem;
 import edu.upenn.cis.orchestra.datamodel.Peer;
 import edu.upenn.cis.orchestra.datamodel.Relation;
 import edu.upenn.cis.orchestra.datamodel.RelationContext;
+import edu.upenn.cis.orchestra.datamodel.RelationField;
 import edu.upenn.cis.orchestra.datamodel.Schema;
+import edu.upenn.cis.orchestra.datamodel.AbstractRelation.BadColumnName;
 import edu.upenn.cis.orchestra.datamodel.exceptions.DuplicateRelationIdException;
+import edu.upenn.cis.orchestra.datamodel.exceptions.RelationUpdateException;
 import edu.upenn.cis.orchestra.datamodel.exceptions.UnsupportedTypeException;
 import edu.upenn.cis.orchestra.datamodel.iterators.IteratorException;
 import edu.upenn.cis.orchestra.dbms.IDb;
 import edu.upenn.cis.orchestra.dbms.SqlDb;
+import edu.upenn.cis.orchestra.dbms.sql.generation.SqlTableManipulation;
 import edu.upenn.cis.orchestra.exchange.BasicEngine;
-import edu.upenn.cis.orchestra.exchange.CreateProvenanceStorage;
+import edu.upenn.cis.orchestra.provenance.ProvenanceRelation;
 import edu.upenn.cis.orchestra.reconciliation.DbException;
 import edu.upenn.cis.orchestra.repository.utils.dbConverter.SchemaConverterStatementsGen;
 import edu.upenn.cis.orchestra.util.XMLParseException;
@@ -92,25 +101,110 @@ public class SqlEngine extends BasicEngine {
 		}
 		return names;
 	}
-
-	/*
-	public List<RelationContext> getAllTables(final OrchestraSystem syst){
-		ArrayList<RelationContext> tables = new ArrayList<RelationContext>();
-		tables.addAll(getState().getEdbs(_mappingDb.getBuiltInSchemas()));
-		tables.addAll(getState().getIdbs(_mappingDb.getBuiltInSchemas()));
-		tables.addAll(getState().getMappingRelations());
-		tables.addAll(getState().getInnerJoinRelations());
-		tables.addAll(getState().getRealOuterJoinRelations());
-		tables.addAll(getState().getSimulatedOuterJoinRelations());
-		tables.addAll(getState().getOuterUnionRelations());
-
-		return tables;
+	
+	public static void addLabeledNulls(Relation r) throws BadColumnName {
+		int max = r.getNumCols();
+		for (int i = 0; i < max; i++) {
+			if (r.isNullable(i)) {
+				RelationField rf = r.getField(r.getColName(i) + RelationField.LABELED_NULL_EXT);
+				
+				if (rf == null) {
+					int inx = r.getFields().size();
+					r.addCol(r.getColName(i) + RelationField.LABELED_NULL_EXT, IntType.INT);
+					
+					r.getField(inx).setDefaultValueAsString(RelationField.LABELED_NULL_DEFAULT);
+				}
+			}
+		}
 	}
-*/
-	protected CreateProvenanceStorage createProvenanceStorage() {
-		return new CreateProvenanceStorageSql(getMappingDb());
-	}
+	
+	/**
+	 * Makes mappings and relation definitions consistent, in a variety of ways.
+	 * <ul>
+	 * <li>Adds any trust annotations.
+	 * <li>Creates any missing tables (_L, _R) and synchronize all references to these tables within mappings, atoms, etc.
+	 * <li>Ensures consistency of data structures and Java references.
+	 * </ul>
+	 * 
+	 */
+	protected void syncTableSchemas(OrchestraSystem system) throws RelationUpdateException {
+		
+		if (!Config.addTrustAnnotations())
+			return;
+		
+		for (Schema s : system.getAllSchemas())
+			s.createMissingRelations();
+		
+		List<RelationContext> tables = system.getAllSystemRelations();
+		
+		Map<String, RelationContext> rcMap = new HashMap<String, RelationContext>();
+		for (RelationContext rc: tables) {
+			if (rc.getRelation().isFinished())
+				throw new RelationUpdateException("Oops, " + rc.getRelation().getName() + " is marked as finished!");
+			else {
+				Debug.println("Extending " + rc.getRelation().getName() + rc.getRelation().getFieldsInList());
+				
+				
+				try {
+//					Debug.println("* Adding labeled nulls to " + rc.getRelation().getColumnsAsString());
+					addLabeledNulls(rc.getRelation());
+//					Debug.println("* After labeled nulls: " + rc.getRelation().getColumnsAsString());
+				} catch (BadColumnName e) {
+					throw new RelationUpdateException(e.getMessage());
+				}
 
+				// Add trust columns ONLY if we have an IDB / non-internal relation...  Elsewhere we will
+				// add predefined constants for the trust conditions.
+				if (!rc.getRelation().isInternalRelation()) {
+					for (Peer p : system.getPeers()) {
+						AtomAnnotation ann = AtomAnnotationFactory.createPeerTrustAnnotation(p.getId(), "temp");
+						
+						try {
+							rc.getRelation().addCol(ann.getLabel(), ann.getDataType(), ann.getDefaultTrustValue());
+						} catch (BadColumnName e) {
+							throw new RelationUpdateException(e.getMessage());
+						}
+	
+					}
+				}
+				System.out.println("* New schema: " + rc.getRelation().getFieldsInList());
+			}
+			
+			rc.getRelation().markFinished();
+			rcMap.put(rc.toString(), rc);
+		}
+
+		// Update all relation contexts in the mappings to point to the originals
+		for (Mapping m : system.getAllSystemMappings(false)) {
+			for (Atom a : m.getMappingHead()) {
+				String nam = a.getRelationContext().toString();
+				if (rcMap.containsKey(nam))
+					a.replaceRelationContext(rcMap.get(nam));
+			}
+			for (Atom a : m.getBody()) {
+				String nam = a.getRelationContext().toString();
+				
+				if (rcMap.containsKey(nam))
+					a.replaceRelationContext(rcMap.get(nam));
+			}
+		}
+		// Update all relation contexts in the mappings to point to the originals
+		for (Mapping m : system.getAllSystemMappings(true)) {
+			for (Atom a : m.getMappingHead()) {
+				String nam = a.getRelationContext().toString();
+				if (rcMap.containsKey(nam))
+					a.replaceRelationContext(rcMap.get(nam));
+			}
+			for (Atom a : m.getBody()) {
+				String nam = a.getRelationContext().toString();
+				
+				if (rcMap.containsKey(nam))
+					a.replaceRelationContext(rcMap.get(nam));
+			}
+		}
+	}
+	
+	
 	/**
 	 * Drops all of the tables corresponding to the DAO
 	 * 
@@ -274,12 +368,12 @@ public class SqlEngine extends BasicEngine {
 	throws IOException
 	{
 		final ArrayList<String> operations = new ArrayList<String>();
+		Set<String> names = new HashSet<String>();
 
-		List<String> names;
 		if(Config.getTempTables()){
-			names = getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, true, false, false);
+			getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, true, false, false, names);
 		}else{
-			names = getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, true, true, true);
+			getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, true, true, true, names);
 		}
 
 		for (final String s : names)
@@ -318,8 +412,9 @@ public class SqlEngine extends BasicEngine {
 	private ArrayList<String> copyBaseTablesStmts(OrchestraSystem system) 
 	{
 		final ArrayList<String> operations = new ArrayList<String>();
+		Set<String> names = new HashSet<String>();
 
-		List<String> names = getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, false, false, false);
+		getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, false, false, false, names);
 
 		for (final String s : names)
 			operations.add(getMappingDb().getSqlTranslator().copyTable(s, s+"OLD"));
@@ -330,8 +425,9 @@ public class SqlEngine extends BasicEngine {
 	private ArrayList<String> compareBaseTablesStmts(OrchestraSystem system) 
 	{
 		final ArrayList<String> operations = new ArrayList<String>();
+		Set<String> names = new HashSet<String>();
 
-		List<String> names = getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, false, false, false);
+		getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, false, false, false, names);
 
 		for (final String s : names)
 			operations.add(getMappingDb().getSqlTranslator().compareTables(s, s+"OLD"));
@@ -406,7 +502,8 @@ public class SqlEngine extends BasicEngine {
 
 	public long prepareNonIncremental() throws IOException {
 		final ArrayList<String> operations = new ArrayList<String>();
-		List<String> names = BasicEngine.getNamesOfAllTablesFromDeltas(/*_deltas,*/ _system, false, true, false);
+		Set<String> names = new HashSet<String>();
+		BasicEngine.getNamesOfAllTablesFromDeltas(/*_deltas,*/ _system, false, true, false, names);
 
 		for (final String s : names){
 //			operations.add("CREATE TABLE " + s + "_TEMP as (select * from " + s + "_INS) WITH NO DATA");
@@ -469,9 +566,10 @@ public class SqlEngine extends BasicEngine {
 		final ArrayList<String> operations = new ArrayList<String>();
 
 //		OrchestraSystem system = dao.loadAllPeers();
+		Set<String> names = new HashSet<String>();
 
 
-		List<String> names = BasicEngine.getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, true, true, true);
+		BasicEngine.getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, true, true, true, names);
 
 		for (final String s : names)
 			operations.add("DELETE FROM " + s);
@@ -483,8 +581,9 @@ public class SqlEngine extends BasicEngine {
 	throws IOException
 	{
 		final ArrayList<String> operations = new ArrayList<String>();
+		Set<String> names = new HashSet<String>();
 
-		List<String> names = BasicEngine.getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, false, true, true);
+		BasicEngine.getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, false, true, true, names);
 
 		for (final String s : names)
 			operations.add("select count(*) from " + s);
@@ -496,8 +595,9 @@ public class SqlEngine extends BasicEngine {
 	throws IOException
 	{
 		final ArrayList<String> operations = new ArrayList<String>();
+		Set<String> names = new HashSet<String>();
 
-		List<String> names = BasicEngine.getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, false, false, false);
+		BasicEngine.getNamesOfAllTablesFromDeltas(/*_deltas,*/ system, false, false, false, names);
 
 		for (final String s : names)
 			operations.add("select count(*) from " + s);
@@ -510,9 +610,9 @@ public class SqlEngine extends BasicEngine {
 		return (SqlDb)_mappingDb;
 	}
 
-	public CreateProvenanceStorageSql getProvenancePrepInfo() {
-		return (CreateProvenanceStorageSql)_provenancePrep;
-	}
+	//public CreateProvenanceStorageSql getProvenancePrepInfo() {
+	//	return (CreateProvenanceStorageSql)_provenancePrep;
+	//}
 
 	public void importUpdates(final IDb sourceDb) throws Exception {
 //		final List<String> baseTables = getNamesOfAllTables(_system, false, false, true);
@@ -657,6 +757,27 @@ public class SqlEngine extends BasicEngine {
 
 		return time;
 	}
+	
+	public void repairSchema() throws Exception
+	{
+		/*
+		// Iterate through delta relations, add STRATUM
+		if (Config.getStratified()) {
+			for (RelationContext rc: _system.getAllSystemRelations()) {
+				Relation r = rc.getRelation();
+				if (r.getName().endsWith(Relation.INSERT) || r.getName().endsWith(Relation.DELETE)) {
+					r.getFields().add(0, new RelationField("STRATUM", "Stratum number", IntType.INT));
+					r.getField(0).setDefaultValueAsString("0");
+				}
+			}
+		}*/
+		
+		if (!_mappingDb.isConnected()) {
+			_mappingDb.connect();
+		}
+		createInternalSchemaRelations();
+		createInternalProvenanceRelations();
+	}
 
 	/**
 	 * Migrates the schema of a database, based on a DAO object 
@@ -673,12 +794,16 @@ public class SqlEngine extends BasicEngine {
 		}
 		Calendar before = Calendar.getInstance();
 
+		System.out.println("Checking relations");
 		createInternalSchemaRelations();
 		createInternalProvenanceRelations();
 		_system.prepareSystemForLocalUpdater();
 
 		try {
-			moveExistingData();
+			int updates = moveExistingData();
+			if (updates != 0) {
+				_system.publishAndMap();
+			}
 			_system.publishAndMap();
 
 		} catch (Exception se) {
@@ -737,15 +862,53 @@ public class SqlEngine extends BasicEngine {
 
 	}
 
+
+	public void createInternalProvenanceRelations () 
+	throws IOException, SQLException, ClassNotFoundException, UnsupportedTypeException
+	{
+
+		Calendar before = Calendar.getInstance();
+
+//		createProvenanceTables(getState().getMappingRelations());
+		List<String> statements = new ArrayList<String>();
+
+		statements.addAll(createProvenanceTables(getState().getRealMappingRelations()));
+		statements.addAll(createProvenanceTables(getState().getInnerJoinRelations()));
+		statements.addAll(createProvenanceTables(getState().getSimulatedOuterJoinRelations()));
+		statements.addAll(createProvenanceTables(getState().getRealOuterJoinRelations()));
+		statements.addAll(createProvenanceTables(getState().getOuterUnionRelations()));
+
+		System.out.println("+++ Provenance +++");
+		for (final String s: statements) {
+
+			try {
+				if (!s.isEmpty()) {
+					logger.debug("Evaluating: {}", s);
+					if (Config.getApply()) {
+						getMappingDb().evaluate(s);
+					}
+				}
+			} catch (final Exception e) {
+				Debug.println("Unable to evaluate statement " + s);
+				e.printStackTrace();
+			}
+		}
+		Calendar after = Calendar.getInstance();
+		long time = (after.getTimeInMillis() - before.getTimeInMillis());
+		System.out.println("EXP: MIGRATE PROVENANCE RELATIONS TIME: " + time + " msec");
+	}
+	
 	public void createInternalSchemaRelations () 
 	throws IOException, XMLParseException, SQLException, ClassNotFoundException
 	{
 		final List<String> statements = new ArrayList<String>();
-		final Map<AbstractRelation,List<String>> map = new HashMap<AbstractRelation,List<String>>();
+//		final Map<AbstractRelation,List<String>> map = new HashMap<AbstractRelation,List<String>>();
 
 		Calendar before = Calendar.getInstance();
 		for (final Peer p : _system.getPeers())
 			for (final Schema sc : p.getSchemas()) {
+				statements.addAll(createPeerRelations(sc));
+				/*
 				try {
 					final SchemaConverterStatementsGen statementsGen = 
 						new SchemaConverterStatementsGen (getMappingDb().getDataSource(), Config.getJDBCDriver(), sc);
@@ -762,17 +925,20 @@ public class SqlEngine extends BasicEngine {
 				} catch (MetaDataAccessException e) {
 					e.printStackTrace();
 					throw new XMLParseException("Unable to access SQL");
-				}
+				}*/
 			}
 
 		logger.debug("+++ Migration +++");
 		for (final String s: statements) {
 
 			try {
-				if (Config.getApply())
-					getMappingDb().evaluate(s);
-				else
-					Debug.println(s);
+				if (!s.isEmpty()) {
+					//logger.debug
+					Debug.println("Evaluating: " + s);
+					if (Config.getApply()) {
+						getMappingDb().evaluate(s);
+					}
+				}
 			} catch (final Exception e) {
 				Debug.println("Unable to evaluate statement " + s);
 				e.printStackTrace();
@@ -781,17 +947,21 @@ public class SqlEngine extends BasicEngine {
 
 		Calendar after = Calendar.getInstance();
 		long time = (after.getTimeInMillis() - before.getTimeInMillis());
-		logger.debug("EXP: MIGRATE ORIG RELATIONS TIME: " + time + " msec");
+		logger.debug("EXP: MIGRATE/REPAIR RELATIONS TIME: " + time + " msec");
 
 	}
 
 	/**
 	 * Transfers data from the original table to the local insertions table
 	 * and imports it into the update store
+	 * @return number of moved tuples
 	 * 
 	 * @throws IOException
 	 * @throws SQLException
 	 * @throws ClassNotFoundException
+	 * @throws DbException 
+	 * @throws IteratorException 
+	 * @throws DuplicateRelationIdException 
 	 */
 	public int moveExistingData () 
 	throws IOException, SQLException, ClassNotFoundException, DbException, IteratorException, DuplicateRelationIdException
@@ -811,27 +981,37 @@ public class SqlEngine extends BasicEngine {
 		return updates;
 	}
 
-	public void createInternalProvenanceRelations () 
-	throws IOException, SQLException, ClassNotFoundException, UnsupportedTypeException
-	{
+	@Override
+	protected List<String> createProvenanceTables(List<RelationContext> mappingRels) {
+		List<String> toApply = new ArrayList<String>();
+//		if(_provenancePrep == null)
+//		_provenancePrep = createProvenanceStorage();
 
-		Calendar before = Calendar.getInstance();
+		for(RelationContext relCtx : mappingRels){
 
-//		createProvenanceTables(getState().getMappingRelations());
+			ProvenanceRelation rel = (ProvenanceRelation)relCtx.getRelation();
+			
+//			if(!rel.getMappings().get(0).isFakeMapping()){
+			if(Config.getOuterUnion()){
+				toApply.addAll(SqlTableManipulation.createOuterUnionProvenanceDbTableSet(rel, !Config.getAutocommit(), getMappingDb()));
+			}else{
+				toApply.addAll(SqlTableManipulation.createProvenanceDbTableSet(rel, !Config.getAutocommit(), getMappingDb(), _system.isBidirectional()));
+			}
+//			}
+		}
 
-		createProvenanceTables(getState().getRealMappingRelations());
-		createProvenanceTables(getState().getInnerJoinRelations());
-		createProvenanceTables(getState().getSimulatedOuterJoinRelations());
-		createProvenanceTables(getState().getRealOuterJoinRelations());
-		createProvenanceTables(getState().getOuterUnionRelations());
-
-		Calendar after = Calendar.getInstance();
-		long time = (after.getTimeInMillis() - before.getTimeInMillis());
-		logger.debug("EXP: MIGRATE PROVENANCE RELATIONS TIME: " + time + " msec");
-
+		return toApply;
 	}
-
-
+	
+	protected List<String> createPeerRelations(Schema sc) {
+		List<String> toApply = new ArrayList<String>();
+		for (Relation rel : sc.getRelations()) {
+			toApply.addAll(SqlTableManipulation.createAuxiliaryDbTableSet(rel, !Config.getAutocommit(), getMappingDb()));
+		}
+		
+		
+		return toApply;
+	}
 }
 
 

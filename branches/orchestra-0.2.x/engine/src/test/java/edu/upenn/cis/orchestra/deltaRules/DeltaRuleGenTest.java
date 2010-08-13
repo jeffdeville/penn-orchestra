@@ -76,7 +76,7 @@ public class DeltaRuleGenTest {
 		in.close();
 
 	}
-
+	
 	/**
 	 * Test deletion rule generation.
 	 * 

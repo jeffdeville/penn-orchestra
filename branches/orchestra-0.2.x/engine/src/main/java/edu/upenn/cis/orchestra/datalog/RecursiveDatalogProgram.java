@@ -28,23 +28,28 @@ import edu.upenn.cis.orchestra.mappings.Rule;
  *
  */
 public class RecursiveDatalogProgram extends DatalogProgram {
-	public RecursiveDatalogProgram(List<Rule> r, boolean c4f){
-		super(r, c4f);
+	public RecursiveDatalogProgram(List<Rule> r, boolean c4f, String desc){
+		super(r, c4f, desc);
 	}
 	
-	public RecursiveDatalogProgram(List<Rule> r){
-		super(r);
+	public RecursiveDatalogProgram(List<Rule> r, String desc){
+		super(r, desc);
 	}
 
 	public String toString ()
 	{		
-		return "Recursive Datalog Program { \n" + super.toString() + "} END Recursive Datalog Program\n";
+		String str = super.toString();
+		if (str.length() > 0)
+			return "Recursive Datalog Program " + getDescription() + " { \n" + str + "} END Recursive Datalog Program\n";
+		else
+			return "Recursive Datalog Program " + getDescription() + "{}\n";
 	}
 
 	@Override
 	public Element serialize(Document document) {
 		Element e = super.serialize(document);
 		e.setAttribute("programType", "recursiveDatalogProgram");
+		e.setAttribute("programName", getDescription());
 		return e;
 	}
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.dbms.sql.generation;
+package edu.upenn.cis.orchestra.obsolete;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,6 +24,11 @@ import edu.upenn.cis.orchestra.Config;
 import edu.upenn.cis.orchestra.Debug;
 import edu.upenn.cis.orchestra.dbms.SqlDb;
 
+/**
+ * @deprecated
+ * @author zives
+ *
+ */
 public class SqlEmptyTables {
 	List<String> _tables;
 

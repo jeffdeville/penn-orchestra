@@ -13,12 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.upenn.cis.orchestra.datamodel;
+package edu.upenn.cis.orchestra.obsolete;
 
-public interface Semiring {
-	public Semiring times(Semiring right);
-	public Semiring plus(Semiring right);
-	
-	public Semiring zero();
-	public Semiring one();
+import edu.upenn.cis.orchestra.dbms.IDb;
+import edu.upenn.cis.orchestra.provenance.ProvenanceRelation;
+
+/**
+ * Handles creating the storage for provenance relations.
+ * @author John Frommeyer
+ *
+ */
+public interface ICreateProvenanceStorage {
+
+	/**
+	 * Creates the storage for a provenance relation.
+	 * @param relation TODO
+	 * @param withNoLogging TODO
+	 * @param db TODO
+	 * @param containsBidirectionalMappings TODO
+	 * 
+	 */
+	public void createStorage(ProvenanceRelation relation, boolean withNoLogging, IDb db, boolean containsBidirectionalMappings);
 }

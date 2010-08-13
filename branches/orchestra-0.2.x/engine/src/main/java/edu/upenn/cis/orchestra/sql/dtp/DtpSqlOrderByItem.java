@@ -17,10 +17,14 @@ package edu.upenn.cis.orchestra.sql.dtp;
 
 import static edu.upenn.cis.orchestra.sql.dtp.SqlDtpUtil.getSQLQueryParserFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.datatools.modelbase.sql.query.OrderBySpecification;
 import org.eclipse.datatools.modelbase.sql.query.QueryValueExpression;
 import org.eclipse.datatools.sqltools.parsers.sql.query.SQLQueryParserFactory;
 
+import edu.upenn.cis.orchestra.sql.ISqlExp;
 import edu.upenn.cis.orchestra.sql.ISqlOrderByItem;
 
 /**
@@ -81,4 +85,17 @@ class DtpSqlOrderByItem extends AbstractSQLQueryObject<OrderBySpecification>
 		return _orderBySpecification;
 	}
 
+	public boolean isBoolean() { return false; }
+
+	public ISqlExp addOperand(ISqlExp e) {
+		return null;
+	}
+	
+	public ISqlExp getOperand(int i) {
+		return null;
+	}
+	
+	public List<ISqlExp> getOperands() {
+		return new ArrayList<ISqlExp>();
+	}
 }

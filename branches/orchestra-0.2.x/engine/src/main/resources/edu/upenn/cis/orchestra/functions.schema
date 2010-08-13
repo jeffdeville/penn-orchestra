@@ -2,6 +2,19 @@
 <catalog>
     <schema name="ARITH">
   		<description></description>
+      <relation materialized="true" name="BITAND">
+        <dbinfo schema="BUILTIN" table="BITAND"/>
+        <field name="CMB" type="boolean"/>
+        <field key="true" name="AND1" type="boolean"/>
+        <field key="true" name="AND2" type="boolean"/>
+      </relation>
+      <relation materialized="true" name="BITOR">
+        <dbinfo schema="BUILTIN" table="BITOR"/>
+        <field name="CMB" type="boolean"/>
+        <field key="true" name="OR1" type="boolean"/>
+        <field key="true" name="OR2" type="boolean"/>
+      </relation>
+  		
       <relation materialized="true" name="INTADD">
         <dbinfo schema="BUILTIN" table="INTADD"/>
         <field name="SUM" type="integer"/>
@@ -26,9 +39,233 @@
         <field key="true" name="DIV1" type="integer"/>
         <field key="true" name="DIV2" type="integer"/>
       </relation>
+      <relation materialized="true" name="INTLEAST2">
+        <dbinfo schema="BUILTIN" table="INTLEAST2"/>
+        <field name="MINVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTLEAST3">
+        <dbinfo schema="BUILTIN" table="INTLEAST3"/>
+        <field name="MINVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTLEAST4">
+        <dbinfo schema="BUILTIN" table="INTLEAST4"/>
+        <field name="MINVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+        <field key="true" name="VAL4" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTLEAST5">
+        <dbinfo schema="BUILTIN" table="INTLEAST5"/>
+        <field name="MINVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+        <field key="true" name="VAL4" type="integer"/>
+        <field key="true" name="VAL5" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTLEAST6">
+        <dbinfo schema="BUILTIN" table="INTLEAST6"/>
+        <field name="MINVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+        <field key="true" name="VAL4" type="integer"/>
+        <field key="true" name="VAL5" type="integer"/>
+        <field key="true" name="VAL6" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTLEAST7">
+        <dbinfo schema="BUILTIN" table="INTLEAST7"/>
+        <field name="MINVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+        <field key="true" name="VAL4" type="integer"/>
+        <field key="true" name="VAL5" type="integer"/>
+        <field key="true" name="VAL6" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTGREATEST2">
+        <dbinfo schema="BUILTIN" table="INTGREATEST2"/>
+        <field name="MAXVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTGREATEST3">
+        <dbinfo schema="BUILTIN" table="INTGREATEST3"/>
+        <field name="MAXVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTGREATEST4">
+        <dbinfo schema="BUILTIN" table="INTGREATEST4"/>
+        <field name="MAXVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+        <field key="true" name="VAL4" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTGREATEST5">
+        <dbinfo schema="BUILTIN" table="INTGREATEST5"/>
+        <field name="MAXVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+        <field key="true" name="VAL4" type="integer"/>
+        <field key="true" name="VAL5" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTGREATEST6">
+        <dbinfo schema="BUILTIN" table="INTGREATEST6"/>
+        <field name="MAXVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+        <field key="true" name="VAL4" type="integer"/>
+        <field key="true" name="VAL5" type="integer"/>
+        <field key="true" name="VAL6" type="integer"/>
+      </relation>
+      <relation materialized="true" name="INTGREATEST7">
+        <dbinfo schema="BUILTIN" table="INTGREATEST7"/>
+        <field name="MAXVAL" type="integer"/>
+        <field key="true" name="VAL1" type="integer"/>
+        <field key="true" name="VAL2" type="integer"/>
+        <field key="true" name="VAL3" type="integer"/>
+        <field key="true" name="VAL4" type="integer"/>
+        <field key="true" name="VAL5" type="integer"/>
+        <field key="true" name="VAL6" type="integer"/>
+      </relation>
+      <relation materialized="true" name="DBLADD">
+        <dbinfo schema="BUILTIN" table="DBLADD"/>
+        <field name="SUM" type="double"/>
+        <field key="true" name="ADD1" type="double"/>
+        <field key="true" name="ADD2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLSUM2">
+        <dbinfo schema="BUILTIN" table="DBLSUM2"/>
+        <field name="SUM" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLSUM3">
+        <dbinfo schema="BUILTIN" table="DBLSUM3"/>
+        <field name="SUM" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLSUM4">
+        <dbinfo schema="BUILTIN" table="DBLSUM4"/>
+        <field name="SUM" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+        <field key="true" name="VAL4" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLSUM5">
+        <dbinfo schema="BUILTIN" table="DBLSUM5"/>
+        <field name="SUM" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+        <field key="true" name="VAL4" type="double"/>
+        <field key="true" name="VAL5" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLSUM6">
+        <dbinfo schema="BUILTIN" table="DBLSUM6"/>
+        <field name="SUM" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+        <field key="true" name="VAL4" type="double"/>
+        <field key="true" name="VAL5" type="double"/>
+        <field key="true" name="VAL6" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLSUM7">
+        <dbinfo schema="BUILTIN" table="DBLSUM7"/>
+        <field name="SUM" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+        <field key="true" name="VAL4" type="double"/>
+        <field key="true" name="VAL5" type="double"/>
+        <field key="true" name="VAL6" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLSUB">
+        <dbinfo schema="BUILTIN" table="DBLSUB"/>
+        <field name="DIFFERENCE" type="double"/>
+        <field key="true" name="SUB1" type="double"/>
+        <field key="true" name="SUB2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLMUL">
+        <dbinfo schema="BUILTIN" table="DBLMUL"/>
+        <field name="PRODUCT" type="double"/>
+        <field key="true" name="MUL1" type="double"/>
+        <field key="true" name="MUL2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLDIV">
+        <dbinfo schema="BUILTIN" table="DBLDIV"/>
+        <field name="QUOTIENT" type="double"/>
+        <field key="true" name="DIV1" type="double"/>
+        <field key="true" name="DIV2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLLEAST2">
+        <dbinfo schema="BUILTIN" table="DBLLEAST2"/>
+        <field name="MINVAL" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLLEAST3">
+        <dbinfo schema="BUILTIN" table="DBLLEAST3"/>
+        <field name="MINVAL" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLLEAST4">
+        <dbinfo schema="BUILTIN" table="DBLLEAST4"/>
+        <field name="MINVAL" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+        <field key="true" name="VAL4" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLLEAST5">
+        <dbinfo schema="BUILTIN" table="DBLLEAST5"/>
+        <field name="MINVAL" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+        <field key="true" name="VAL4" type="double"/>
+        <field key="true" name="VAL5" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLLEAST6">
+        <dbinfo schema="BUILTIN" table="DBLLEAST6"/>
+        <field name="MINVAL" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+        <field key="true" name="VAL4" type="double"/>
+        <field key="true" name="VAL5" type="double"/>
+        <field key="true" name="VAL6" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLLEAST7">
+        <dbinfo schema="BUILTIN" table="DBLLEAST7"/>
+        <field name="MINVAL" type="double"/>
+        <field key="true" name="VAL1" type="double"/>
+        <field key="true" name="VAL2" type="double"/>
+        <field key="true" name="VAL3" type="double"/>
+        <field key="true" name="VAL4" type="double"/>
+        <field key="true" name="VAL5" type="double"/>
+        <field key="true" name="VAL6" type="double"/>
+      </relation>
     </schema>
     <schema name="COMPARE">
-  		<description>The Interpro database is a database of protein families, domains and functional sites, in which identifiable features found in known proteins can be applied to unknown protein sequences.</description>
+  		<description>Value comparison</description>
       <relation materialized="true" name="INTLESS">
         <dbinfo schema="BUILTIN" table="INTLESS"/>
         <field name="LES1" type="integer"/>
@@ -55,9 +292,39 @@
         <field name="EQ2" type="integer"/>
       </relation>
       <relation materialized="true" name="INTNOTEQUAL">
-        <dbinfo schema="BUILTIN" table="INTENOTQUAL"/>
+        <dbinfo schema="BUILTIN" table="INTNOTEQUAL"/>
         <field name="NEQ1" type="integer"/>
         <field name="NEQ2" type="integer"/>
+      </relation>
+      <relation materialized="true" name="DBLLESS">
+        <dbinfo schema="BUILTIN" table="DBLLESS"/>
+        <field name="LES1" type="double"/>
+        <field name="LES2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLLESSEQUAL">
+        <dbinfo schema="BUILTIN" table="DBLLESSEQUAL"/>
+        <field name="LEQ1" type="double"/>
+        <field name="LEQ2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLGREATER">
+        <dbinfo schema="BUILTIN" table="DBLGREATER"/>
+        <field name="GTR1" type="double"/>
+        <field name="GTR2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLGREATEREQUAL">
+        <dbinfo schema="BUILTIN" table="DBLGREATEREQUAL"/>
+        <field name="GEQ1" type="double"/>
+        <field name="GEQ2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLEQUAL">
+        <dbinfo schema="BUILTIN" table="DBLEQUAL"/>
+        <field name="EQ1" type="double"/>
+        <field name="EQ2" type="double"/>
+      </relation>
+      <relation materialized="true" name="DBLNOTEQUAL">
+        <dbinfo schema="BUILTIN" table="DBLNOTEQUAL"/>
+        <field name="NEQ1" type="double"/>
+        <field name="NEQ2" type="double"/>
       </relation>
       <relation materialized="true" name="STRLIKE">
         <dbinfo schema="BUILTIN" table="STRLIKE"/>

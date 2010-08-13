@@ -23,7 +23,6 @@ import java.util.Map;
 import edu.upenn.cis.orchestra.Debug;
 import edu.upenn.cis.orchestra.datalog.atom.Atom;
 import edu.upenn.cis.orchestra.datalog.atom.AtomArgument;
-import edu.upenn.cis.orchestra.datalog.atom.AtomSkolem;
 import edu.upenn.cis.orchestra.datalog.atom.AtomVariable;
 import edu.upenn.cis.orchestra.datamodel.AbstractRelation;
 import edu.upenn.cis.orchestra.datamodel.Mapping;
@@ -36,7 +35,7 @@ import edu.upenn.cis.orchestra.exchange.RuleFieldMapping;
 
 public class MappingsInversionMgt {
 
-	private static int indSkolem = 0;
+//	private static int indSkolem = 0;
 
 		
 	/**
@@ -253,11 +252,12 @@ public class MappingsInversionMgt {
 	 * @param skolem Skolem to rename
 	 * @return Skolem renamed
 	 */
+	/*
 	private static AtomSkolem renameUserSkolem (AtomSkolem skolem)
 	{		
 		AtomSkolem newSkolem = new AtomSkolem ("user:" + skolem.getName(), skolem.getParams());
 		return newSkolem;
-	}
+	}*/
 
 	private static List<RelationField> getFieldsForSkolemParams(Mapping mapping, List<AtomArgument> params,
 			List<RelationField> keyFields, List<AtomArgument> keyParams) throws IncompatibleTypesException{
@@ -526,6 +526,16 @@ public class MappingsInversionMgt {
 			res.setFakeMapping(mapping.isFakeMapping());
 			
 			res.setDerivedFrom(mapping.getId());
+			
+			// Mark the Skolem variables in the head
+			for (Atom a : res.getMappingHead()) {
+				int inx = 0;
+				for (AtomVariable v : a.getVariables()) {
+					if (skolemizedVars.contains(v))
+						a.setIsNullable(inx);
+					inx++;
+				}
+			}
 			return res;
 		}catch(IncompatibleTypesException e){
 			Debug.println("Skolemization of mapping failed due to type error in the mapping");

@@ -75,7 +75,7 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
         init.addAll(copyRelationList(getIncrementallyMaintenableJoinRelations(), AtomType.NEW, AtomType.NONE, builtInSchemas));
         init.addAll(copyRelationList(getOuterUnionRelations(), AtomType.NEW, AtomType.NONE, builtInSchemas));
         
-        ret.add(new NonRecursiveDatalogProgram(init, true));
+        ret.add(new NonRecursiveDatalogProgram(init, true, "PreInsertion"));
 		return ret;
 	}
 
@@ -85,14 +85,14 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
 		List<RelationContext> emptyList = new ArrayList<RelationContext>();
 		
 		
-		ret.add(applyDeltasToBase(getMappingRelations(), getEdbs(), getIdbs(), builtInSchemas));
-		ret.add(applyDeltasToBase(getRej(), emptyList, emptyList, builtInSchemas));
-		ret.add(applyDeltasToBase(getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, builtInSchemas));
-		ret.add(applyDeltasToBase(getOuterUnionRelations(), emptyList, emptyList, builtInSchemas));
+		ret.add(applyDeltasToBase(getMappingRelations(), getEdbs(), getIdbs(), builtInSchemas, "Mapping"));
+		ret.add(applyDeltasToBase(getRej(), emptyList, emptyList, builtInSchemas, "Rejection"));
+		ret.add(applyDeltasToBase(getIncrementallyMaintenableJoinRelations(), emptyList, emptyList, builtInSchemas, "IncrJoin"));
+		ret.add(applyDeltasToBase(getOuterUnionRelations(), emptyList, emptyList, builtInSchemas, "OuterUnion"));
 
 		//			Recompute real outer join ASRs
 		ret.add(cleanupRelations(AtomType.NONE, getRealOuterJoinRelations(), emptyList, emptyList, builtInSchemas));
-		ret.add(new NonRecursiveDatalogProgram(getRealOuterJoinRules(), false));
+		ret.add(new NonRecursiveDatalogProgram(getRealOuterJoinRules(), false, "PostInsertion"));
 		
 		
         ret.add(cleanupRelations(AtomType.INS, getMappingRelations(), getEdbs(), getIdbs(), builtInSchemas));
@@ -113,13 +113,18 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
     private DatalogSequence createInsertionProgramSequence(Map<String, Schema> builtInSchemas) {
         DatalogSequence ret = new DatalogSequence(false, true);
 
-       	ret.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.NEW, AtomType.INS, builtInSchemas), true));
-       	ret.add(new NonRecursiveDatalogProgram(copyRelationList(getRej(), AtomType.NEW, AtomType.INS, builtInSchemas), true));
+        // zives 1/10 -- moved this below the local2peer
+       	//ret.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.NEW, AtomType.INS, builtInSchemas), true, "ApplyInsToNew"));
+
        	List<Rule> l2p = new ArrayList<Rule>();
        	for(Rule r : getLocal2PeerRules()) {
        		l2p.addAll(insertionRules(r, false, builtInSchemas));
         }
-       	ret.add(new NonRecursiveDatalogProgram(l2p));
+       	ret.add(new NonRecursiveDatalogProgram(l2p, "LocalToPeer"));
+       	
+        // zives 1/10 -- moved this from above the local2peer
+       	ret.add(new NonRecursiveDatalogProgram(copyRelationList(getEdbs(), AtomType.NEW, AtomType.INS, builtInSchemas), true, "ApplyInsToNew"));
+       	ret.add(new NonRecursiveDatalogProgram(copyRelationList(getRej(), AtomType.NEW, AtomType.INS, builtInSchemas), true, "ApplyRejInsToNew"));
        	
        	List<Datalog> progList = new ArrayList<Datalog>();
 
@@ -141,25 +146,26 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
         	combinedMappings.addAll(insertionRules(r, true, builtInSchemas));
         }
         
-        for(Rule r : getProv2TargetRulesForIns()) {
+        List<Rule> rset = getProv2TargetRulesForIns();
+        for(Rule r : rset) {
         	idbIns.addAll(insertionRules(r, false, builtInSchemas));
         }
 
 		List<Rule> newDefs = new ArrayList<Rule>();
 		List<Rule> unfoldedIdbIns = unfoldProvDefs(defs, idbIns, newDefs, false);
 
-		progList.add(new NonRecursiveDatalogProgram(newDefs, true));
+		progList.add(new NonRecursiveDatalogProgram(newDefs, true, "UnfoldedProvDefs"));
 		if(existCombined){
-			progList.add(new NonRecursiveDatalogProgram(combinedMappings, true));
+			progList.add(new NonRecursiveDatalogProgram(combinedMappings, true, "CombinedMappings"));
 		}
-		progList.add(new NonRecursiveDatalogProgram(unfoldedIdbIns, true));
+		progList.add(new NonRecursiveDatalogProgram(unfoldedIdbIns, true, "UnfoldedIDBIns"));
     	
 //        NonRecursiveDatalogProgram appl = new NonRecursiveDatalogProgram(idbDeltaApplicationRules(true, false), false);
 //		Count4fixpoint because of initial copying of data from local2peer relations 
-        NonRecursiveDatalogProgram appl = new NonRecursiveDatalogProgram(idbDeltaApplicationRules(true, false), true);
+        NonRecursiveDatalogProgram appl = new NonRecursiveDatalogProgram(idbDeltaApplicationRules(true, false), true, "IDBDeltaApplyRules");
         progList.add(appl);
 
-        NonRecursiveDatalogProgram applMap = new NonRecursiveDatalogProgram((copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.INS, builtInSchemas)));
+        NonRecursiveDatalogProgram applMap = new NonRecursiveDatalogProgram((copyRelationList(getMappingRelations(), AtomType.NEW, AtomType.INS, builtInSchemas)), "MainLoopApplyInsToNew");
         progList.add(applMap);
 //        NonRecursiveDatalogProgram applOJ = new NonRecursiveDatalogProgram((copyRelationList(getOuterJoinRelations(), AtomType.NEW, AtomType.INS, db)));
 //        progList.add(applOJ);
@@ -176,7 +182,7 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
         List<Rule> unfoldedMappingAppl = unfoldProvDefs(defs, mappingAppl, trash, false);
         
 //        ret.add(new NonRecursiveDatalogProgram(mappingAppl, true));
-        ret.add(new NonRecursiveDatalogProgram(unfoldedMappingAppl, true));
+        ret.add(new NonRecursiveDatalogProgram(unfoldedMappingAppl, true, "UnfoldedMapping"));
         
         return ret;
     }	
@@ -219,7 +225,8 @@ public class InsertionDeltaRuleGen extends DeltaRuleGen {
 		int lastInd = -1;
 		for (int i = 0 ; i < size ; i++)
 		{
-			while(i < size && (body.get(i).isSkolem() || body.get(i).isNeg())){
+			while (i < size && !DeltaRuleGen.hasDeltaRelationVersion(body.get(i), builtInSchemas)) { 
+					//(body.get(i).isSkolem() || body.get(i).isNeg() || builtInSchemas.containsKey(body.get(i).getSchema().getSchemaId()))){
 				i++;
 			}
 			

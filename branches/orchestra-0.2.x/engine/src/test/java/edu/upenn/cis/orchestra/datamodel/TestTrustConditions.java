@@ -143,7 +143,7 @@ public class TestTrustConditions {
 		Element root = d.createElement("trustConds");
 		d.appendChild(root);
 
-		tc.serialize(d, root, scm);
+		tc.serialize(d, root, scm.getSchema(ownerPeerID));
 
 		DomUtils.write(d, System.out);
 

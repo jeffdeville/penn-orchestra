@@ -179,6 +179,9 @@ public class AtomConst extends AtomArgument {
 	public void renameVariable (String extension)
 	{}
 	
+	public void renameVariable (Map<String,String> renameTable)
+	{}
+	
 	public boolean isLabeledNull(){
 		if (getValue() != null && getValue().toString() != null)
 			return getValue().toString().startsWith("NULL(");
